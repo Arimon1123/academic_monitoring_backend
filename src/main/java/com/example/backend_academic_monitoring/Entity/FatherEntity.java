@@ -1,16 +1,15 @@
 package com.example.backend_academic_monitoring.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 @Entity
 @Table(name = "father")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class FatherEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

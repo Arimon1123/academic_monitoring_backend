@@ -164,7 +164,7 @@ CREATE TABLE reject (
 );
 
 -- Table: requirements
-CREATE TABLE requirements (
+CREATE TABLE requirement (
     id serial  NOT NULL,
     requirement varchar(100)  NOT NULL,
     description varchar(400)  NOT NULL,
