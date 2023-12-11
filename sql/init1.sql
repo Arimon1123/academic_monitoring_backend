@@ -3,11 +3,14 @@
 
 -- tables
 -- Table: acad_user
+CREATE  DATABASE acad_monitoring;
+\c acad_monitoring;
 CREATE TABLE acad_user (
     id serial  NOT NULL,
     username varchar(100)  NOT NULL,
     password varchar(200)  NOT NULL,
     status int  NOT NULL,
+    role varchar(20)  NOT NULL,
     image_id int  NULL,
     CONSTRAINT acad_user_pk PRIMARY KEY (id)
 );
@@ -168,7 +171,7 @@ CREATE TABLE requirement (
     id serial  NOT NULL,
     requirement varchar(100)  NOT NULL,
     description varchar(400)  NOT NULL,
-    CONSTRAINT requirements_pk PRIMARY KEY (id)
+    CONSTRAINT requirement_pk PRIMARY KEY (id)
 );
 
 -- Table: schedule
@@ -224,7 +227,7 @@ CREATE TABLE subject (
 CREATE TABLE subject_requirement (
     id serial  NOT NULL,
     subject_id int  NOT NULL,
-    requirements_id int  NOT NULL,
+    requirement_id int  NOT NULL,
     CONSTRAINT subject_requirement_pk PRIMARY KEY (id)
 );
 
@@ -284,7 +287,7 @@ ALTER TABLE administrative ADD CONSTRAINT administrative_acad_user
 
 -- Reference: asistencia_estudiante (table: attendance)
 ALTER TABLE attendance ADD CONSTRAINT attendance_student
-    FOREIGN KEY (estudiante_id)
+    FOREIGN KEY (student_id)
     REFERENCES student (id)  
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
@@ -451,9 +454,9 @@ ALTER TABLE subject ADD CONSTRAINT subject_grade
 ;
 
 -- Reference: subject_requirement_requirements (table: subject_requirement)
-ALTER TABLE subject_requirement ADD CONSTRAINT subject_requirement_requirements
-    FOREIGN KEY (requirements_id)
-    REFERENCES requirements (id)  
+ALTER TABLE subject_requirement ADD CONSTRAINT subject_requirement_requirement
+    FOREIGN KEY (requirement_id)
+    REFERENCES requirement (id)
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
 ;
@@ -489,6 +492,6 @@ ALTER TABLE teacher_subject ADD CONSTRAINT teacher_subject_teacher
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
 ;
-
+INSERT INTO acad_user values (1, 'admin', '', 1, 'ADMNINISTRATIVE', null);
 -- End of file.
 
