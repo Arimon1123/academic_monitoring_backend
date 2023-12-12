@@ -20,4 +20,6 @@ public class AdministrativeEntity {
     private String phone;
     private String lastname;
     private Integer status;
+    @Column(name = "acad_user_id")
+    private Integer userId;
 }

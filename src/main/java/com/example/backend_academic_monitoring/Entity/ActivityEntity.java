@@ -10,6 +10,7 @@ import org.springframework.data.relational.core.sql.In;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Table(name = "activity")
 public class ActivityEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

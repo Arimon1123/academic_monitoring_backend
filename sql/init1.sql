@@ -492,6 +492,8 @@ ALTER TABLE teacher_subject ADD CONSTRAINT teacher_subject_teacher
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
 ;
-INSERT INTO acad_user values (1, 'admin', '', 1, 'ADMNINISTRATIVE', null);
+INSERT INTO acad_user values (999, 'admin', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, 'ADMINISTRATIVE', null);
+INSERT INTO administrative values (999, 'Administrador', 'Administrador', '12345678', '', '', 1, 999);
 -- End of file.
-
+Insert into grade values (1, 'Primaria', '1'), (2, 'Primaria', '2'), (3, 'Primaria', '3'), (4, 'Primaria', '4'), (5, 'Primaria', '5'), (6, 'Primaria', '6'), (7, 'Secundaria', '1'), (8, 'Secundaria', '2'), (9, 'Secundaria', '3'), (10, 'Secundaria', '4'), (11, 'Secundaria', '5'), (12, 'Secundaria', '6');
+Insert into subject values (1,'Matemática',2,1,1),(2,'Lenguaje',2,1,1),(3,'Ciencias Naturales',2,1,1),(4,'Ciencias Sociales',2,1,1),(5,'Educación Física',2,1,1),(6,'Educación Artística',2,1,1),(7,'Educación Religiosa',2,1,1),(8,'Inglés',2,1,1),(9,'Matemática',2,1,2),(10,'Lenguaje',2,1,2),(11,'Ciencias Naturales',2,1,2),(12,'Ciencias Sociales',2,1,2),(13,'Educación Física',2,1,2),(14,'Educación Artística',2,1,2),(15,'Educación Religiosa',2,1,2),(16,'Inglés',2,1,2),(17,'Matemática',2,1,3),(18,'Lenguaje',2,1,3),(19,'Ciencias Naturales',2,1,3),(20,'Ciencias Sociales',2,1,3),(21,'Educación Física',2,1,3),(22,'Educación Artística',2,1,3),(23,'Educación Religiosa',2,1,3);

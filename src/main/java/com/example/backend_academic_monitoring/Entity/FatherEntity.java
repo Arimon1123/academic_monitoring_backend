@@ -20,4 +20,6 @@ public class FatherEntity {
     private String email;
     private String phone;
     private Integer status;
+    @Column(name = "acad_user_id")
+    private Integer userId;
 }

@@ -1,0 +1,27 @@
+### Send POST request with json body
+POST http://localhost:8080/authenticate
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+####
+POST http://localhost:8080/user/save
+Content-Type: application/json
+
+{
+  "name": "teacher1",
+  "lastname": "teacher1",
+  "email": "teacher1@gmail.com",
+  "address": "address1",
+  "phone": "123456789",
+  "username": "teacher1",
+  "password": "teacher1",
+  "role": "TEACHER"
+}
+
+###
+GET http://localhost:8080/user
+Accept: application/json
+
