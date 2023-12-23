@@ -1,20 +1,24 @@
-package com.example.backend_academic_monitoring.Service;
+package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.FatherDTO;
+import com.example.backend_academic_monitoring.DTO.PersonDTO;
 import com.example.backend_academic_monitoring.Entity.FatherEntity;
 import com.example.backend_academic_monitoring.Repository.FatherRepository;
+import com.example.backend_academic_monitoring.Service.FatherService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class FatherServiceImpl {
+public class FatherServiceImpl implements FatherService {
 
     private FatherRepository fatherRepository;
 
     public FatherServiceImpl(FatherRepository fatherRepository) {
         this.fatherRepository = fatherRepository;
     }
-
-    public void saveFather(FatherDTO fatherDTO, Integer userId) {
+    @Override
+    public void saveFather(PersonDTO fatherDTO, Integer userId) {
         FatherEntity fatherEntity = new FatherEntity();
         fatherEntity.setName(fatherDTO.getName());
         fatherEntity.setLastname(fatherDTO.getLastname());
@@ -25,6 +29,35 @@ public class FatherServiceImpl {
         fatherEntity.setUserId(userId);
         fatherEntity.setStatus(1);
         fatherRepository.save(fatherEntity);
+    }
+
+    @Override
+    public void deleteFather(Integer userId) {
+        FatherEntity fatherEntity = fatherRepository.findByUserId(userId);
+        fatherEntity.setStatus(0);
+        fatherRepository.save(fatherEntity);
+    }
+
+    @Override
+    public void updateFather(PersonDTO personDTO) {
+        FatherEntity fatherEntity = fatherRepository.findByUserId(personDTO.getId());
+        fatherEntity.setName(personDTO.getName());
+        fatherEntity.setLastname(personDTO.getLastname());
+        fatherEntity.setAddress(personDTO.getAddress());
+        fatherEntity.setPhone(personDTO.getPhone());
+        fatherEntity.setEmail(personDTO.getEmail());
+        fatherRepository.save(fatherEntity);
+
+    }
+
+    @Override
+    public FatherDTO getFather() {
+        return null;
+    }
+
+    @Override
+    public List<FatherDTO> getAllFather() {
+        return null;
     }
 
     public FatherDTO findFatherByUserId(Integer userId) {

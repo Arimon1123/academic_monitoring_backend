@@ -9,12 +9,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class TeacherDTO {
-    Integer id;
-    String name;
-    String lastname;
-    String email;
-    String phone;
-    String address;
-    Integer userId;
+public class TeacherDTO extends PersonDTO{
+
 }

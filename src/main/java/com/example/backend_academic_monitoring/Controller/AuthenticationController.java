@@ -76,15 +76,6 @@ public class AuthenticationController {
 	}
 
 	public Map<String, Object> getMapFromIoJsonwebtokenClaims(DefaultClaims claims) {
-		Map<String, Object> expectedMap = new HashMap<String, Object>();
-		for (Map.Entry<String, Object> entry : claims.entrySet()) {
-			expectedMap.put(entry.getKey(), entry.getValue());
-		}
-		return expectedMap;
-	}
-	@GetMapping("/helloworld")
-	public String helloWorld (){
-
-		return "HelloWorld";
+        return new HashMap<String, Object>(claims);
 	}
 }
