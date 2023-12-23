@@ -18,4 +18,5 @@ public class UserEntity {
     private String password;
     private Integer status;
     private String role;
+    private Integer imageId;
 }

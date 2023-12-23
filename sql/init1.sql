@@ -129,7 +129,7 @@ CREATE TABLE grade (
 -- Table: image
 CREATE TABLE image (
     id serial  NOT NULL,
-    uuid varchar(20)  NOT NULL,
+    uuid varchar(100)  NOT NULL,
     type varchar(20)  NOT NULL,
     name varchar(100)  NOT NULL,
     CONSTRAINT image_pk PRIMARY KEY (id)
