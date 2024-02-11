@@ -86,7 +86,6 @@ public class ImageServiceImpl implements ImageService {
         file.delete();
         imageRepository.delete(imageEntity);
     }
-
     public ResourceDTO getResource(String uuid) throws IOException {
         ResourceDTO resourceDTO = new ResourceDTO();
         ImageDTO imageDTO = getImageByUuid(uuid);

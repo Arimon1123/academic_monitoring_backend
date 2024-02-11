@@ -1,11 +1,15 @@
 package com.example.backend_academic_monitoring.Implementations;
 
+import com.example.backend_academic_monitoring.Controller.FileController;
 import com.example.backend_academic_monitoring.DTO.*;
+import com.example.backend_academic_monitoring.Entity.ImageEntity;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 import com.example.backend_academic_monitoring.Repository.UserRepository;
 import com.example.backend_academic_monitoring.Service.ImageService;
 import com.example.backend_academic_monitoring.Service.TeacherService;
 import com.example.backend_academic_monitoring.Service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final String HOST = "localhost";
     @Value("SERVER_PORT")
     private final String PORT = "8080";
+    public  static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     public UserServiceImpl(TeacherService teacherService, UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, FatherServiceImpl fatherService, AdministrativeServiceImpl administrativeService, ImageService fileService) {
@@ -42,9 +47,6 @@ public class UserServiceImpl implements UserService {
         this.administrativeService = administrativeService;
         this.fileService = fileService;
     }
-
-
-
 
     @Override
     @Transactional(propagation= Propagation.REQUIRED)
@@ -121,6 +123,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void blockUser(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username);
+        userEntity.setStatus(2);
+        userRepository.save(userEntity);
+    }
+
+    @Override
     public UserDataDTO getUser(Integer id) {
         UserDataDTO userDataDTO = new UserDataDTO();
         UserEntity user = userRepository.findById(id).orElseThrow();
@@ -142,6 +151,7 @@ public class UserServiceImpl implements UserService {
         userDataDTO.setEmail(personDTO.getEmail());
         userDataDTO.setUsername(user.getUsername());
         userDataDTO.setRole(user.getRole());
+
     }
     private void entityToCreate(UserCreateDTO userCreateDTO, UserEntity user, PersonDTO personDTO) {
         userCreateDTO.setName(personDTO.getName());
@@ -153,14 +163,20 @@ public class UserServiceImpl implements UserService {
         userCreateDTO.setRole(user.getRole());
     }
 
+
     @Override
-    public List<UserCreateDTO> getAllUser() {
+    public List<UserDataDTO> getAllUser() {
         return userRepository.findAll().stream().map(userEntity -> {
-            UserCreateDTO userCreateDTO = new UserCreateDTO();
+            UserDataDTO userDataDTO = new UserDataDTO();
             PersonDTO personDTO;
             personDTO = getPersonDTO(userEntity);
-            entityToCreate(userCreateDTO, userEntity, personDTO);
-            return userCreateDTO;
+
+            entityToData(userDataDTO, userEntity, personDTO);
+            if(userEntity.getImageId() != null){
+                ImageDTO image = fileService.getImage(userEntity.getImageId());
+                userDataDTO.setImageUrl("http://"+ HOST +":"+ PORT + "/file/image/" + image.getUuid());
+            }
+                return userDataDTO;
         }).toList();
     }
 
@@ -169,8 +185,14 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findById(id).orElseThrow();
         fileService.deleteImage(userEntity.getImageId());
         Integer imageId = fileService.saveFile(image);
+
         userEntity.setImageId(imageId);
         userRepository.save(userEntity);
+    }
+
+    @Override
+    public boolean isUsernameAvaiable(String username) {
+        return !userRepository.existsByUsername(username);
     }
 
     private PersonDTO getPersonDTO(UserEntity userEntity) {
@@ -186,6 +208,5 @@ public class UserServiceImpl implements UserService {
         }
         return personDTO;
     }
-
 
 }

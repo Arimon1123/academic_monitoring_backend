@@ -12,6 +12,7 @@ CREATE TABLE acad_user (
     status int  NOT NULL,
     role varchar(20)  NOT NULL,
     image_id int  NULL,
+
     CONSTRAINT acad_user_pk PRIMARY KEY (id)
 );
 

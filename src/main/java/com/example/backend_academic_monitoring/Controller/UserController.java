@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ResponseDTO<String>> saveUser(@RequestParam("user") String userDTO, @RequestParam("image") MultipartFile image) {
-        LOGGER.info("DTO {}, image {}, type {}",userDTO,image.getOriginalFilename(),image.getContentType());
+    public ResponseEntity<ResponseDTO<String>> saveUser(@RequestParam("user") String userDTO, @RequestParam(value = "image", required = false) MultipartFile image) {
+        if(image != null) LOGGER.info("DTO {}, image {}, type {}", userDTO, image.getOriginalFilename(), image.getContentType());
         try {
             UserCreateDTO userDto = null;
              userDto = objectMapper.readValue(userDTO, UserCreateDTO.class);
@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<ResponseDTO<List<UserCreateDTO>>> getUsers() {
+    public ResponseEntity<ResponseDTO<List<UserDataDTO>>> getUsers() {
         try {
             return ResponseEntity.ok(
                     new ResponseDTO<>(
@@ -93,5 +93,30 @@ public class UserController {
                         "Imagen actualizada",
                         200 ));
     }
-
+    @GetMapping("/{username}/available")
+    public ResponseEntity<ResponseDTO<Boolean>> existsByUsername(@PathVariable String username){
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        userService.isUsernameAvaiable(username),
+                        "Usuario disponible",
+                        200));
+    }
+    @PutMapping("/block/{username}")
+    public ResponseEntity<ResponseDTO<String>> blockUser(@PathVariable String username){
+        try{
+            userService.blockUser(username);
+        }catch (Exception e){
+            LOGGER.error("Error al bloquear el usuario",e);
+            return ResponseEntity.badRequest().body(
+                    new ResponseDTO<>(
+                            null,
+                            "Error al bloquear el usuario",
+                            401));
+        }
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        null,
+                        "Usuario bloqueado",
+                        200 ));
+    }
 }
