@@ -28,12 +28,11 @@ public class UserController {
         this.objectMapper = objectMapper;
     }
 
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<ResponseDTO<String>> saveUser(@RequestParam("user") String userDTO, @RequestParam(value = "image", required = false) MultipartFile image) {
         if(image != null) LOGGER.info("DTO {}, image {}, type {}", userDTO, image.getOriginalFilename(), image.getContentType());
         try {
-            UserCreateDTO userDto = null;
-             userDto = objectMapper.readValue(userDTO, UserCreateDTO.class);
+            UserCreateDTO userDto = objectMapper.readValue(userDTO, UserCreateDTO.class);
              return ResponseEntity.ok(
                      new ResponseDTO<>(
                              userService.saveUser(userDto,image),

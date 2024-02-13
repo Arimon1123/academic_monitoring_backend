@@ -103,6 +103,7 @@ CREATE TABLE classroom_feature (
 CREATE TABLE father (
     id serial  NOT NULL,
     name varchar(150)  NOT NULL,
+    ci varchar(20)  NOT NULL,
     lastname varchar(150)  NOT NULL,
     address varchar(100)  NOT NULL,
     email varchar(100)  NOT NULL,
@@ -378,7 +379,7 @@ ALTER TABLE student_class ADD CONSTRAINT student_class
 ALTER TABLE father ADD CONSTRAINT father_acad_user
     FOREIGN KEY (acad_user_id)
     REFERENCES acad_user (id)  
-    NOT DEFERRABLE 
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 

@@ -13,4 +13,5 @@ public interface ImageService {
     ImageDTO getImageByUuid(String uuid);
     void deleteImage(Integer userId);
     ResourceDTO getResource(String uuid) throws IOException;
+    ImageDTO getImageByUserId(Integer userId);
 }

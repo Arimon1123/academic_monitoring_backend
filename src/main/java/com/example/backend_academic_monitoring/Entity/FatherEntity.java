@@ -15,6 +15,7 @@ public class FatherEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private String ci;
     private String lastname;
     private String address;
     private String email;

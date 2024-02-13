@@ -5,9 +5,11 @@ import com.example.backend_academic_monitoring.DTO.*;
 import com.example.backend_academic_monitoring.Entity.ImageEntity;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 import com.example.backend_academic_monitoring.Repository.UserRepository;
+import com.example.backend_academic_monitoring.Service.EmailService;
 import com.example.backend_academic_monitoring.Service.ImageService;
 import com.example.backend_academic_monitoring.Service.TeacherService;
 import com.example.backend_academic_monitoring.Service.UserService;
+import com.example.backend_academic_monitoring.Utilities.PasswordGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.context.Context;
 
 import java.util.List;
 
@@ -31,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder bCryptPasswordEncoder;
     private final FatherServiceImpl fatherService;
     private final AdministrativeServiceImpl administrativeService;
+    private final PasswordGenerator passwordGenerator;
+    private final EmailService emailService;
     private final ImageService fileService;
     @Value("SERVER_HOST")
     private final String HOST = "localhost";
@@ -39,12 +44,14 @@ public class UserServiceImpl implements UserService {
     public  static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    public UserServiceImpl(TeacherService teacherService, UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, FatherServiceImpl fatherService, AdministrativeServiceImpl administrativeService, ImageService fileService) {
+    public UserServiceImpl(TeacherService teacherService, UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, FatherServiceImpl fatherService, AdministrativeServiceImpl administrativeService, PasswordGenerator passwordGenerator, EmailService emailService, ImageService fileService) {
         this.teacherService = teacherService;
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.fatherService = fatherService;
         this.administrativeService = administrativeService;
+        this.passwordGenerator = passwordGenerator;
+        this.emailService = emailService;
         this.fileService = fileService;
     }
 
@@ -56,7 +63,11 @@ public class UserServiceImpl implements UserService {
         }
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(userCreateDTO.getUsername());
-        userEntity.setPassword(bCryptPasswordEncoder.encode(userCreateDTO.getPassword()));
+        String generatedPassword = passwordGenerator.generatePassword();
+        Context context = new Context();
+        context.setVariable("password", generatedPassword);
+        emailService.sendPasswordEmail(userCreateDTO.getEmail(), "Contraseña generada", context);
+        userEntity.setPassword(bCryptPasswordEncoder.encode(generatedPassword));
         userEntity.setRole(userCreateDTO.getRole());
         userEntity.setStatus(1);
         if(image != null){

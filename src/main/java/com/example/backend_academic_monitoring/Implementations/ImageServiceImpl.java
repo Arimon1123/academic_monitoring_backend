@@ -96,4 +96,14 @@ public class ImageServiceImpl implements ImageService {
         resourceDTO.setResource(resource);
         return resourceDTO;
     }
+
+    public ImageDTO getImageByUserId(Integer userId) {
+        ImageEntity imageEntity = imageRepository.findByUserId(userId);
+        ImageDTO imageDTO = new ImageDTO();
+        imageDTO.setId(imageEntity.getId());
+        imageDTO.setName(imageEntity.getName());
+        imageDTO.setType(imageEntity.getType());
+        imageDTO.setUuid(imageEntity.getUuid());
+        return imageDTO;
+    }
 }
