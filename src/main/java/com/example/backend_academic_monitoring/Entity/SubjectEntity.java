@@ -26,8 +26,8 @@ public class SubjectEntity {
     @JoinTable(
             name = "teacher_subject",
             joinColumns = @JoinColumn(name = "subject_id"),
-            inverseJoinColumns = @JoinColumn(name = "teacher_id")
+            inverseJoinColumns = @JoinColumn(name = "person_id")
     )
-    List<TeacherEntity> teacherEntities;
+    List<PersonEntity> teacherEntities;
 
 }

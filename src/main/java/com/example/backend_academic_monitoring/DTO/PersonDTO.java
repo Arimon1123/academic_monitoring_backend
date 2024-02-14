@@ -10,9 +10,9 @@ import lombok.*;
 public class PersonDTO {
     private Integer id;
     private String name;
+    private String lastname;
+    private String ci;
     private String address;
     private String email;
     private String phone;
-    private String lastname;
-    private Integer status;
 }

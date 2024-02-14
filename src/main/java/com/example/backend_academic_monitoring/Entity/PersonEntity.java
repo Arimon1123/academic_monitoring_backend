@@ -3,23 +3,22 @@ package com.example.backend_academic_monitoring.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Table(name = "person")
 @Entity
-@Table(name = "administrative")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
-public class AdministrativeEntity {
+public class PersonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private String lastname;
+    private String ci;
     private String address;
     private String email;
     private String phone;
-    private String lastname;
     private Integer status;
-    @Column(name = "acad_user_id")
-    private Integer userId;
 }

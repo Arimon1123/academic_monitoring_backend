@@ -1,13 +1,11 @@
 package com.example.backend_academic_monitoring.Implementations;
 
-import com.example.backend_academic_monitoring.Controller.FileController;
 import com.example.backend_academic_monitoring.DTO.*;
-import com.example.backend_academic_monitoring.Entity.ImageEntity;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 import com.example.backend_academic_monitoring.Repository.UserRepository;
 import com.example.backend_academic_monitoring.Service.EmailService;
 import com.example.backend_academic_monitoring.Service.ImageService;
-import com.example.backend_academic_monitoring.Service.TeacherService;
+import com.example.backend_academic_monitoring.Service.PersonService;
 import com.example.backend_academic_monitoring.Service.UserService;
 import com.example.backend_academic_monitoring.Utilities.PasswordGenerator;
 import org.slf4j.Logger;
@@ -29,13 +27,11 @@ public class UserServiceImpl implements UserService {
     public static final String TEACHER_ROLE = "TEACHER";
     public static final String FATHER_ROLE = "FATHER";
     public static final String  ADMINISTRATIVE_ROLE = "ADMINISTRATIVE";
-    private final TeacherService teacherService;
     private final UserRepository userRepository;
     private final PasswordEncoder bCryptPasswordEncoder;
-    private final FatherServiceImpl fatherService;
-    private final AdministrativeServiceImpl administrativeService;
     private final PasswordGenerator passwordGenerator;
     private final EmailService emailService;
+    private final PersonService personService;
     private final ImageService fileService;
     @Value("SERVER_HOST")
     private final String HOST = "localhost";
@@ -44,14 +40,12 @@ public class UserServiceImpl implements UserService {
     public  static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    public UserServiceImpl(TeacherService teacherService, UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, FatherServiceImpl fatherService, AdministrativeServiceImpl administrativeService, PasswordGenerator passwordGenerator, EmailService emailService, ImageService fileService) {
-        this.teacherService = teacherService;
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, PasswordGenerator passwordGenerator, EmailService emailService, PersonService personService, ImageService fileService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.fatherService = fatherService;
-        this.administrativeService = administrativeService;
         this.passwordGenerator = passwordGenerator;
         this.emailService = emailService;
+        this.personService = personService;
         this.fileService = fileService;
     }
 
@@ -64,9 +58,6 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(userCreateDTO.getUsername());
         String generatedPassword = passwordGenerator.generatePassword();
-        Context context = new Context();
-        context.setVariable("password", generatedPassword);
-        emailService.sendPasswordEmail(userCreateDTO.getEmail(), "Contraseña generada", context);
         userEntity.setPassword(bCryptPasswordEncoder.encode(generatedPassword));
         userEntity.setRole(userCreateDTO.getRole());
         userEntity.setStatus(1);
@@ -81,15 +72,12 @@ public class UserServiceImpl implements UserService {
         personDTO.setAddress(userCreateDTO.getAddress());
         personDTO.setPhone(userCreateDTO.getPhone());
         personDTO.setEmail(userCreateDTO.getEmail());
-        if(userCreateDTO.getRole().equals(TEACHER_ROLE)){
-            teacherService.saveTeacher(personDTO, userEntity.getId());
-        }
-        if(userCreateDTO.getRole().equals(FATHER_ROLE)){
-            fatherService.saveFather(personDTO, userEntity.getId());
-        }
-        if(userCreateDTO.getRole().equals(ADMINISTRATIVE_ROLE)){
-            administrativeService.saveAdministrative(personDTO, userEntity.getId());
-        }
+        personDTO.setCi(userCreateDTO.getCi());
+        personService.save(personDTO, userEntity.getId());
+        Context context = new Context();
+        context.setVariable("password", generatedPassword);
+        emailService.sendPasswordEmail(userCreateDTO.getEmail(), "Contraseña generada", context);
+
         return "Usuario guardado correctamente";
     }
     @Override
@@ -97,15 +85,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findById(id).orElseThrow();
         userEntity.setStatus(0);
         userRepository.save(userEntity);
-        if(userEntity.getRole().equals(TEACHER_ROLE)){
-            teacherService.deleteTeacher(userEntity.getId());
-        }
-        if(userEntity.getRole().equals(FATHER_ROLE)){
-            fatherService.deleteFather(userEntity.getId());
-        }
-        if(userEntity.getRole().equals(ADMINISTRATIVE_ROLE)){
-            administrativeService.deleteAdministrative(userEntity.getId());
-        }
+        personService.delete(userEntity.getId());
     }
 
     @Override
@@ -122,15 +102,7 @@ public class UserServiceImpl implements UserService {
         personDTO.setAddress(userCreateDTO.getAddress());
         personDTO.setPhone(userCreateDTO.getPhone());
         personDTO.setEmail(userCreateDTO.getEmail());
-        if(userCreateDTO.getRole().equals(TEACHER_ROLE)){
-            teacherService.saveTeacher(personDTO, userEntity.getId());
-        }
-        if(userCreateDTO.getRole().equals(FATHER_ROLE)){
-            fatherService.saveFather(personDTO, userEntity.getId());
-        }
-        if(userCreateDTO.getRole().equals(ADMINISTRATIVE_ROLE)){
-            administrativeService.saveAdministrative(personDTO, userEntity.getId());
-        }
+        personService.delete(userEntity.getId());
     }
 
     @Override
@@ -207,17 +179,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private PersonDTO getPersonDTO(UserEntity userEntity) {
-        PersonDTO personDTO = new PersonDTO();
-        if(userEntity.getRole().equals(TEACHER_ROLE)){
-            personDTO = teacherService.getTeacherByUserId(userEntity.getId());
-        }
-        if(userEntity.getRole().equals(FATHER_ROLE)){
-            personDTO = fatherService.findFatherByUserId(userEntity.getId());
-        }
-        if(userEntity.getRole().equals(ADMINISTRATIVE_ROLE)){
-            personDTO = administrativeService.findAdministrativeByUserId(userEntity.getId());
-        }
-        return personDTO;
+        return personService.getById(userEntity.getId());
     }
 
 }

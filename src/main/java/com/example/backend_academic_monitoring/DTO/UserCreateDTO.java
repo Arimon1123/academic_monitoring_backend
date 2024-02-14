@@ -16,6 +16,7 @@ public class UserCreateDTO {
     String email;
     String phone;
     String address;
+    String ci;
     Integer userId;
     String username;
     String password;
