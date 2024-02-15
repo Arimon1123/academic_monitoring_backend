@@ -2,27 +2,38 @@ package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.PersonDTO;
 import com.example.backend_academic_monitoring.DTO.StudentDTO;
+import com.example.backend_academic_monitoring.Entity.FatherStudentEntity;
 import com.example.backend_academic_monitoring.Entity.StudentEntity;
+import com.example.backend_academic_monitoring.Mappers.PersonMapper;
 import com.example.backend_academic_monitoring.Mappers.StudentMapper;
+import com.example.backend_academic_monitoring.Repository.FatherStudentRepository;
 import com.example.backend_academic_monitoring.Repository.StudentRepository;
 import com.example.backend_academic_monitoring.Service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
+    private final FatherStudentRepository fatherStudentRepository;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    public StudentServiceImpl(StudentRepository studentRepository, FatherStudentRepository fatherStudentRepository) {
         this.studentRepository = studentRepository;
+        this.fatherStudentRepository = fatherStudentRepository;
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void saveStudent(StudentDTO studentDTO, PersonDTO fatherDTO){
         StudentEntity studentEntity = StudentMapper.toEntity(studentDTO);
-
-        studentRepository.save(studentEntity);
+        studentEntity = studentRepository.save(studentEntity);
+        FatherStudentEntity fatherStudentEntity = new FatherStudentEntity();
+        fatherStudentEntity.setFather(PersonMapper.dtoToEntity(fatherDTO,null,1));
+        fatherStudentEntity.setStudent(studentEntity);
+        fatherStudentRepository.save(fatherStudentEntity);
     }
 
     @Override

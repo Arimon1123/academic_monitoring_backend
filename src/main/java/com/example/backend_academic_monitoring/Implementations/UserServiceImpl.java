@@ -1,7 +1,9 @@
 package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.*;
+import com.example.backend_academic_monitoring.Entity.PersonEntity;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
+import com.example.backend_academic_monitoring.Mappers.PersonMapper;
 import com.example.backend_academic_monitoring.Repository.UserRepository;
 import com.example.backend_academic_monitoring.Service.EmailService;
 import com.example.backend_academic_monitoring.Service.ImageService;
@@ -118,6 +120,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(id).orElseThrow();
         PersonDTO personDTO;
         personDTO = getPersonDTO(user);
+        LOGGER.info("PersonDTO: {}, UserEntity {}", personDTO.getId(),user.getId() );
         entityToData(userDataDTO, user, personDTO);
         if(user.getImageId() != null){
             String uuid = fileService.getImage(user.getImageId()).getUuid();
@@ -127,6 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void entityToData(UserDataDTO userDataDTO, UserEntity user, PersonDTO personDTO){
+        userDataDTO.setId(personDTO.getId());
         userDataDTO.setName(personDTO.getName());
         userDataDTO.setLastname(personDTO.getLastname());
         userDataDTO.setAddress(personDTO.getAddress());
@@ -134,6 +138,7 @@ public class UserServiceImpl implements UserService {
         userDataDTO.setEmail(personDTO.getEmail());
         userDataDTO.setUsername(user.getUsername());
         userDataDTO.setRole(user.getRole());
+        userDataDTO.setCi(personDTO.getCi());
 
     }
     private void entityToCreate(UserCreateDTO userCreateDTO, UserEntity user, PersonDTO personDTO) {
@@ -148,18 +153,18 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserDataDTO> getAllUser() {
-        return userRepository.findAll().stream().map(userEntity -> {
+    public List<UserDataDTO> getAllUser(String role) {
+        List<PersonEntity> personList = personService.findAllByRole(role);
+        return personList.stream().map(person -> {
             UserDataDTO userDataDTO = new UserDataDTO();
-            PersonDTO personDTO;
-            personDTO = getPersonDTO(userEntity);
-
-            entityToData(userDataDTO, userEntity, personDTO);
-            if(userEntity.getImageId() != null){
-                ImageDTO image = fileService.getImage(userEntity.getImageId());
-                userDataDTO.setImageUrl("http://"+ HOST +":"+ PORT + "/file/image/" + image.getUuid());
+            UserEntity user = userRepository.findById(person.getUserId()).orElseThrow();
+            LOGGER.info("PersonDTO: {}, UserEntity {}", person.getId(),user.getId() );
+            entityToData(userDataDTO, user, PersonMapper.entityToDTO(person));
+            if(user.getImageId() != null){
+                String uuid = fileService.getImage(user.getImageId()).getUuid();
+                userDataDTO.setImageUrl( "http://"+HOST+":"+PORT+"/file/image/" + uuid);
             }
-                return userDataDTO;
+            return userDataDTO;
         }).toList();
     }
 
@@ -168,7 +173,6 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findById(id).orElseThrow();
         fileService.deleteImage(userEntity.getImageId());
         Integer imageId = fileService.saveFile(image);
-
         userEntity.setImageId(imageId);
         userRepository.save(userEntity);
     }

@@ -49,11 +49,11 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<ResponseDTO<List<UserDataDTO>>> getUsers() {
+    public ResponseEntity<ResponseDTO<List<UserDataDTO>>> getUsers(@RequestParam(required = false) String role) {
         try {
             return ResponseEntity.ok(
                     new ResponseDTO<>(
-                            userService.getAllUser(),
+                            userService.getAllUser(role),
                             "Usuarios obtenidos",
                             200));
         }catch (Exception e){

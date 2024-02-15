@@ -29,14 +29,18 @@ import java.util.Map;
 @CrossOrigin("*")
 public class AuthenticationController {
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+	private final AuthenticationManager authenticationManager;
 
-	@Autowired
-	private CustomUserDetailsService userDetailsService;
+	private final CustomUserDetailsService userDetailsService;
 
+	private final JwtUtil jwtUtil;
 	@Autowired
-	private JwtUtil jwtUtil;
+	public AuthenticationController(AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
+		this.authenticationManager = authenticationManager;
+		this.userDetailsService = userDetailsService;
+		this.jwtUtil = jwtUtil;
+	}
+
 	public static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationController.class);
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)

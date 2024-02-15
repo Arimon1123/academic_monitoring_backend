@@ -9,4 +9,5 @@ public class UserDataDTO extends PersonDTO {
     private String imageUrl;
     private String username;
     private String role;
+    private String ci;
 }

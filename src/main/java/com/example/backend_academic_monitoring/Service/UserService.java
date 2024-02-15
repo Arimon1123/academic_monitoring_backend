@@ -15,7 +15,7 @@ public interface UserService {
     public void updateUser(UserCreateDTO userCreateDTO);
     public void blockUser(String username);
     public UserDataDTO getUser(Integer id);
-    public List<UserDataDTO> getAllUser();
+    public List<UserDataDTO> getAllUser(String role);
     public void updateUserImage(Integer id, MultipartFile image);
     public boolean isUsernameAvaiable(String username);
 }
