@@ -1,6 +1,8 @@
 package com.example.backend_academic_monitoring.Config;
 
 import io.jsonwebtoken.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +18,7 @@ public class JwtUtil {
 	private String secret;
 	private int jwtExpirationInMs;
 	private int refreshExpirationDateInMs;
+	public static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
 
 	@Value("${jwt.secret}")
 	public void setSecret(String secret) {
@@ -35,13 +38,17 @@ public class JwtUtil {
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
 
+		LOGGER.info("UserDetails: {}", userDetails.getAuthorities());
 		Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
 
 		if (roles.contains(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"))) {
 			claims.put("isAdmin", true);
 		}
-		if (roles.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-			claims.put("isUser", true);
+		if (roles.contains(new SimpleGrantedAuthority("ROLE_FATHER"))) {
+			claims.put("isTeacher", true);
+		}
+		if(roles.contains(new SimpleGrantedAuthority("ROLE_TEACHER"))){
+			claims.put("isTeacher", true);
 		}
 		
 		return doGenerateToken(claims, userDetails.getUsername());
@@ -85,14 +92,17 @@ public class JwtUtil {
 		List<SimpleGrantedAuthority> roles = null;
 
 		Boolean isAdmin = claims.get("isAdmin", Boolean.class);
-		Boolean isUser = claims.get("isUser", Boolean.class);
+		Boolean isTeacher = claims.get("isTeacher", Boolean.class);
+		Boolean isFather = claims.get("isFather", Boolean.class);
 
 		if (isAdmin != null && isAdmin) {
-			roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+			roles = List.of(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"));
 		}
-
-		if (isUser != null && isAdmin) {
-			roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
+		if (isTeacher != null && isTeacher) {
+			roles = List.of(new SimpleGrantedAuthority("ROLE_FATHER"));
+		}
+		if (isFather != null && isFather) {
+			roles = List.of(new SimpleGrantedAuthority("ROLE_TEACHER"));
 		}
 		return roles;
 

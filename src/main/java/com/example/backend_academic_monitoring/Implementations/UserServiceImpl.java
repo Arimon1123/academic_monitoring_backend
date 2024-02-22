@@ -4,6 +4,7 @@ import com.example.backend_academic_monitoring.DTO.*;
 import com.example.backend_academic_monitoring.Entity.PersonEntity;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 import com.example.backend_academic_monitoring.Mappers.PersonMapper;
+import com.example.backend_academic_monitoring.Mappers.UserMapper;
 import com.example.backend_academic_monitoring.Repository.UserRepository;
 import com.example.backend_academic_monitoring.Service.EmailService;
 import com.example.backend_academic_monitoring.Service.ImageService;
@@ -185,5 +186,7 @@ public class UserServiceImpl implements UserService {
     private PersonDTO getPersonDTO(UserEntity userEntity) {
         return personService.getById(userEntity.getId());
     }
-
+    public UserDTO getUserByUsername(String username){
+        return UserMapper.entityToDTO(userRepository.findByUsername(username));
+    }
 }

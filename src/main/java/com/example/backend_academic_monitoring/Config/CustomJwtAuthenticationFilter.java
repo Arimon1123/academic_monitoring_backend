@@ -3,9 +3,11 @@ package com.example.backend_academic_monitoring.Config;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
 
@@ -22,6 +25,10 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private JwtUtil jwtTokenUtil;
+
+	@Value("${jwt.accesTokenCookieName}")
+	private String cookieName;
+
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -43,7 +50,6 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 			 String isRefreshToken = request.getHeader("isRefreshToken");
 				String requestURL = request.getRequestURL().toString();
 				if (isRefreshToken != null && isRefreshToken.equals("true") && requestURL.contains("refreshToken")) {
-				 	System.out.println("huevos");
 					allowForRefreshToken(ex, request);
 				} else
 					request.setAttribute("exception", ex);
@@ -64,12 +70,14 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private String extractJwtFromRequest(HttpServletRequest request) {
-		String bearerToken = request.getHeader("Authorization");
-		System.out.println(bearerToken);
-		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-			return bearerToken.substring(7, bearerToken.length());
-		}
-		return null;
+		Cookie cookie = WebUtils.getCookie(request,cookieName);
+//		String bearerToken = request.getHeader("Authorization");
+//		System.out.println(bearerToken);
+//		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+//			return bearerToken.substring(7, bearerToken.length());
+//		}
+//		return null;
+		return cookie != null ? cookie.getValue() : null;
 	}
 
 }

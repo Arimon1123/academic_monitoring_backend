@@ -1,66 +1,76 @@
 package com.example.backend_academic_monitoring.Controller;
 
 
+import com.example.backend_academic_monitoring.Config.CookieHelper;
 import com.example.backend_academic_monitoring.Config.CustomUserDetailsService;
 import com.example.backend_academic_monitoring.Config.JwtUtil;
 import com.example.backend_academic_monitoring.DTO.AuthenticationRequest;
 import com.example.backend_academic_monitoring.DTO.AuthenticationResponse;
 import com.example.backend_academic_monitoring.DTO.UserDTO;
+import com.example.backend_academic_monitoring.Entity.UserEntity;
+import com.example.backend_academic_monitoring.Mappers.UserMapper;
+import com.example.backend_academic_monitoring.Service.UserService;
 import io.jsonwebtoken.impl.DefaultClaims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.service.annotation.GetExchange;
+
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@CrossOrigin("*")
+@RequestMapping("/auth")
 public class AuthenticationController {
 
 	private final AuthenticationManager authenticationManager;
 
 	private final CustomUserDetailsService userDetailsService;
+	@Value("${jwt.accesTokenCookieName}")
+	private String cookieName;
 
+	private final UserService userService;
 	private final JwtUtil jwtUtil;
 	@Autowired
-	public AuthenticationController(AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
+	public AuthenticationController(AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, UserService userService, JwtUtil jwtUtil) {
 		this.authenticationManager = authenticationManager;
 		this.userDetailsService = userDetailsService;
-		this.jwtUtil = jwtUtil;
+        this.userService = userService;
+        this.jwtUtil = jwtUtil;
 	}
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationController.class);
 
+
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest)
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest,
+													   HttpServletResponse httpServletResponse)
 			throws Exception {
 		LOGGER.info("{}",authenticationRequest);
-		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-		} catch (DisabledException e) {
-			throw new Exception("USER_DISABLED", e);
-		}
-		catch (BadCredentialsException e) {
-			throw new Exception("INVALID_CREDENTIALS", e);
-		}
-		
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken( authenticationRequest.getUsername()
+				,authenticationRequest.getPassword())
+		);
 		UserDetails userdetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtUtil.generateToken(userdetails);
+		CookieHelper.create(httpServletResponse, cookieName, token, false , -1 , "localhost");
 		LOGGER.info("{}",userdetails);
-		return ResponseEntity.ok(new AuthenticationResponse(token));
+		return ResponseEntity.ok("Sesion Iniciada");
 	}
 	
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -82,4 +92,21 @@ public class AuthenticationController {
 	public Map<String, Object> getMapFromIoJsonwebtokenClaims(DefaultClaims claims) {
         return new HashMap<String, Object>(claims);
 	}
+	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_FATHER')")
+	@GetMapping("/details")
+	public ResponseEntity<Object> getUserDetails(){
+
+		UserDetails userDetails =  (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String username = userDetails.getUsername();
+		Optional<UserDTO> user = Optional.ofNullable(userService.getUserByUsername(username));
+        return user.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok("Usuario no encontrado"));
+    }
+
+	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_FATHER')")
+	@GetMapping("/logout")
+	public ResponseEntity<?> logout(HttpServletResponse httpServletResponse){
+		CookieHelper.clear(httpServletResponse, cookieName);
+		return ResponseEntity.ok("Sesion cerrada");
+	}
 }
+

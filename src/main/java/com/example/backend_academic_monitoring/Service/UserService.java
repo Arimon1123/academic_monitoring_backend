@@ -18,4 +18,5 @@ public interface UserService {
     public List<UserDataDTO> getAllUser(String role);
     public void updateUserImage(Integer id, MultipartFile image);
     public boolean isUsernameAvaiable(String username);
+    public UserDTO getUserByUsername(String username);
 }

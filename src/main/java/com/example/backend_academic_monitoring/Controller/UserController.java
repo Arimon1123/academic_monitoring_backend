@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +49,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
     @GetMapping()
     public ResponseEntity<ResponseDTO<List<UserDataDTO>>> getUsers(@RequestParam(required = false) String role) {
         try {
@@ -58,6 +60,7 @@ public class UserController {
                             200));
         }catch (Exception e){
             LOGGER.error("Error al obtener los usuarios",e);
+
             return ResponseEntity.badRequest().body(
                     new ResponseDTO<>(
                             null,
