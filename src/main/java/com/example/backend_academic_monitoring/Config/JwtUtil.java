@@ -89,20 +89,20 @@ public class JwtUtil {
 	public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
 		Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
-		List<SimpleGrantedAuthority> roles = null;
+		List<SimpleGrantedAuthority> roles = new ArrayList<>();
 
 		Boolean isAdmin = claims.get("isAdmin", Boolean.class);
 		Boolean isTeacher = claims.get("isTeacher", Boolean.class);
 		Boolean isFather = claims.get("isFather", Boolean.class);
 
 		if (isAdmin != null && isAdmin) {
-			roles = List.of(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"));
+			roles.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"));
 		}
 		if (isTeacher != null && isTeacher) {
-			roles = List.of(new SimpleGrantedAuthority("ROLE_FATHER"));
+			roles.add(new SimpleGrantedAuthority("ROLE_TEACHER"));
 		}
 		if (isFather != null && isFather) {
-			roles = List.of(new SimpleGrantedAuthority("ROLE_TEACHER"));
+			roles.add(new SimpleGrantedAuthority("ROLE_FATHER"));
 		}
 		return roles;
 

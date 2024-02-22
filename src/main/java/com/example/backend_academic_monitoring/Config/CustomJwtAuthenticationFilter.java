@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,12 +25,16 @@ import java.io.IOException;
 @Component
 public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 
-	@Autowired
-	private JwtUtil jwtTokenUtil;
+
+	private final JwtUtil jwtTokenUtil;
 
 	@Value("${jwt.accesTokenCookieName}")
 	private String cookieName;
-
+	public static final Logger LOGGER = LoggerFactory.getLogger(CustomJwtAuthenticationFilter.class);
+	@Autowired
+	public CustomJwtAuthenticationFilter(JwtUtil jwtTokenUtil) {
+		this.jwtTokenUtil = jwtTokenUtil;
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -41,7 +47,7 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-				System.out.println(usernamePasswordAuthenticationToken);
+				LOGGER.info("{}",usernamePasswordAuthenticationToken);
 			} else {
 				System.out.println("Cannot set the Security Context");
 			}

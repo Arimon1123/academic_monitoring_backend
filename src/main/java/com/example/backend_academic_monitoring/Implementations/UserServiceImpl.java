@@ -1,15 +1,14 @@
 package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.*;
+import com.example.backend_academic_monitoring.Entity.FatherEntity;
 import com.example.backend_academic_monitoring.Entity.PersonEntity;
+import com.example.backend_academic_monitoring.Entity.RoleEntity;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 import com.example.backend_academic_monitoring.Mappers.PersonMapper;
 import com.example.backend_academic_monitoring.Mappers.UserMapper;
 import com.example.backend_academic_monitoring.Repository.UserRepository;
-import com.example.backend_academic_monitoring.Service.EmailService;
-import com.example.backend_academic_monitoring.Service.ImageService;
-import com.example.backend_academic_monitoring.Service.PersonService;
-import com.example.backend_academic_monitoring.Service.UserService;
+import com.example.backend_academic_monitoring.Service.*;
 import com.example.backend_academic_monitoring.Utilities.PasswordGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +34,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordGenerator passwordGenerator;
     private final EmailService emailService;
     private final PersonService personService;
+    private final AdministrativeService administrativeService;
+    private final FatherService fatherService;
+    private final TeacherService teacherService;
     private final ImageService fileService;
     @Value("SERVER_HOST")
     private final String HOST = "localhost";
@@ -43,12 +45,15 @@ public class UserServiceImpl implements UserService {
     public  static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, PasswordGenerator passwordGenerator, EmailService emailService, PersonService personService, ImageService fileService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, PasswordGenerator passwordGenerator, EmailService emailService, PersonService personService, AdministrativeService administrativeService, FatherService fatherService, TeacherService teacherService, ImageService fileService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.passwordGenerator = passwordGenerator;
         this.emailService = emailService;
         this.personService = personService;
+        this.administrativeService = administrativeService;
+        this.fatherService = fatherService;
+        this.teacherService = teacherService;
         this.fileService = fileService;
     }
 
@@ -74,9 +79,22 @@ public class UserServiceImpl implements UserService {
         personDTO.setLastname(userCreateDTO.getLastname());
         personDTO.setAddress(userCreateDTO.getAddress());
         personDTO.setPhone(userCreateDTO.getPhone());
-        personDTO.setEmail(userCreateDTO.getEmail());
+        personDTO.setEmail(userCreateDTO.getEmail());   
         personDTO.setCi(userCreateDTO.getCi());
-        personService.save(personDTO, userEntity.getId());
+        PersonEntity personEntity =  personService.save(personDTO, userEntity.getId());
+        LOGGER.info("roles {} ", userCreateDTO.getRole());
+        if(userCreateDTO.getRole().get(0).getRole().equals(ADMINISTRATIVE_ROLE)){
+            administrativeService.save(personEntity);
+            LOGGER.info("Administrative saved");
+        }
+        if(userCreateDTO.getRole().get(0).getRole().equals(TEACHER_ROLE)){
+            fatherService.save(personEntity);
+            LOGGER.info("Father saved");
+        }
+        if(userCreateDTO.getRole().get(0).getRole().equals(FATHER_ROLE)){
+            teacherService.save(personEntity, userCreateDTO.getAcademicEmail());
+            LOGGER.info("Teacher saved");
+        }
         Context context = new Context();
         context.setVariable("password", generatedPassword);
         emailService.sendPasswordEmail(userCreateDTO.getEmail(), "Contraseña generada", context);
@@ -97,7 +115,6 @@ public class UserServiceImpl implements UserService {
         userEntity.setUsername(userCreateDTO.getUsername());
         userEntity.setPassword(bCryptPasswordEncoder.encode(userCreateDTO.getPassword()));
         userEntity.setRole(userCreateDTO.getRole());
-        userEntity.setStatus(1);
         userRepository.save(userEntity);
         PersonDTO personDTO = new PersonDTO();
         personDTO.setName(userCreateDTO.getName());
@@ -106,6 +123,7 @@ public class UserServiceImpl implements UserService {
         personDTO.setPhone(userCreateDTO.getPhone());
         personDTO.setEmail(userCreateDTO.getEmail());
         personService.delete(userEntity.getId());
+
     }
 
     @Override
@@ -117,50 +135,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDataDTO getUser(Integer id) {
-        UserDataDTO userDataDTO = new UserDataDTO();
         UserEntity user = userRepository.findById(id).orElseThrow();
         PersonDTO personDTO;
         personDTO = getPersonDTO(user);
         LOGGER.info("PersonDTO: {}, UserEntity {}", personDTO.getId(),user.getId() );
-        entityToData(userDataDTO, user, personDTO);
+        UserDataDTO userDataDTO = UserMapper.entityToData(user, personDTO);
         if(user.getImageId() != null){
             String uuid = fileService.getImage(user.getImageId()).getUuid();
             userDataDTO.setImageUrl( "http://"+HOST+":"+PORT+"/file/image/" + uuid);
         }
+        LOGGER.info(String.valueOf(user));
         return userDataDTO;
     }
 
-    private void entityToData(UserDataDTO userDataDTO, UserEntity user, PersonDTO personDTO){
-        userDataDTO.setId(personDTO.getId());
-        userDataDTO.setName(personDTO.getName());
-        userDataDTO.setLastname(personDTO.getLastname());
-        userDataDTO.setAddress(personDTO.getAddress());
-        userDataDTO.setPhone(personDTO.getPhone());
-        userDataDTO.setEmail(personDTO.getEmail());
-        userDataDTO.setUsername(user.getUsername());
-        userDataDTO.setRole(user.getRole());
-        userDataDTO.setCi(personDTO.getCi());
-
-    }
-    private void entityToCreate(UserCreateDTO userCreateDTO, UserEntity user, PersonDTO personDTO) {
-        userCreateDTO.setName(personDTO.getName());
-        userCreateDTO.setLastname(personDTO.getLastname());
-        userCreateDTO.setAddress(personDTO.getAddress());
-        userCreateDTO.setPhone(personDTO.getPhone());
-        userCreateDTO.setEmail(personDTO.getEmail());
-        userCreateDTO.setUsername(user.getUsername());
-        userCreateDTO.setRole(user.getRole());
-    }
 
 
     @Override
     public List<UserDataDTO> getAllUser(String role) {
         List<PersonEntity> personList = personService.findAllByRole(role);
         return personList.stream().map(person -> {
-            UserDataDTO userDataDTO = new UserDataDTO();
             UserEntity user = userRepository.findById(person.getUserId()).orElseThrow();
             LOGGER.info("PersonDTO: {}, UserEntity {}", person.getId(),user.getId() );
-            entityToData(userDataDTO, user, PersonMapper.entityToDTO(person));
+            UserDataDTO userDataDTO =  UserMapper.entityToData(user, PersonMapper.entityToDTO(person));
             if(user.getImageId() != null){
                 String uuid = fileService.getImage(user.getImageId()).getUuid();
                 userDataDTO.setImageUrl( "http://"+HOST+":"+PORT+"/file/image/" + uuid);

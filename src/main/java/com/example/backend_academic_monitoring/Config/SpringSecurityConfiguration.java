@@ -57,7 +57,7 @@ public class SpringSecurityConfiguration {
 				.cors(Customizer.withDefaults())
 				.authorizeRequests(authorize -> authorize.requestMatchers("/auth/authenticate").permitAll()
 						.requestMatchers("/auth/**").authenticated()
-						.requestMatchers("/user").authenticated()
+						.requestMatchers("/user/**").permitAll()
 						.anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -2,6 +2,8 @@ package com.example.backend_academic_monitoring.DTO;
 
 import lombok.*;
 
+import java.sql.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor

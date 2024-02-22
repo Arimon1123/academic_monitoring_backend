@@ -8,7 +8,7 @@ import java.util.List;
 public interface PersonService {
     public List<PersonDTO> getAll();
     public PersonDTO getById(Integer id);
-    public void save(PersonDTO personDTO, Integer userId);
+    public PersonEntity save(PersonDTO personDTO, Integer userId);
     public void update(PersonDTO personDTO, Integer userId);
     public void delete(Integer id);
     public PersonDTO findByCi(String ci);

@@ -3,26 +3,20 @@ package com.example.backend_academic_monitoring.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Date;
-
-@Table(name = "person")
 @Entity
+@Table(name = "teacher")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PersonEntity {
+public class TeacherEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String name;
-    private String lastname;
-    private String ci;
-    private String address;
-    private String email;
-    private String phone;
+    @OneToOne
+    @JoinColumn(name = "person_id")
+    private PersonEntity person;
+    private String academicEmail;
     private Integer status;
-    @Column(name = "acad_user_id")
-    private Integer userId;
 }

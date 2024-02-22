@@ -1,9 +1,13 @@
 package com.example.backend_academic_monitoring.DTO;
 
+import com.example.backend_academic_monitoring.Entity.RoleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.sql.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,11 +18,12 @@ public class UserCreateDTO {
     String name;
     String lastname;
     String email;
+    String academicEmail;
     String phone;
     String address;
     String ci;
     Integer userId;
     String username;
     String password;
-    String role;
+    List<RoleEntity> role;
 }

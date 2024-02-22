@@ -65,7 +65,9 @@ public class AuthenticationController {
 				new UsernamePasswordAuthenticationToken( authenticationRequest.getUsername()
 				,authenticationRequest.getPassword())
 		);
+
 		UserDetails userdetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+		LOGGER.info("{}",userdetails);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtUtil.generateToken(userdetails);
 		CookieHelper.create(httpServletResponse, cookieName, token, false , -1 , "localhost");

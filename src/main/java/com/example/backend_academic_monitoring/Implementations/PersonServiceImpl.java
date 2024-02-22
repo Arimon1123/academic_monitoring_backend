@@ -36,9 +36,9 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public void save(PersonDTO personDTO, Integer userId) {
+    public PersonEntity save(PersonDTO personDTO, Integer userId) {
         PersonEntity personEntity = PersonMapper.dtoToEntity(personDTO, userId, 1);
-        personRepository.save(personEntity);
+        return personRepository.save(personEntity);
     }
 
     @Override
