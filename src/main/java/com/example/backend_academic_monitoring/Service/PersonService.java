@@ -14,4 +14,7 @@ public interface PersonService {
     public PersonDTO findByCi(String ci);
     public List<PersonDTO> findAllByNameAndRole(String name, String role);
     public List<PersonEntity> findAllByRole(String role);
+    public boolean existsByCi(String ci);
+    public boolean existsByEmail(String email);
+    public boolean existsByPhone(String phone);
 }

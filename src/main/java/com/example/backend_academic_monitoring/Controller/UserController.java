@@ -40,11 +40,10 @@ public class UserController {
                              "Usuario creado",
                              200));
         }catch (Exception e){
-            LOGGER.error("Error al convertir el DTO",e);
             return ResponseEntity.badRequest().body(
                     new ResponseDTO<>(
                             null,
-                            "Error al crear el usuario",
+                            e.getMessage(),
                             401));
         }
     }

@@ -23,4 +23,8 @@ public interface PersonRepository extends JpaRepository<PersonEntity, Integer>{
             "u.role LIKE %:role% and u.id = p.acad_user_id"  , nativeQuery = true)
     List<PersonEntity> findAllByRole(String role);
     PersonEntity findByCi(String ci);
+
+    boolean existsByCi(String ci);
+    boolean existsByEmail(String email);
+    boolean existsByPhone(String phone);
 }

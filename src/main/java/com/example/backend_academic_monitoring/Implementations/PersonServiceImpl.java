@@ -70,4 +70,19 @@ public class PersonServiceImpl implements PersonService {
     public List<PersonEntity> findAllByRole(String role) {
         return personRepository.findAllByRole(role);
     }
+
+    @Override
+    public boolean existsByCi(String ci) {
+        return personRepository.existsByCi(ci);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return personRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByPhone(String phone) {
+        return personRepository.existsByPhone(phone);
+    }
 }

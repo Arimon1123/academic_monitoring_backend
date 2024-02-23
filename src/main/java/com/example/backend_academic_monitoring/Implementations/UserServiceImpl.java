@@ -60,11 +60,20 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(propagation= Propagation.REQUIRED)
     public String saveUser(UserCreateDTO userCreateDTO, MultipartFile image) {
-        if(userRepository.existsByUsername(userCreateDTO.getUsername())){
-            return "El usuario ya existe";
+//        if(userRepository.existsByUsername(userCreateDTO.getCi())){
+//           throw new RuntimeException("El usuario ya existe");
+//        }
+        if(personService.existsByCi(userCreateDTO.getCi())){
+           throw new RuntimeException("La cedula ya existe");
+        }
+        if(personService.existsByEmail(userCreateDTO.getEmail())){
+            throw new RuntimeException("El email ya existe");
+        }
+        if(personService.existsByPhone(userCreateDTO.getPhone())){
+            throw new RuntimeException("El telefono ya existe");
         }
         UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(userCreateDTO.getUsername());
+        userEntity.setUsername(userCreateDTO.getCi());
         String generatedPassword = passwordGenerator.generatePassword();
         userEntity.setPassword(bCryptPasswordEncoder.encode(generatedPassword));
         userEntity.setRole(userCreateDTO.getRole());
@@ -97,6 +106,7 @@ public class UserServiceImpl implements UserService {
         }
         Context context = new Context();
         context.setVariable("password", generatedPassword);
+        context.setVariable("username", userCreateDTO.getCi());
         emailService.sendPasswordEmail(userCreateDTO.getEmail(), "Contraseña generada", context);
 
         return "Usuario guardado correctamente";

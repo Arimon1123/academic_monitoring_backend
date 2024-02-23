@@ -58,6 +58,7 @@ public class SpringSecurityConfiguration {
 				.authorizeRequests(authorize -> authorize.requestMatchers("/auth/authenticate").permitAll()
 						.requestMatchers("/auth/**").authenticated()
 						.requestMatchers("/user/**").permitAll()
+						.requestMatchers("/person/**").authenticated()
 						.anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
