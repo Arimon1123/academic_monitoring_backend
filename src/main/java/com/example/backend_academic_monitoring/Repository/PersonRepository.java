@@ -18,9 +18,10 @@ public interface PersonRepository extends JpaRepository<PersonEntity, Integer>{
             "FROM person  p , acad_user u WHERE p.name LIKE %:name% " +
             "or p.lastname LIKE %:name% or p.ci LIKE %:name% and u.role = :role and u.id = p.acad_user_id"  , nativeQuery = true)
     List<PersonEntity> findAllByNameAndRole(@Param("name") String name , @Param("role") String role);
-    @Query(value = "SELECT p.id, name, lastname, ci, phone, email, address, p.status, acad_user_id " +
-            "FROM person  p , acad_user u WHERE  " +
-            "u.role LIKE %:role% and u.id = p.acad_user_id"  , nativeQuery = true)
+    @Query(value = "SELECT p.id, name, lastname, ci, phone, email, address, p.status, p.acad_user_id " +
+            "FROM person  p , acad_user u , user_roles ur , roles r  WHERE  " +
+            "r.role LIKE %:role% and u.id = p.acad_user_id " +
+            "and ur.acad_user_id = u.id and ur.roles_id = r.id"  , nativeQuery = true)
     List<PersonEntity> findAllByRole(String role);
     PersonEntity findByCi(String ci);
 
