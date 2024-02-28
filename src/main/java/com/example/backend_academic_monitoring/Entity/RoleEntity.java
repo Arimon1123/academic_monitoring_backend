@@ -5,7 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
-@Table(name = "roles")
+@Table(name = "role")
 @Entity
 @Getter
 @Setter
@@ -15,5 +15,5 @@ import lombok.*;
 public class RoleEntity {
     @Id
     private Integer id;
-    private String role;
+    private String name;
 }

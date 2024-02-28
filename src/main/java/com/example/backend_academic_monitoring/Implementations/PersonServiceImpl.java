@@ -8,6 +8,8 @@ import com.example.backend_academic_monitoring.Service.PersonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,9 +32,8 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public PersonDTO getById(Integer id) {
-        Optional<PersonEntity> personEntity = personRepository.findById(id);
-        return personEntity.map(PersonMapper::entityToDTO).orElse(null);
+    public PersonEntity getById(Integer id) {
+        return personRepository.findById(id).orElseThrow();
     }
 
     @Override
@@ -60,14 +61,24 @@ public class PersonServiceImpl implements PersonService {
         return PersonMapper.entityToDTO(personEntity);
     }
 
+
     @Override
-    public List<PersonDTO> findAllByNameAndRole(String name, String role) {
-        LOGGER.info("Buscando personas por nombre y rol {} y {} ", name, role);
-        return personRepository.findAllByNameAndRole(name, role).stream().map(PersonMapper::entityToDTO).toList();
+    public Page<PersonEntity> findAllByNameOrCI(String name,  String lastname, String ci, String role, Integer page, Integer size) {
+        if(name != null) name = "%" + name + "%";
+        else name = "%%";
+        if(lastname != null) lastname = "%" + lastname + "%";
+        else lastname = "%%";
+        if(ci != null) ci = "%" + ci + "%";
+        else ci = "%%";
+        if(role != null) role = "%" + role + "%";
+        else role = "%%";
+        LOGGER.info("Buscando personas por nombre: {}, apellido: {}, ci: {}, role: {}", name, lastname, ci, role);
+        return personRepository.findAllByNameAndRole(name,lastname , ci ,role,  PageRequest.of(page, size));
     }
 
     @Override
     public List<PersonEntity> findAllByRole(String role) {
+        if(role == null) return personRepository.findAll();
         return personRepository.findAllByRole(role);
     }
 

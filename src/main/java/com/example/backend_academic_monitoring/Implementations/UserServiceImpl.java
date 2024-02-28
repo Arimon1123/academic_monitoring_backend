@@ -1,9 +1,7 @@
 package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.*;
-import com.example.backend_academic_monitoring.Entity.FatherEntity;
 import com.example.backend_academic_monitoring.Entity.PersonEntity;
-import com.example.backend_academic_monitoring.Entity.RoleEntity;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 import com.example.backend_academic_monitoring.Mappers.PersonMapper;
 import com.example.backend_academic_monitoring.Mappers.UserMapper;
@@ -14,14 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
-
-import java.util.List;
 
 
 @Service
@@ -60,9 +57,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(propagation= Propagation.REQUIRED)
     public String saveUser(UserCreateDTO userCreateDTO, MultipartFile image) {
-//        if(userRepository.existsByUsername(userCreateDTO.getCi())){
-//           throw new RuntimeException("El usuario ya existe");
-//        }
         if(personService.existsByCi(userCreateDTO.getCi())){
            throw new RuntimeException("La cedula ya existe");
         }
@@ -76,7 +70,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setUsername(userCreateDTO.getCi());
         String generatedPassword = passwordGenerator.generatePassword();
         userEntity.setPassword(bCryptPasswordEncoder.encode(generatedPassword));
-        userEntity.setRole(userCreateDTO.getRole());
+        userEntity.setRole(userCreateDTO.getRoles());
         userEntity.setStatus(1);
         if(image != null){
             Integer imageId = fileService.saveFile(image);
@@ -91,16 +85,16 @@ public class UserServiceImpl implements UserService {
         personDTO.setEmail(userCreateDTO.getEmail());   
         personDTO.setCi(userCreateDTO.getCi());
         PersonEntity personEntity =  personService.save(personDTO, userEntity.getId());
-        LOGGER.info("roles {} ", userCreateDTO.getRole());
-        if(userCreateDTO.getRole().get(0).getRole().equals(ADMINISTRATIVE_ROLE)){
+        LOGGER.info("roles {} ", userCreateDTO.getRoles());
+        if(userCreateDTO.getRoles().get(0).getName().equals(ADMINISTRATIVE_ROLE)){
             administrativeService.save(personEntity);
             LOGGER.info("Administrative saved");
         }
-        if(userCreateDTO.getRole().get(0).getRole().equals(TEACHER_ROLE)){
+        if(userCreateDTO.getRoles().get(0).getName().equals(TEACHER_ROLE)){
             fatherService.save(personEntity);
             LOGGER.info("Father saved");
         }
-        if(userCreateDTO.getRole().get(0).getRole().equals(FATHER_ROLE)){
+        if(userCreateDTO.getRoles().get(0).getName().equals(FATHER_ROLE)){
             teacherService.save(personEntity, userCreateDTO.getAcademicEmail());
             LOGGER.info("Teacher saved");
         }
@@ -121,18 +115,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(UserCreateDTO userCreateDTO){
-        UserEntity userEntity = userRepository.findById(userCreateDTO.getId()).orElseThrow();
-        userEntity.setUsername(userCreateDTO.getUsername());
-        userEntity.setPassword(bCryptPasswordEncoder.encode(userCreateDTO.getPassword()));
-        userEntity.setRole(userCreateDTO.getRole());
+        PersonEntity personEntity = personService.getById(userCreateDTO.getId());
+        UserEntity userEntity = userRepository.findById(personEntity.getUserId()).orElseThrow();
+        userEntity.setRole(userCreateDTO.getRoles());
         userRepository.save(userEntity);
         PersonDTO personDTO = new PersonDTO();
+        personDTO.setId(personEntity.getId());
         personDTO.setName(userCreateDTO.getName());
         personDTO.setLastname(userCreateDTO.getLastname());
         personDTO.setAddress(userCreateDTO.getAddress());
         personDTO.setPhone(userCreateDTO.getPhone());
         personDTO.setEmail(userCreateDTO.getEmail());
-        personService.delete(userEntity.getId());
+        personDTO.setCi(userCreateDTO.getCi());
+        personService.save(personDTO, userEntity.getId());
 
     }
 
@@ -144,10 +139,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void unblockUser(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username);
+        userEntity.setStatus(1);
+        userRepository.save(userEntity);
+    }
+
+    @Override
     public UserDataDTO getUser(Integer id) {
         UserEntity user = userRepository.findById(id).orElseThrow();
         PersonDTO personDTO;
-        personDTO = getPersonDTO(user);
+        personDTO = PersonMapper.entityToDTO(personService.getById(user.getId()));
         LOGGER.info("PersonDTO: {}, UserEntity {}", personDTO.getId(),user.getId() );
         UserDataDTO userDataDTO = UserMapper.entityToData(user, personDTO);
         if(user.getImageId() != null){
@@ -161,18 +163,17 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserDataDTO> getAllUser(String role) {
-        List<PersonEntity> personList = personService.findAllByRole(role);
-        return personList.stream().map(person -> {
+    public Page<UserDataDTO> searchUser(String name, String lastname, String role, String ci, Integer page, Integer size) {
+        Page<PersonEntity> personList = personService.findAllByNameOrCI(name, lastname, ci, role, page, size);
+        return personList.map(person -> {
             UserEntity user = userRepository.findById(person.getUserId()).orElseThrow();
-            LOGGER.info("PersonDTO: {}, UserEntity {}", person.getId(),user.getId() );
-            UserDataDTO userDataDTO =  UserMapper.entityToData(user, PersonMapper.entityToDTO(person));
+            UserDataDTO userDataDTO = UserMapper.entityToData(user, PersonMapper.entityToDTO(person));
             if(user.getImageId() != null){
                 String uuid = fileService.getImage(user.getImageId()).getUuid();
                 userDataDTO.setImageUrl( "http://"+HOST+":"+PORT+"/file/image/" + uuid);
             }
             return userDataDTO;
-        }).toList();
+        });
     }
 
     @Override
@@ -189,10 +190,15 @@ public class UserServiceImpl implements UserService {
         return !userRepository.existsByUsername(username);
     }
 
-    private PersonDTO getPersonDTO(UserEntity userEntity) {
-        return personService.getById(userEntity.getId());
-    }
+
     public UserDTO getUserByUsername(String username){
         return UserMapper.entityToDTO(userRepository.findByUsername(username));
     }
+
+    @Override
+    public UserEntity getUserByPersonId(Integer id) {
+        return null;
+    }
+
+
 }

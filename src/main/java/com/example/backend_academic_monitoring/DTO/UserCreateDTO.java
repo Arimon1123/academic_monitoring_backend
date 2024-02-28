@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
 import java.util.List;
 
 @Getter
@@ -25,5 +24,5 @@ public class UserCreateDTO {
     Integer userId;
     String username;
     String password;
-    List<RoleEntity> role;
+    List<RoleEntity> roles;
 }

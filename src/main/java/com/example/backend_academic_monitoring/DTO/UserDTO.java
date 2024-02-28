@@ -15,4 +15,5 @@ public class UserDTO {
     private String username;
     private String password;
     private List<RoleEntity> role;
+    private Integer status;
 }

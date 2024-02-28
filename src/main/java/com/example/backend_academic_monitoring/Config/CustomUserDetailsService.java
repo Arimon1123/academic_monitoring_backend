@@ -34,10 +34,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		List<SimpleGrantedAuthority> roles = null;
-		UserEntity user = userDao.findByUsername(username);
+		UserEntity user = userDao.findByUsernameAndStatus(username,1);
 		LOGGER.info("{}",user);
 		if (user != null) {
-			roles = user.getRole().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).toList();
+			roles = user.getRole().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName())).toList();
 			LOGGER.info("{}",roles);
 			return new User(user.getUsername(), user.getPassword(), roles);
 		}

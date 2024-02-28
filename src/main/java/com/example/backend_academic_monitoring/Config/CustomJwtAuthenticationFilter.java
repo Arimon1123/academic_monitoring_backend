@@ -77,12 +77,6 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private String extractJwtFromRequest(HttpServletRequest request) {
 		Cookie cookie = WebUtils.getCookie(request,cookieName);
-//		String bearerToken = request.getHeader("Authorization");
-//		System.out.println(bearerToken);
-//		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-//			return bearerToken.substring(7, bearerToken.length());
-//		}
-//		return null;
 		return cookie != null ? cookie.getValue() : null;
 	}
 

@@ -12,6 +12,7 @@ public class UserMapper {
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
         userDTO.setRole(user.getRole());
+        userDTO.setStatus(user.getStatus() );
         return userDTO;
 
     }
@@ -24,8 +25,9 @@ public class UserMapper {
         userDataDTO.setPhone(personDTO.getPhone());
         userDataDTO.setEmail(personDTO.getEmail());
         userDataDTO.setUsername(user.getUsername());
-        userDataDTO.setRole(user.getRole());
+        userDataDTO.setRoles(user.getRole());
         userDataDTO.setCi(personDTO.getCi());
+        userDataDTO.setStatus(user.getStatus());
         return userDataDTO;
     }
     public static UserCreateDTO entityToCreate( UserEntity user, PersonDTO personDTO) {
@@ -36,7 +38,7 @@ public class UserMapper {
         userCreateDTO.setPhone(personDTO.getPhone());
         userCreateDTO.setEmail(personDTO.getEmail());
         userCreateDTO.setUsername(user.getUsername());
-        userCreateDTO.setRole(user.getRole());
+        userCreateDTO.setRoles(user.getRole());
         return userCreateDTO;
     }
 

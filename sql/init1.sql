@@ -35,7 +35,7 @@ CREATE TABLE activity_has_grade (
 CREATE TABLE administrative (
                                 id serial  NOT NULL,
                                 person_id int  NOT NULL,
-                                status int NOT NULL,
+                                status int  NOT NULL,
                                 CONSTRAINT administrative_pk PRIMARY KEY (id)
 );
 
@@ -170,11 +170,11 @@ CREATE TABLE requirement (
                              CONSTRAINT requirement_pk PRIMARY KEY (id)
 );
 
--- Table: roles
-CREATE TABLE roles (
-                       id serial  NOT NULL,
-                       role varchar(100)  NOT NULL,
-                       CONSTRAINT roles_pk PRIMARY KEY (id)
+-- Table: role
+CREATE TABLE role (
+                      id serial  NOT NULL,
+                      name varchar(100)  NOT NULL,
+                      CONSTRAINT role_pk PRIMARY KEY (id)
 );
 
 -- Table: schedule
@@ -503,16 +503,13 @@ ALTER TABLE user_roles ADD CONSTRAINT user_roles_acad_user
 -- Reference: user_roles_roles (table: user_roles)
 ALTER TABLE user_roles ADD CONSTRAINT user_roles_roles
     FOREIGN KEY (roles_id)
-        REFERENCES roles (id)
+        REFERENCES role (id)
         NOT DEFERRABLE
             INITIALLY IMMEDIATE
 ;
 
--- End of file.
-
-
 INSERT INTO acad_user values (999, 'admin', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
-Insert into roles values (1, 'ADMINISTRATIVE'), (2, 'TEACHER'), (3, 'FATHER');
+Insert into role values (1, 'ADMINISTRATIVE'), (2, 'TEACHER'), (3, 'FATHER');
 Insert into user_roles values (999, 1), (999, 3);
 INSERT INTO person values (999, 'Administrador', 'Administrador', '12345678', '3697984' ,'','', 1, 999);
 insert into administrative values (999, 999 ,1 );
