@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,9 +37,9 @@ public class UserServiceImpl implements UserService {
     private final FatherService fatherService;
     private final TeacherService teacherService;
     private final ImageService fileService;
-    @Value("SERVER_HOST")
-    private final String HOST = "localhost";
-    @Value("SERVER_PORT")
+    @Value("${server.host}")
+    private final String HOST = "192.168.0.181";
+    @Value("${server.port}")
     private final String PORT = "8080";
     public  static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -91,12 +93,13 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Administrative saved");
         }
         if(userCreateDTO.getRoles().get(0).getName().equals(TEACHER_ROLE)){
-            fatherService.save(personEntity);
-            LOGGER.info("Father saved");
-        }
-        if(userCreateDTO.getRoles().get(0).getName().equals(FATHER_ROLE)){
             teacherService.save(personEntity, userCreateDTO.getAcademicEmail());
             LOGGER.info("Teacher saved");
+        }
+        if(userCreateDTO.getRoles().get(0).getName().equals(FATHER_ROLE)){
+            fatherService.save(personEntity);
+            LOGGER.info("Father saved");
+
         }
         Context context = new Context();
         context.setVariable("password", generatedPassword);

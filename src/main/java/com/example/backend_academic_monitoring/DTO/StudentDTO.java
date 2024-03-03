@@ -17,4 +17,5 @@ public class StudentDTO {
     private String motherLastname;
     private Date birthDate;
     private String address;
+    private String rude;
 }

@@ -15,8 +15,8 @@ public class FatherStudentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "person_id")
-    private PersonEntity father;
+    @JoinColumn(name = "father_id")
+    private FatherEntity father;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "student_id")
     private StudentEntity student;

@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.Mappers;
 
+import com.example.backend_academic_monitoring.DTO.StudentCreateDTO;
 import com.example.backend_academic_monitoring.DTO.StudentDTO;
 import com.example.backend_academic_monitoring.Entity.StudentEntity;
 
@@ -12,7 +13,21 @@ public class StudentMapper {
                 studentEntity.getFatherLastname(),
                 studentEntity.getMotherLastname(),
                 studentEntity.getBirthdate(),
-                studentEntity.getAddress()
+                studentEntity.getAddress(),
+                studentEntity.getRude()
+        );
+    }
+    public static StudentEntity toEntity(StudentCreateDTO studentDTO) {
+        return new StudentEntity(
+                studentDTO.getId(),
+                studentDTO.getName(),
+                studentDTO.getCi(),
+                studentDTO.getFatherLastname(),
+                studentDTO.getMotherLastname(),
+                studentDTO.getBirthDate(),
+                studentDTO.getAddress(),
+                1,
+                studentDTO.getRude()
         );
     }
     public static StudentEntity toEntity(StudentDTO studentDTO) {
@@ -24,7 +39,8 @@ public class StudentMapper {
                 studentDTO.getMotherLastname(),
                 studentDTO.getBirthDate(),
                 studentDTO.getAddress(),
-                1
+                1,
+                studentDTO.getRude()
         );
     }
 }

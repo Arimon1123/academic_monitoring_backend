@@ -23,4 +23,5 @@ public class StudentEntity {
     private Date birthdate;
     private String address;
     private Integer status;
+    private String rude;
 }

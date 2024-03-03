@@ -21,13 +21,8 @@ public class SubjectEntity {
     String name;
     Integer hours;
     Integer status;
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "teacher_subject",
-            joinColumns = @JoinColumn(name = "subject_id"),
-            inverseJoinColumns = @JoinColumn(name = "person_id")
-    )
-    List<PersonEntity> teacherEntities;
+    @OneToOne
+    @JoinColumn(name = "grade_id")
+    GradeEntity grade;
 
 }

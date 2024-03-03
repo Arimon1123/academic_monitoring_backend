@@ -59,6 +59,9 @@ public class SpringSecurityConfiguration {
 						.requestMatchers("/auth/**").authenticated()
 						.requestMatchers("/user/**").authenticated()
 						.requestMatchers("/person/**").authenticated()
+						.requestMatchers("/grade/**").authenticated()
+						.requestMatchers("/class/**").authenticated()
+						.requestMatchers("/student/**").authenticated()
 						.anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -68,7 +71,7 @@ public class SpringSecurityConfiguration {
 	@Bean
 	public CorsFilter corsFilter() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of("http://localhost:4200"));
+		config.setAllowedOrigins(List.of("http://localhost:4200", "http://192.168.0.181:4200"));
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setAllowCredentials(true);

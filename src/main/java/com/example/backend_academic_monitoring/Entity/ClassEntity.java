@@ -1,7 +1,10 @@
 package com.example.backend_academic_monitoring.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "class")
@@ -10,6 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ClassEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,4 +22,15 @@ public class ClassEntity {
     private Integer shift;
     private String identifier;
     private Integer status;
+    @OneToOne
+    @JoinColumn(name = "grade_id")
+    private GradeEntity grade;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "student_class",
+            joinColumns = @JoinColumn(name = "class_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private List<StudentEntity> students;
+
 }

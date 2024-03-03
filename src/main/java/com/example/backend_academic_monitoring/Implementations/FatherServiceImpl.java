@@ -23,4 +23,10 @@ public class FatherServiceImpl implements FatherService {
         fatherRepository.save(fatherEntity);
 
     }
+
+    @Override
+    public FatherEntity getFather(Integer id) {
+        return fatherRepository.getReferenceById(id);
+    }
+
 }
