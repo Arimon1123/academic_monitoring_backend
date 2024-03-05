@@ -13,6 +13,7 @@ public class SubjectMapper {
         subjectEntity.setHours(subjectDTO.getHours());
         subjectEntity.setStatus(subjectDTO.getStatus());
         subjectEntity.setGrade(gradeEntity);
+        subjectEntity.setRequirements(subjectDTO.getRequirements());
         return subjectEntity;
     }
     public static SubjectDTO toDTO(SubjectEntity subjectEntity) {
@@ -22,7 +23,8 @@ public class SubjectMapper {
         subjectDTO.setHours(subjectEntity.getHours());
         subjectDTO.setStatus(subjectEntity.getStatus());
         subjectDTO.setSection(subjectEntity.getGrade().getSection());
-        subjectDTO.setGradeName(GradeName.gradeNames.get(subjectEntity.getGrade().getId()));
+        subjectDTO.setGradeName(GradeName.gradeNames.get(Integer.parseInt(subjectEntity.getGrade().getNumber())));
+        subjectDTO.setRequirements(subjectEntity.getRequirements());
         return subjectDTO;
     }
 }

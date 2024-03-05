@@ -5,6 +5,7 @@ import com.example.backend_academic_monitoring.DTO.SubjectDTO;
 import com.example.backend_academic_monitoring.Entity.GradeEntity;
 import com.example.backend_academic_monitoring.Entity.SubjectEntity;
 import com.example.backend_academic_monitoring.Mappers.SubjectMapper;
+import com.example.backend_academic_monitoring.Repository.RequirementRepository;
 import com.example.backend_academic_monitoring.Repository.SubjectRepository;
 import com.example.backend_academic_monitoring.Service.GradeService;
 import com.example.backend_academic_monitoring.Service.SubjectService;
@@ -21,12 +22,14 @@ import java.util.stream.Collectors;
 public class SubjectServiceImpl implements SubjectService {
     private final SubjectRepository subjectRepository;
     private final GradeService gradeService;
+    private final RequirementRepository requirementRepository;
     public static final Logger LOGGER = LoggerFactory.getLogger(SubjectServiceImpl.class);
 
     @Autowired
-    public SubjectServiceImpl(SubjectRepository subjectRepository, GradeService gradeService) {
+    public SubjectServiceImpl(SubjectRepository subjectRepository, GradeService gradeService, RequirementRepository requirementRepository) {
         this.subjectRepository = subjectRepository;
         this.gradeService = gradeService;
+        this.requirementRepository = requirementRepository;
     }
 
     @Override
@@ -34,6 +37,10 @@ public class SubjectServiceImpl implements SubjectService {
         GradeEntity gradeEntity = gradeService.getById(subjectDTO.getGradeId());
         SubjectEntity subjectEntity = SubjectMapper.toEntity(subjectDTO, gradeEntity);
         subjectEntity.setStatus(1);
+        subjectEntity.setRequirements(subjectDTO.getRequirements().stream().map(
+                requirementDTO -> requirementRepository.getReferenceById(requirementDTO.getId())
+        ).collect(Collectors.toList()
+        ));
         LOGGER.info("Saving subject {}", subjectEntity);
         subjectRepository.save(subjectEntity);
     }
