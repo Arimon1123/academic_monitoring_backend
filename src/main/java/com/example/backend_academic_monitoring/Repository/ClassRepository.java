@@ -1,10 +1,22 @@
 package com.example.backend_academic_monitoring.Repository;
 
 import com.example.backend_academic_monitoring.Entity.ClassEntity;
+import com.example.backend_academic_monitoring.Entity.StudentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface ClassRepository extends JpaRepository<ClassEntity, Integer>{
-
+    List<ClassEntity> findByGrade_IdAndYearAndShift(Integer gradeId, Integer year, Integer shift);
+    @Query( value ="""
+            SELECT COUNT(s.id)
+            FROM class c
+            JOIN student_class sc ON c.id = sc.class_id
+            JOIN student s ON s.id = sc.student_id
+            WHERE c.id = :id""",  nativeQuery = true)
+    Integer getStudentCount( @Param("id") Integer id);
 }

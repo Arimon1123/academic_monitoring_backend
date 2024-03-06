@@ -1,15 +1,13 @@
 package com.example.backend_academic_monitoring.Implementations;
 
-import com.example.backend_academic_monitoring.DTO.PersonDTO;
 import com.example.backend_academic_monitoring.DTO.StudentCreateDTO;
 import com.example.backend_academic_monitoring.DTO.StudentDTO;
 import com.example.backend_academic_monitoring.Entity.*;
-import com.example.backend_academic_monitoring.Mappers.PersonMapper;
 import com.example.backend_academic_monitoring.Mappers.StudentMapper;
-import com.example.backend_academic_monitoring.Repository.FatherStudentRepository;
+import com.example.backend_academic_monitoring.Repository.ParentStudentRepository;
 import com.example.backend_academic_monitoring.Repository.StudentRepository;
 import com.example.backend_academic_monitoring.Service.ClassService;
-import com.example.backend_academic_monitoring.Service.FatherService;
+import com.example.backend_academic_monitoring.Service.ParentService;
 import com.example.backend_academic_monitoring.Service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,30 +20,33 @@ import java.util.List;
 @Service
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
-    private final FatherStudentRepository fatherStudentRepository;
-    private final FatherService fatherService;
+    private final ParentStudentRepository parentStudentRepository;
+    private final ParentService parentService;
     private final ClassService classService;
     public static final Logger LOGGER = LoggerFactory.getLogger(StudentServiceImpl.class);
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository, FatherStudentRepository fatherStudentRepository, FatherService fatherService, ClassService classService) {
+    public StudentServiceImpl(StudentRepository studentRepository, ParentStudentRepository parentStudentRepository, ParentService parentService, ClassService classService) {
         this.studentRepository = studentRepository;
-        this.fatherStudentRepository = fatherStudentRepository;
-        this.fatherService = fatherService;
+        this.parentStudentRepository = parentStudentRepository;
+        this.parentService = parentService;
         this.classService = classService;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void saveStudent(StudentCreateDTO studentDTO){
+        if(studentRepository.existsByCi(studentDTO.getCi())) throw new RuntimeException("Ci ya existe");
+        if(studentRepository.existsByRude(studentDTO.getRude())) throw new RuntimeException("Rude ya existe");
         StudentEntity studentEntity = StudentMapper.toEntity(studentDTO);
         studentEntity = studentRepository.save(studentEntity);
-        FatherStudentEntity fatherStudentEntity = new FatherStudentEntity();
-        FatherEntity fatherEntity = fatherService.getFather(studentDTO.getFatherId());
-        fatherStudentEntity.setFather(fatherEntity);
-        fatherStudentEntity.setStudent(studentEntity);
-        LOGGER.info("Guardando  {}", fatherStudentEntity);
-        fatherStudentRepository.save(fatherStudentEntity);
+        for(Integer parentId : studentDTO.getParentId()){
+            ParentEntity parentEntity = parentService.getParent(parentId);
+            ParentStudentEntity fatherStudentEntity = new ParentStudentEntity();
+            fatherStudentEntity.setFather(parentEntity);
+            fatherStudentEntity.setStudent(studentEntity);
+            parentStudentRepository.save(fatherStudentEntity);
+        }
         classService.addStudentToClass(studentDTO.getClassId(), studentEntity);
     }
 
@@ -74,5 +75,15 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentDTO> getAllStudent() {
         List<StudentEntity> studentEntities = studentRepository.findAllByStatus(1);
         return studentEntities.stream().map(StudentMapper::toDTO).toList();
+    }
+
+    @Override
+    public boolean existsByCi(String ci) {
+        return studentRepository.existsByCi(ci);
+    }
+
+    @Override
+    public boolean existsByRude(String rude) {
+        return studentRepository.existsByRude(rude);
     }
 }

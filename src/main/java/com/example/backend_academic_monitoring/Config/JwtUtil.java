@@ -44,8 +44,8 @@ public class JwtUtil {
 		if (roles.contains(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"))) {
 			claims.put("isAdmin", true);
 		}
-		if (roles.contains(new SimpleGrantedAuthority("ROLE_FATHER"))) {
-			claims.put("isTeacher", true);
+		if (roles.contains(new SimpleGrantedAuthority("ROLE_PARENT"))) {
+			claims.put("isParent", true);
 		}
 		if(roles.contains(new SimpleGrantedAuthority("ROLE_TEACHER"))){
 			claims.put("isTeacher", true);
@@ -93,7 +93,7 @@ public class JwtUtil {
 
 		Boolean isAdmin = claims.get("isAdmin", Boolean.class);
 		Boolean isTeacher = claims.get("isTeacher", Boolean.class);
-		Boolean isFather = claims.get("isFather", Boolean.class);
+		Boolean isParent = claims.get("isParent", Boolean.class);
 
 		if (isAdmin != null && isAdmin) {
 			roles.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"));
@@ -101,8 +101,8 @@ public class JwtUtil {
 		if (isTeacher != null && isTeacher) {
 			roles.add(new SimpleGrantedAuthority("ROLE_TEACHER"));
 		}
-		if (isFather != null && isFather) {
-			roles.add(new SimpleGrantedAuthority("ROLE_FATHER"));
+		if (isParent != null && isParent) {
+			roles.add(new SimpleGrantedAuthority("ROLE_PARENT"));
 		}
 		return roles;
 

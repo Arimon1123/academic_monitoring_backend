@@ -2,6 +2,8 @@ package com.example.backend_academic_monitoring.DTO;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -9,5 +11,5 @@ import lombok.*;
 @ToString
 public class StudentCreateDTO extends StudentDTO{
     private Integer classId;
-    private Integer FatherId;
+    private List<Integer> parentId;
 }

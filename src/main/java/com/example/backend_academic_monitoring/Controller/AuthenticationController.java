@@ -42,7 +42,8 @@ public class AuthenticationController {
 	private final CustomUserDetailsService userDetailsService;
 	@Value("${jwt.accesTokenCookieName}")
 	private String cookieName;
-
+	@Value("${server.host}")
+	private String host;
 	private final UserService userService;
 	private final JwtUtil jwtUtil;
 	@Autowired
@@ -70,7 +71,7 @@ public class AuthenticationController {
 		LOGGER.info("{}",userdetails);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtUtil.generateToken(userdetails);
-		CookieHelper.create(httpServletResponse, cookieName, token, false , -1 , "localhost");
+		CookieHelper.create(httpServletResponse, cookieName, token, false , -1 , host);
 		LOGGER.info("{}",userdetails);
 		return ResponseEntity.ok("Sesion Iniciada");
 	}
@@ -94,7 +95,7 @@ public class AuthenticationController {
 	public Map<String, Object> getMapFromIoJsonwebtokenClaims(DefaultClaims claims) {
         return new HashMap<String, Object>(claims);
 	}
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_FATHER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT')")
 	@GetMapping("/details")
 	public ResponseEntity<Object> getUserDetails(){
 
@@ -104,7 +105,7 @@ public class AuthenticationController {
         return user.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok("Usuario no encontrado"));
     }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_FATHER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT')")
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletResponse httpServletResponse){
 		CookieHelper.clear(httpServletResponse, cookieName);

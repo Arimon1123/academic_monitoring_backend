@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -34,7 +32,7 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final PersonService personService;
     private final AdministrativeService administrativeService;
-    private final FatherService fatherService;
+    private final ParentService parentService;
     private final TeacherService teacherService;
     private final ImageService fileService;
     @Value("${server.host}")
@@ -44,14 +42,14 @@ public class UserServiceImpl implements UserService {
     public  static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, PasswordGenerator passwordGenerator, EmailService emailService, PersonService personService, AdministrativeService administrativeService, FatherService fatherService, TeacherService teacherService, ImageService fileService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, PasswordGenerator passwordGenerator, EmailService emailService, PersonService personService, AdministrativeService administrativeService, ParentService parentService, TeacherService teacherService, ImageService fileService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.passwordGenerator = passwordGenerator;
         this.emailService = emailService;
         this.personService = personService;
         this.administrativeService = administrativeService;
-        this.fatherService = fatherService;
+        this.parentService = parentService;
         this.teacherService = teacherService;
         this.fileService = fileService;
     }
@@ -97,7 +95,7 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Teacher saved");
         }
         if(userCreateDTO.getRoles().get(0).getName().equals(FATHER_ROLE)){
-            fatherService.save(personEntity);
+            parentService.save(personEntity);
             LOGGER.info("Father saved");
 
         }

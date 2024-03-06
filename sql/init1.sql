@@ -1,5 +1,10 @@
 CREATE  DATABASE acad_monitoring;
 \c acad_monitoring;
+-- Created by Vertabelo (http://vertabelo.com)
+-- Last modification date: 2024-03-06 01:14:53.34
+
+-- tables
+-- Table: acad_user
 CREATE TABLE acad_user (
                            id serial  NOT NULL,
                            username varchar(100)  NOT NULL,
@@ -79,27 +84,12 @@ CREATE TABLE classroom (
                            CONSTRAINT classroom_pk PRIMARY KEY (id)
 );
 
--- Table: classroom_feature
-CREATE TABLE classroom_feature (
-                                   id serial  NOT NULL,
-                                   classroom_id int  NOT NULL,
-                                   feature_id int  NOT NULL,
-                                   CONSTRAINT classroom_feature_pk PRIMARY KEY (id)
-);
-
--- Table: father
-CREATE TABLE father (
-                        id serial  NOT NULL,
-                        person_id int  NOT NULL,
-                        status int  NOT NULL,
-                        CONSTRAINT father_pk PRIMARY KEY (id)
-);
-
--- Table: feature
-CREATE TABLE feature (
-                         id serial  NOT NULL,
-                         feature varchar(150)  NOT NULL,
-                         CONSTRAINT feature_pk PRIMARY KEY (id)
+-- Table: classroom_requirement
+CREATE TABLE classroom_requirement (
+                                       id int  NOT NULL,
+                                       classroom_id int  NOT NULL,
+                                       requirement_id int  NOT NULL,
+                                       CONSTRAINT classroom_requirement_pk PRIMARY KEY (id)
 );
 
 -- Table: grade
@@ -117,6 +107,14 @@ CREATE TABLE image (
                        type varchar(20)  NOT NULL,
                        name varchar(100)  NOT NULL,
                        CONSTRAINT image_pk PRIMARY KEY (id)
+);
+
+-- Table: parent
+CREATE TABLE parent (
+                        id serial  NOT NULL,
+                        person_id int  NOT NULL,
+                        status int  NOT NULL,
+                        CONSTRAINT parent_pk PRIMARY KEY (id)
 );
 
 -- Table: permission
@@ -209,12 +207,12 @@ CREATE TABLE student_class (
                                CONSTRAINT student_class_pk PRIMARY KEY (id)
 );
 
--- Table: student_father
-CREATE TABLE student_father (
+-- Table: student_parent
+CREATE TABLE student_parent (
                                 id serial  NOT NULL,
                                 student_id int  NOT NULL,
-                                father_id int  NOT NULL,
-                                CONSTRAINT student_father_pk PRIMARY KEY (id)
+                                parent_id int  NOT NULL,
+                                CONSTRAINT student_parent_pk PRIMARY KEY (id)
 );
 
 -- Table: subject
@@ -260,6 +258,30 @@ CREATE TABLE user_roles (
 );
 
 -- foreign keys
+-- Reference: Table_36_classroom (table: classroom_requirement)
+ALTER TABLE classroom_requirement ADD CONSTRAINT Table_36_classroom
+    FOREIGN KEY (classroom_id)
+        REFERENCES classroom (id)
+        NOT DEFERRABLE
+            INITIALLY IMMEDIATE
+;
+
+-- Reference: Table_36_requirement (table: classroom_requirement)
+ALTER TABLE classroom_requirement ADD CONSTRAINT Table_36_requirement
+    FOREIGN KEY (requirement_id)
+        REFERENCES requirement (id)
+        NOT DEFERRABLE
+            INITIALLY IMMEDIATE
+;
+
+-- Reference: Table_38_student (table: student_parent)
+ALTER TABLE student_parent ADD CONSTRAINT Table_38_student
+    FOREIGN KEY (student_id)
+        REFERENCES student (id)
+        NOT DEFERRABLE
+            INITIALLY IMMEDIATE
+;
+
 -- Reference: actividad_class_has_subject (table: activity)
 ALTER TABLE activity ADD CONSTRAINT actividad_class_has_subject
     FOREIGN KEY (class_has_subject_id)
@@ -348,22 +370,6 @@ ALTER TABLE class_has_subject ADD CONSTRAINT class_has_subject_teacher
             INITIALLY IMMEDIATE
 ;
 
--- Reference: classroom_feature_classroom (table: classroom_feature)
-ALTER TABLE classroom_feature ADD CONSTRAINT classroom_feature_classroom
-    FOREIGN KEY (classroom_id)
-        REFERENCES classroom (id)
-        NOT DEFERRABLE
-            INITIALLY IMMEDIATE
-;
-
--- Reference: classroom_feature_feature (table: classroom_feature)
-ALTER TABLE classroom_feature ADD CONSTRAINT classroom_feature_feature
-    FOREIGN KEY (feature_id)
-        REFERENCES feature (id)
-        NOT DEFERRABLE
-            INITIALLY IMMEDIATE
-;
-
 -- Reference: curso_estudiante_class (table: student_class)
 ALTER TABLE student_class ADD CONSTRAINT curso_estudiante_class
     FOREIGN KEY (class_id)
@@ -380,18 +386,18 @@ ALTER TABLE student_class ADD CONSTRAINT curso_estudiante_student
             INITIALLY IMMEDIATE
 ;
 
--- Reference: father_person (table: father)
-ALTER TABLE father ADD CONSTRAINT father_person
-    FOREIGN KEY (person_id)
-        REFERENCES person (id)
-        NOT DEFERRABLE
-            INITIALLY IMMEDIATE
-;
-
 -- Reference: licencia_image_permission (table: permission_image)
 ALTER TABLE permission_image ADD CONSTRAINT licencia_image_permission
     FOREIGN KEY (permission_id)
         REFERENCES permission (id)
+        NOT DEFERRABLE
+            INITIALLY IMMEDIATE
+;
+
+-- Reference: parent_person (table: parent)
+ALTER TABLE parent ADD CONSTRAINT parent_person
+    FOREIGN KEY (person_id)
+        REFERENCES person (id)
         NOT DEFERRABLE
             INITIALLY IMMEDIATE
 ;
@@ -436,18 +442,10 @@ ALTER TABLE schedule ADD CONSTRAINT schedule_class_has_subject
             INITIALLY IMMEDIATE
 ;
 
--- Reference: student_father_father (table: student_father)
-ALTER TABLE student_father ADD CONSTRAINT student_father_father
-    FOREIGN KEY (father_id)
-        REFERENCES father (id)
-        NOT DEFERRABLE
-            INITIALLY IMMEDIATE
-;
-
--- Reference: student_father_student (table: student_father)
-ALTER TABLE student_father ADD CONSTRAINT student_father_student
-    FOREIGN KEY (student_id)
-        REFERENCES student (id)
+-- Reference: student_parent_parent (table: student_parent)
+ALTER TABLE student_parent ADD CONSTRAINT student_parent_parent
+    FOREIGN KEY (parent_id)
+        REFERENCES parent (id)
         NOT DEFERRABLE
             INITIALLY IMMEDIATE
 ;
@@ -508,16 +506,30 @@ ALTER TABLE user_roles ADD CONSTRAINT user_roles_roles
             INITIALLY IMMEDIATE
 ;
 
+-- End of file.
+
 INSERT INTO acad_user values (999, 'admin', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
-Insert into role values (1, 'ADMINISTRATIVE'), (2, 'TEACHER'), (3, 'FATHER');
+Insert into role values (1, 'ADMINISTRATIVE'), (2, 'TEACHER'), (3, 'PARENT');
 Insert into user_roles values (999, 1), (999, 3);
 INSERT INTO person values (999, 'Administrador', 'Administrador', '12345678', '3697984' ,'','', 1, 999);
 insert into administrative values (999, 999 ,1 );
 Insert into grade values (1, 'Primaria', '1'), (2, 'Primaria', '2'), (3, 'Primaria', '3'), (4, 'Primaria', '4'), (5, 'Primaria', '5'), (6, 'Primaria', '6'), (7, 'Secundaria', '1'), (8, 'Secundaria', '2'), (9, 'Secundaria', '3'), (10, 'Secundaria', '4'), (11, 'Secundaria', '5'), (12, 'Secundaria', '6');
 Insert into subject values (1,'Matemática',2,1,1),(2,'Lenguaje',2,1,1),(3,'Ciencias Naturales',2,1,1),(4,'Ciencias Sociales',2,1,1),(5,'Educación Física',2,1,1),(6,'Educación Artística',2,1,1),(7,'Educación Religiosa',2,1,1),(8,'Inglés',2,1,1),(9,'Matemática',2,1,2),(10,'Lenguaje',2,1,2),(11,'Ciencias Naturales',2,1,2),(12,'Ciencias Sociales',2,1,2),(13,'Educación Física',2,1,2),(14,'Educación Artística',2,1,2),(15,'Educación Religiosa',2,1,2),(16,'Inglés',2,1,2),(17,'Matemática',2,1,3),(18,'Lenguaje',2,1,3),(19,'Ciencias Naturales',2,1,3),(20,'Ciencias Sociales',2,1,3),(21,'Educación Física',2,1,3),(22,'Educación Artística',2,1,3),(23,'Educación Religiosa',2,1,3);
 Insert into class values (1,2024,1,'A',1,1);
+Insert into class values (2,2024,1,'B',1,1);
+Insert into class values (3,2024,1,'C',1,1);
+Insert into class values (4,2024,1,'D',1,1);
+Insert into class values (5,2024,1,'E',1,1);
+Insert into class values (6,2024,1,'A',1,2);
+Insert into class values (7,2024,1,'B',1,2);
+Insert into class values (8,2024,1,'C',1,2);
+Insert into class values (9,2024,1,'D',1,2);
+Insert into class values (10,2024,1,'E',1,2);
+Insert into class values (11,2024,1,'A',1,3);
+Insert into class values (12,2024,1,'B',1,3);
 insert into acad_user values (4, 'juan', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
 insert into person values (4,'Juan','Gomez','12345678','2000-01-01','a@a.com','Calle 1',1,4);
-insert into father values (1,4,1);
+insert into parent values (1,4,1);
 Insert into student values (1,'Juan','12345678','Perez','Gomez','2000-01-01','123456','Calle 1',1);
+insert into student_parent values (1,1,1);
 Insert into student_class values (1,1,1);

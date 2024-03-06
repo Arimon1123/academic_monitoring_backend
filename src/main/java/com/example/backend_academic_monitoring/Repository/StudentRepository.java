@@ -10,4 +10,6 @@ import java.util.List;
 public interface StudentRepository extends JpaRepository<StudentEntity, Integer> {
     StudentEntity findByIdAndStatus(Integer id, Integer status);
     List<StudentEntity> findAllByStatus(Integer status);
+    boolean existsByCi(String ci);
+    boolean existsByRude(String rude);
 }

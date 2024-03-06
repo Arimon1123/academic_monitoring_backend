@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,6 +32,7 @@ public class ClassEntity {
             joinColumns = @JoinColumn(name = "class_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
+    @JsonIgnore
     private List<StudentEntity> students;
 
 }

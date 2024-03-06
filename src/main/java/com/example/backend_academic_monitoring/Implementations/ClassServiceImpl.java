@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.Implementations;
 
+import com.example.backend_academic_monitoring.DTO.ClassListDTO;
 import com.example.backend_academic_monitoring.Entity.ClassEntity;
 import com.example.backend_academic_monitoring.Entity.StudentEntity;
 import com.example.backend_academic_monitoring.Repository.ClassRepository;
@@ -27,5 +28,22 @@ public class ClassServiceImpl implements ClassService {
         ClassEntity classEntity = classRepository.getReferenceById(classId);
         classEntity.getStudents().add(student);
         classRepository.save(classEntity);
+    }
+
+    @Override
+    public List<ClassListDTO> getClassByGradeAndYearAndShift(Integer gradeId, Integer year, Integer shift) {
+        List<ClassEntity> classEntities = classRepository.findByGrade_IdAndYearAndShift(gradeId, year, shift);
+        return classEntities.stream().map(
+                classEntity ->{
+                    ClassListDTO classListDTO = new ClassListDTO();
+                    classListDTO.setId(classEntity.getId());
+                    classListDTO.setYear(classEntity.getYear());
+                    classListDTO.setShift(classEntity.getShift());
+                    classListDTO.setIdentifier(classEntity.getIdentifier());
+                    classListDTO.setGrade(classEntity.getGrade().getNumber()+ "°" + classEntity.getGrade().getSection());
+                    classListDTO.setStudentCount(classRepository.getStudentCount(classEntity.getId()));
+                    return classListDTO;
+                }
+        ).toList();
     }
 }

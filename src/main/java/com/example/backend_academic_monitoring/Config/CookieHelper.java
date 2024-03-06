@@ -14,6 +14,7 @@ public class CookieHelper {
         cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
         cookie.setPath("/");
+        cookie.setDomain(domain);
         httpServletResponse.addCookie(cookie);
     }
     public static void clear(HttpServletResponse httpServletResponse, String name){

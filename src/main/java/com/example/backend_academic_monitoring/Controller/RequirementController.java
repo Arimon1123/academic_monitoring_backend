@@ -20,7 +20,7 @@ public class RequirementController {
         this.requirementService = requirementService;
     }
 
-    @PreAuthorize("hasRole('ADMINISTRATIVE')")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
     @GetMapping()
     public ResponseEntity<ResponseDTO<List<RequirementEntity>>> getRequirements(){
         try{

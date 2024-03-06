@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/student")
@@ -28,5 +25,24 @@ public class StudentController {
         LOGGER.info("Guardando  {}", studentDTO);
         studentService.saveStudent(studentDTO);
         return  ResponseEntity.ok(new ResponseDTO<>(null,"Estudiante guardado correctamente", 200));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
+    @GetMapping("exists/ci/{ci}")
+    public ResponseEntity<ResponseDTO<Boolean>> existsByCi(@PathVariable String ci){
+        try {
+           return ResponseEntity.ok(new ResponseDTO<>(studentService.existsByCi(ci),"Busqueda exitosa", 200));
+        }catch (Exception e){
+            return ResponseEntity.ok(new ResponseDTO<>(null,"Error al buscar", 500));
+        }
+    }
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
+    @GetMapping("exists/rude/{rude}")
+    public ResponseEntity<ResponseDTO<Boolean>> existsByRude(@PathVariable String rude){
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(studentService.existsByRude(rude),"Busqueda exitosa", 200));
+        }catch (Exception e){
+            return ResponseEntity.ok(new ResponseDTO<>(null,"Error al buscar", 500));
+        }
     }
 }
