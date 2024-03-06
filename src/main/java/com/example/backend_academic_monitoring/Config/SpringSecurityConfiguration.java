@@ -71,7 +71,7 @@ public class SpringSecurityConfiguration {
 	@Bean
 	public CorsFilter corsFilter() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of("http://localhost:4200", "http://192.168.0.181:4200"));
+		config.setAllowedOrigins(List.of("http://localhost:4200", "http://192.168.0.18:4200"));
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setAllowCredentials(true);
