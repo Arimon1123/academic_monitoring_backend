@@ -2,6 +2,7 @@ package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.GradeDTO;
 import com.example.backend_academic_monitoring.Entity.GradeEntity;
+import com.example.backend_academic_monitoring.Mappers.GradeMapper;
 import com.example.backend_academic_monitoring.Repository.GradeRepository;
 import com.example.backend_academic_monitoring.Service.GradeService;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class GradeServiceImpl implements GradeService {
 
     @Override
     public List<GradeDTO> getAll() {
-        return null;
+        return gradeRepository.findAll().stream().map(GradeMapper::toGradeDTO).toList();
     }
 
     @Override
