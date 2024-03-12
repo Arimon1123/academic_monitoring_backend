@@ -38,5 +38,7 @@ public class ClassController {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
+
+
 }
 

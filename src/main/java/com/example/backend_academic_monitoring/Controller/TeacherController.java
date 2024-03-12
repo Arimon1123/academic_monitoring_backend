@@ -2,8 +2,11 @@ package com.example.backend_academic_monitoring.Controller;
 
 import com.example.backend_academic_monitoring.DTO.ResponseDTO;
 import com.example.backend_academic_monitoring.DTO.SubjectDTO;
+import com.example.backend_academic_monitoring.DTO.TeacherDTO;
 import com.example.backend_academic_monitoring.Service.TeacherService;
+import lombok.Getter;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +26,15 @@ public class TeacherController {
         try {
             teacherService.saveTeacherSubjects(teacherId, subjects);
             return ResponseEntity.ok(new ResponseDTO<>(null,"Subjects saved successfully",200));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDTO<>(null,e.getMessage(),500));
+        }
+    }
+    @PreAuthorize("hasRole('ADMINISTRATIVE')")
+    @GetMapping("/subject/{subjectId}")
+    public ResponseEntity<ResponseDTO<List<TeacherDTO>>> getTeacherBySubject(@PathVariable Integer subjectId){
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(teacherService.getTeacherBySubject(subjectId),"Teachers retrieved successfully",200));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDTO<>(null,e.getMessage(),500));
         }

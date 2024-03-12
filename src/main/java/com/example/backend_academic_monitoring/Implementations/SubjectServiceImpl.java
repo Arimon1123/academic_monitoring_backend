@@ -83,4 +83,9 @@ public class SubjectServiceImpl implements SubjectService {
         List<SubjectEntity> subjectEntities = subjectRepository.findAllByTeacher(teacherId);
         return subjectEntities.stream().map(SubjectMapper::toDTO).collect(Collectors.toList());
     }
+
+    @Override
+    public String getSubjectName(Integer subjectId) {
+        return subjectRepository.getReferenceById(subjectId).getName();
+    }
 }

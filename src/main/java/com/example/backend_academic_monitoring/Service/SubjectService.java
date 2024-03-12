@@ -14,4 +14,5 @@ public interface SubjectService {
     List<SubjectDTO> getAll();
     List<SubjectDTO> getByGrade(Integer gradeId);
     List<SubjectDTO> getByTeacher(Integer teacherId);
+    String getSubjectName(Integer subjectId);
 }

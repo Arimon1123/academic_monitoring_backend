@@ -1,10 +1,12 @@
 package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.SubjectDTO;
+import com.example.backend_academic_monitoring.DTO.TeacherDTO;
 import com.example.backend_academic_monitoring.Entity.PersonEntity;
 import com.example.backend_academic_monitoring.Entity.SubjectEntity;
 import com.example.backend_academic_monitoring.Entity.TeacherEntity;
 import com.example.backend_academic_monitoring.Entity.TeacherSubjectEntity;
+import com.example.backend_academic_monitoring.Mappers.TeacherMapper;
 import com.example.backend_academic_monitoring.Repository.TeacherRepository;
 import com.example.backend_academic_monitoring.Repository.TeacherSubjectRepository;
 import com.example.backend_academic_monitoring.Service.TeacherService;
@@ -46,5 +48,21 @@ public class TeacherServiceImpl implements TeacherService {
             teacherSubjectList.add(teacherSubjectEntity);
         }
         teacherSubjectRepository.saveAll(teacherSubjectList);
+    }
+
+    @Override
+    public List<TeacherDTO> getTeacherBySubject(Integer subjectId) {
+        List<TeacherEntity> teachers = teacherRepository.findBySubjectId(subjectId);
+        List<TeacherDTO> teacherDTOS = new ArrayList<>();
+        for (TeacherEntity teacher : teachers) {
+           teacherDTOS.add(TeacherMapper.toDTO(teacher));
+        }
+        return teacherDTOS;
+    }
+
+    @Override
+    public String getTeacherName(Integer teacherId) {
+        TeacherEntity teacher = teacherRepository.getReferenceById(teacherId);
+        return teacher.getPerson().getName() + " " + teacher.getPerson().getLastname();
     }
 }

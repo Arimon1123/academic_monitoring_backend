@@ -1,7 +1,8 @@
+
 CREATE  DATABASE acad_monitoring;
 \c acad_monitoring;
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2024-03-06 01:14:53.34
+-- Last modification date: 2024-03-11 14:43:25.8
 
 -- tables
 -- Table: acad_user
@@ -86,7 +87,7 @@ CREATE TABLE classroom (
 
 -- Table: classroom_requirement
 CREATE TABLE classroom_requirement (
-                                       id int  NOT NULL,
+                                       id serial  NOT NULL,
                                        classroom_id int  NOT NULL,
                                        requirement_id int  NOT NULL,
                                        CONSTRAINT classroom_requirement_pk PRIMARY KEY (id)
@@ -112,8 +113,8 @@ CREATE TABLE image (
 -- Table: parent
 CREATE TABLE parent (
                         id serial  NOT NULL,
-                        person_id int  NOT NULL,
                         status int  NOT NULL,
+                        person_id int  NOT NULL,
                         CONSTRAINT parent_pk PRIMARY KEY (id)
 );
 
@@ -508,11 +509,14 @@ ALTER TABLE user_roles ADD CONSTRAINT user_roles_roles
 
 -- End of file.
 
-INSERT INTO acad_user values (999, 'admin', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
+
+-- End of file.
+
+INSERT INTO acad_user values (1, 'admin', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
 Insert into role values (1, 'ADMINISTRATIVE'), (2, 'TEACHER'), (3, 'PARENT');
-Insert into user_roles values (999, 1), (999, 3);
-INSERT INTO person values (999, 'Administrador', 'Administrador', '12345678', '3697984' ,'','', 1, 999);
-insert into administrative values (999, 999 ,1 );
+Insert into user_roles values (1, 1);
+INSERT INTO person values (1, 'Administrador', 'Administrador', '12345678', '3697984' ,'','', 1, 1);
+insert into administrative values (1, 1 ,1 );
 Insert into grade values (1, 'Primaria', '1'), (2, 'Primaria', '2'), (3, 'Primaria', '3'), (4, 'Primaria', '4'), (5, 'Primaria', '5'), (6, 'Primaria', '6'), (7, 'Secundaria', '1'), (8, 'Secundaria', '2'), (9, 'Secundaria', '3'), (10, 'Secundaria', '4'), (11, 'Secundaria', '5'), (12, 'Secundaria', '6');
 Insert into subject values (1,'Matemática',2,1,1),(2,'Lenguaje',2,1,1),(3,'Ciencias Naturales',2,1,1),(4,'Ciencias Sociales',2,1,1),(5,'Educación Física',2,1,1),(6,'Educación Artística',2,1,1),(7,'Educación Religiosa',2,1,1),(8,'Inglés',2,1,1),(9,'Matemática',2,1,2),(10,'Lenguaje',2,1,2),(11,'Ciencias Naturales',2,1,2),(12,'Ciencias Sociales',2,1,2),(13,'Educación Física',2,1,2),(14,'Educación Artística',2,1,2),(15,'Educación Religiosa',2,1,2),(16,'Inglés',2,1,2),(17,'Matemática',2,1,3),(18,'Lenguaje',2,1,3),(19,'Ciencias Naturales',2,1,3),(20,'Ciencias Sociales',2,1,3),(21,'Educación Física',2,1,3),(22,'Educación Artística',2,1,3),(23,'Educación Religiosa',2,1,3);
 Insert into class values (1,2024,1,'A',1,1);
@@ -527,9 +531,73 @@ Insert into class values (9,2024,1,'D',1,2);
 Insert into class values (10,2024,1,'E',1,2);
 Insert into class values (11,2024,1,'A',1,3);
 Insert into class values (12,2024,1,'B',1,3);
-insert into acad_user values (4, 'juan', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
-insert into person values (4,'Juan','Gomez','12345678','2000-01-01','a@a.com','Calle 1',1,4);
-insert into parent values (1,4,1);
+insert into acad_user values (2, 'juan', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
+insert into person values (2,'Juan','Gomez','12345678','2000-01-01','a@a.com','Calle 1',1,2);
+insert into parent values (1,2,1);
 Insert into student values (1,'Juan','12345678','Perez','Gomez','2000-01-01','123456','Calle 1',1);
 insert into student_parent values (1,1,1);
 Insert into student_class values (1,1,1);
+INSERT INTO requirement (requirement, description) VALUES
+                                                  ('Pizarrón Interactivo', 'Superficie táctil para proyecciones digitales.'),
+                                                  ('Proyector Multimedia', 'Dispositivo para presentaciones visuales.'),
+                                                  ('Conexión a Internet', 'Acceso a la red para recursos en línea.'),
+                                                  ('Escritorios o mesas individuales', 'Superficies de trabajo individuales.'),
+                                                  ('Sillas cómodas y ergonómicas', 'Asientos confortables y ergonómicos.'),
+                                                  ('Iluminación adecuada', 'Luz suficiente y uniforme.'),
+                                                  ('Aire acondicionado o calefacción', 'Climatización adecuada.'),
+                                                  ('Espacio amplio para movilidad', 'Amplitud para movimiento.'),
+                                                  ('Pizarra blanca o de tiza', 'Superficie de escritura.'),
+                                                  ('Espacio de almacenamiento para materiales educativos', 'Área para guardar materiales.');
+insert into subject_requirement values (1,1,1);
+insert into subject_requirement values (2,1,2);
+insert into subject_requirement values (3,1,3);
+insert into subject_requirement values (4,1,4);
+insert into subject_requirement values (5,1,5);
+insert into subject_requirement values (6,1,6);
+insert into classroom values (1,1,'A','Aula');
+insert into classroom values (2,2,'A','Aula');
+insert into classroom values (3,3,'A','Aula');
+insert into classroom values (4,4,'A','Aula');
+insert into classroom_requirement values (1,1,1);
+insert into classroom_requirement values (2,1,2);
+insert into classroom_requirement values (3,1,3);
+insert into classroom_requirement values (4,1,4);
+insert into classroom_requirement values (5,2,3),(6,2,4),(7,2,1);
+
+insert into acad_user values (3, 'teacher', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
+insert into person values (3,'Teacher','Teacher','12345678','1831092831','q1231231@gmail.com','Calle 1',1,3);
+insert into teacher values (1,3,'',1);
+insert into teacher_subject values (1,1,1);
+insert into acad_user values (4, 'teacher2', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
+insert into person values (4,'Teacher2','Teacher2','12345678','1831092831','123123@gmail.com', 'Calle 1',1,4);
+insert into teacher values (2,4,'',1);
+insert into teacher_subject values (2,2,1);
+insert into acad_user values (5, 'teacher3', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
+insert into person values (5,'Teacher3','Teacher3','12345678','1831092831','123@gmail.com', 'Calle 1',1,5);
+insert into teacher values (3,5,'',1);
+insert into teacher_subject values (3,3,1);
+insert into class_has_subject values (1,1,1,1,1);
+insert into class_has_subject values (2,1,2,1,2);
+insert into schedule values (1,1,'07:00:00','08:00:00',1);
+insert into schedule values (2,2,'08:00:00','09:00:00',1);
+insert into schedule values (3,1,'07:00:00','08:00:00',2);
+insert into schedule values (4,2,'08:00:00','09:00:00',2);
+
+
+
+
+alter sequence classroom_id_seq restart with 5;
+alter sequence classroom_requirement_id_seq restart with 5;
+alter sequence teacher_id_seq restart with 4;
+alter sequence teacher_subject_id_seq restart with 4;
+alter sequence requirement_id_seq restart with 11;
+alter sequence acad_user_id_seq restart with 6;
+alter sequence person_id_seq restart with 6;
+alter sequence administrative_id_seq restart with 2;
+alter sequence parent_id_seq restart with 2;
+alter sequence student_id_seq restart with 2;
+alter sequence student_parent_id_seq restart with 2;
+alter sequence student_class_id_seq restart with 2;
+alter sequence class_id_seq restart with 13;
+alter sequence grade_id_seq restart with 2;
+alter sequence subject_id_seq restart with 24;

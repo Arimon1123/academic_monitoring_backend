@@ -2,15 +2,15 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
-    <springProperty scope="context" name="application" source="spring.application.name" defaultValue="micro-service"/>
+    <springProperty scope="context" name="application" source="spring.application.name" defaultValue="backend"/>
     <springProperty scope="context" name="port" source="server.port" defaultValue="0000"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/arqui_software/logs/${application}/${application}-${port}.log</file>
+        <file>/opt/acad_monitoring/logs/${application}/${application}-${port}.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>/opt/arqui_software/logs/${application}/${application}-${port}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/opt/aacad_monitoring/logs/${application}/${application}-${port}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 50MB -->

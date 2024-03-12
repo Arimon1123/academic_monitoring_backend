@@ -67,6 +67,7 @@ public class SpringSecurityConfiguration {
 						.requestMatchers("/requirement/**").authenticated()
 						.requestMatchers("/grade/**").authenticated()
 						.requestMatchers("/parent/**").authenticated()
+						.requestMatchers("/classroom/**").authenticated()
 						.anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

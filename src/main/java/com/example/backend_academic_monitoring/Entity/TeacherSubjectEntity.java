@@ -16,5 +16,4 @@ public class TeacherSubjectEntity {
     private Integer id;
     private Integer teacherId;
     private Integer subjectId;
-    private Integer status;
 }

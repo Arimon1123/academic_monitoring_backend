@@ -1,6 +1,5 @@
 package com.example.backend_academic_monitoring.DTO;
 
-import com.example.backend_academic_monitoring.Entity.FeatureEntity;
 import com.example.backend_academic_monitoring.Entity.RequirementEntity;
 import lombok.*;
 
