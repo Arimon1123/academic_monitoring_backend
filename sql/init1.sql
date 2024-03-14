@@ -179,10 +179,12 @@ CREATE TABLE role (
 -- Table: schedule
 CREATE TABLE schedule (
                           id serial  NOT NULL,
-                          weekday int  NOT NULL,
+                          weekday varchar(20)  NOT NULL,
+                          period int  NOT NULL,
                           start_time time  NOT NULL,
                           end_time time  NOT NULL,
                           class_has_subject_id int  NOT NULL,
+
                           CONSTRAINT schedule_pk PRIMARY KEY (id)
 );
 
@@ -560,9 +562,8 @@ insert into classroom values (3,3,'A','Aula');
 insert into classroom values (4,4,'A','Aula');
 insert into classroom_requirement values (1,1,1);
 insert into classroom_requirement values (2,1,2);
-insert into classroom_requirement values (3,1,3);
-insert into classroom_requirement values (4,1,4);
-insert into classroom_requirement values (5,2,3),(6,2,4),(7,2,1);
+insert into classroom_requirement values (3,2,1);
+insert into classroom_requirement values (4,2,2);
 
 insert into acad_user values (3, 'teacher', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
 insert into person values (3,'Teacher','Teacher','12345678','1831092831','q1231231@gmail.com','Calle 1',1,3);
@@ -571,17 +572,17 @@ insert into teacher_subject values (1,1,1);
 insert into acad_user values (4, 'teacher2', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
 insert into person values (4,'Teacher2','Teacher2','12345678','1831092831','123123@gmail.com', 'Calle 1',1,4);
 insert into teacher values (2,4,'',1);
-insert into teacher_subject values (2,2,1);
+insert into teacher_subject values (2,2,2);
 insert into acad_user values (5, 'teacher3', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1,  null);
 insert into person values (5,'Teacher3','Teacher3','12345678','1831092831','123@gmail.com', 'Calle 1',1,5);
 insert into teacher values (3,5,'',1);
 insert into teacher_subject values (3,3,1);
 insert into class_has_subject values (1,1,1,1,1);
 insert into class_has_subject values (2,1,2,1,2);
-insert into schedule values (1,1,'07:00:00','08:00:00',1);
-insert into schedule values (2,2,'08:00:00','09:00:00',1);
-insert into schedule values (3,1,'07:00:00','08:00:00',2);
-insert into schedule values (4,2,'08:00:00','09:00:00',2);
+insert into schedule values (1,'monday',1,'08:00:00','08:45:00' ,1);
+insert into schedule values (2,'tuesday',2,'08:45:00','09:30:00',1);
+insert into schedule values (3,'monday',1,'08:00:00','08:45:00',2);
+insert into schedule values (4,'tuesday',2,'08:45:00','09:30:00',2);
 
 
 

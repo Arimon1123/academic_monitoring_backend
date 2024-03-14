@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ScheduleService {
     List<ScheduleEntity> findAllByClassId(Integer classId);
+    List<ScheduleEntity> findAllByTeacherId(Integer teacherId);
+    List<ScheduleEntity> findAllByClassroomId(Integer classroomId);
 }

@@ -1,15 +1,11 @@
 package com.example.backend_academic_monitoring.Implementations;
 
-import com.example.backend_academic_monitoring.DTO.ClassSubjectDTO;
 import com.example.backend_academic_monitoring.DTO.ClassroomDTO;
-import com.example.backend_academic_monitoring.Entity.ClassSubjectEntity;
 import com.example.backend_academic_monitoring.Entity.ClassroomEntity;
 import com.example.backend_academic_monitoring.Mappers.ClassroomMapper;
-import com.example.backend_academic_monitoring.Repository.ClassSubjectRepository;
 import com.example.backend_academic_monitoring.Repository.ClassroomRepository;
 import com.example.backend_academic_monitoring.Service.ClassroomService;
-import com.example.backend_academic_monitoring.Service.SubjectService;
-import com.example.backend_academic_monitoring.Service.TeacherService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,16 +16,11 @@ import java.util.List;
 public class ClassroomServiceImpl implements ClassroomService {
 
     private final ClassroomRepository classroomRepository;
-    private final ClassSubjectRepository classSubjectRepository;
-    private final TeacherService teacherService;
-    private final SubjectService subjectService;
     public static final Logger LOGGER = LoggerFactory.getLogger(ClassroomServiceImpl.class);
 
-    public ClassroomServiceImpl(ClassroomRepository classroomRepository, ClassSubjectRepository classSubjectRepository, TeacherService teacherService, SubjectService subjectService) {
+    public ClassroomServiceImpl(ClassroomRepository classroomRepository) {
         this.classroomRepository = classroomRepository;
-        this.classSubjectRepository = classSubjectRepository;
-        this.teacherService = teacherService;
-        this.subjectService = subjectService;
+
     }
 
     @Override
@@ -61,26 +52,16 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
+    public List<ClassroomDTO> getAllClassrooms(List<Integer> requirements) {
+        return classroomRepository.findAll().stream().map(ClassroomMapper::toDTO).toList();
+    }
+
+    @Override
     public String getClassroomName(Integer classroomId) {
         ClassroomEntity classroom = classroomRepository.getReferenceById(classroomId);
         return classroom.getType() + " " + classroom.getBlock() + "-" + classroom.getNumber();
     }
 
-    @Override
-    public List<ClassSubjectDTO> getClassroomSubjects(Integer classroomId) {
-        List<ClassSubjectEntity> classSubjectEntities = classSubjectRepository.findAllByClassroomId(classroomId);
-        return classSubjectEntities.stream().map(
-                classSubjectEntity -> {
-                    ClassSubjectDTO classSubjectDTO = new ClassSubjectDTO();
-                    classSubjectDTO.setId(classSubjectEntity.getId());
-                    classSubjectDTO.setSubjectName(subjectService.getSubjectName(classSubjectEntity.getSubjectId()));
-                    classSubjectDTO.setTeacherName(teacherService.getTeacherName(classSubjectEntity.getTeacherId()));
-                    classSubjectDTO.setClassroomName(this.getClassroomName(classSubjectEntity.getClassroomId()));
-                    classSubjectDTO.setSchedule(classSubjectEntity.getSchedules());
-                    return classSubjectDTO;
-                }
-        ).toList();
-    }
 
 
 }

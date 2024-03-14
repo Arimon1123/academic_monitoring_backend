@@ -39,7 +39,7 @@ public class SubjectController {
         }
     }
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
-    @GetMapping("/{gradeId}")
+    @GetMapping("/grade/{gradeId}")
     public ResponseEntity<ResponseDTO<List<SubjectDTO>>> getByGrade(@PathVariable Integer gradeId){
         try{
             return ResponseEntity.ok(new ResponseDTO<>(subjectService.getByGrade(gradeId),"Materias obtenidas correctamente", 200));

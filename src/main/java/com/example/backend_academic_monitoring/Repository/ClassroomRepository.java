@@ -18,4 +18,5 @@ public interface ClassroomRepository extends JpaRepository<ClassroomEntity, Inte
             WHERE cs.requirement_id = :requirementId ;
             """, nativeQuery = true)
     List<ClassroomEntity> findByRequirements(@Param("requirementId") Integer requirementId);
+
 }

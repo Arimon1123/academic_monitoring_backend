@@ -10,11 +10,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ClassSubjectDTO {
-    private Integer id;
-    private String className;
-    private String teacherName;
-    private String subjectName;
-    private String classroomName;
-    private List<ScheduleEntity> schedule;
+public class AssignationCreateDTO {
+    private Integer classId;
+    private Integer classroomId;
+    private Integer subjectId;
+    private Integer teacherId;
+    List<ScheduleEntity> schedule;
 }
