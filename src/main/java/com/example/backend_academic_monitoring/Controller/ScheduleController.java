@@ -32,4 +32,10 @@ public class ScheduleController {
     public ResponseEntity<ResponseDTO<List<ScheduleEntity>>> findAllByClassroomId(@PathVariable Integer classroomId) {
         return ResponseEntity.ok(new ResponseDTO<>(scheduleService.findAllByClassroomId(classroomId),null, 200));
     }
+
+    @GetMapping("/class/{classId}/subject/{subjectId}")
+    public ResponseEntity<ResponseDTO<List<ScheduleEntity>>> findAllByClassIdAndSubjectId(@PathVariable Integer classId, @PathVariable Integer subjectId) {
+        return ResponseEntity.ok(new ResponseDTO<>(scheduleService.findAllByClassIdAndSubjectId(classId, subjectId),null, 200));
+    }
+
 }

@@ -16,4 +16,5 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Intege
     List<ScheduleEntity> findAllByClassAssignation_ClassId(Integer class_id);
     List<ScheduleEntity> findAllByClassAssignation_TeacherId(Integer teacherId);
     List<ScheduleEntity> findAllByClassAssignation_ClassroomId(Integer classroomId);
+    List<ScheduleEntity> findAllByClassAssignation_SubjectIdAndClassAssignation_ClassId(Integer subjectId, Integer classId);
 }

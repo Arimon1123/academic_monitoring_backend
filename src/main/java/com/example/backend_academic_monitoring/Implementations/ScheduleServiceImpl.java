@@ -30,4 +30,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     public List<ScheduleEntity> findAllByClassroomId(Integer classroomId) {
         return scheduleRepository.findAllByClassAssignation_ClassroomId(classroomId);
     }
+
+    @Override
+    public List<ScheduleEntity> findAllByClassIdAndSubjectId(Integer classId, Integer subjectId) {
+        return scheduleRepository.findAllByClassAssignation_SubjectIdAndClassAssignation_ClassId(subjectId, classId);
+    }
 }
