@@ -3,7 +3,7 @@ package com.example.backend_academic_monitoring.Entity;
 import com.example.backend_academic_monitoring.DTO.DimensionEnum;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.relational.core.sql.In;
+
 @Entity
 @Getter
 @Setter

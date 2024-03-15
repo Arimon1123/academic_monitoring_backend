@@ -33,7 +33,7 @@ public class ClassAssignationController {
             classAssignationService.createClassAssignation(classAssignationDTO);
             return ResponseEntity.ok(new ResponseDTO<>("Class assignation created successfully", "Class assignation created successfully", 200));
         }catch (Exception e){
-            return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
+            return ResponseEntity.ok(new ResponseDTO<>(null, e.toString(), 500));
         }
     }
     @GetMapping("/teacher/{teacherId}")

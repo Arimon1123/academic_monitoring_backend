@@ -10,4 +10,6 @@ public interface ClassAssignationService {
     List<ClassAssignationDTO> getClassAssignationByClassroomId(Integer classroomId);
     List<ClassAssignationDTO> getClassAssignationByTeacherId(Integer teacherId);
     void createClassAssignation(AssignationCreateDTO classAssignationDTO);
+    boolean existsByClassIdAndSubjectId(Integer classId, Integer subjectId);
+
 }

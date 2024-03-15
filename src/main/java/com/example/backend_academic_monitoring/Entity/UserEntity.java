@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.Entity;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 

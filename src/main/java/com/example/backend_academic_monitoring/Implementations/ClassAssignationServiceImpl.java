@@ -4,10 +4,16 @@ import com.example.backend_academic_monitoring.DTO.AssignationCreateDTO;
 import com.example.backend_academic_monitoring.DTO.ClassAssignationDTO;
 import com.example.backend_academic_monitoring.Entity.ClassAssignationEntity;
 import com.example.backend_academic_monitoring.Entity.ScheduleEntity;
+import com.example.backend_academic_monitoring.Mappers.ClassAssignationMapper;
 import com.example.backend_academic_monitoring.Repository.ClassAssignationRepository;
 import com.example.backend_academic_monitoring.Service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 @Service
 public class ClassAssignationServiceImpl implements ClassAssignationService {
@@ -16,6 +22,7 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
     private final TeacherService teacherService;
     private final ClassroomService classroomService;
     private final ClassService classService;
+    public static final Logger LOGGER = LoggerFactory.getLogger(ClassAssignationServiceImpl.class);
 
     public ClassAssignationServiceImpl(ClassAssignationRepository classAssignationRepository, SubjectService subjectService, TeacherService teacherService, ClassroomService classroomService, ClassService classService) {
         this.classAssignationRepository = classAssignationRepository;
@@ -44,17 +51,47 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void createClassAssignation(AssignationCreateDTO classAssignationDTO) {
-        ClassAssignationEntity classAssignationEntity = new ClassAssignationEntity();
-        classAssignationEntity.setClassId(classAssignationDTO.getClassId());
-        classAssignationEntity.setSubjectId(classAssignationDTO.getSubjectId());
-        classAssignationEntity.setTeacherId(classAssignationDTO.getTeacherId());
-        classAssignationEntity.setClassroomId(classAssignationDTO.getClassroomId());
-        classAssignationEntity.setSchedules(classAssignationDTO.getSchedule());
-        for(ScheduleEntity schedule : classAssignationDTO.getSchedule()){
-            schedule.setClassAssignation(classAssignationEntity);
+        if(classAssignationRepository.existsByClassIdAndClassroomIdAndTeacherIdAndSubjectId(classAssignationDTO.getClassId(), classAssignationDTO.getClassroomId(), classAssignationDTO.getTeacherId(), classAssignationDTO.getSubjectId())){
+            updateSchedule(classAssignationDTO);
+        }else{
+            ClassAssignationEntity classAssignationEntity = ClassAssignationMapper.toEntity(classAssignationDTO);
+            classAssignationEntity.setSchedule(mapSchedule(classAssignationDTO, classAssignationEntity));
+            classAssignationRepository.save(classAssignationEntity);
         }
-        classAssignationRepository.save(classAssignationEntity);
+
+    }
+    private void updateSchedule(AssignationCreateDTO classAssignationDTO){
+        ClassAssignationEntity classAssignationEntity = classAssignationRepository.findByClassIdAndClassroomIdAndTeacherIdAndSubjectId(classAssignationDTO.getClassId(), classAssignationDTO.getClassroomId(), classAssignationDTO.getTeacherId(), classAssignationDTO.getSubjectId());
+        classAssignationEntity.getSchedule().clear();
+        classAssignationEntity.getSchedule().add(new ScheduleEntity(
+                classAssignationDTO.getSchedule().get(0).getId(),
+                classAssignationDTO.getSchedule().get(0).getWeekday(),
+                classAssignationDTO.getSchedule().get(0).getStartTime(),
+                classAssignationDTO.getSchedule().get(0).getEndTime(),
+                classAssignationDTO.getSchedule().get(0).getPeriod(),
+                classAssignationEntity
+        ));
+        classAssignationEntity.getSchedule().addAll(mapSchedule(classAssignationDTO, classAssignationEntity));
+        LOGGER.info("Updating schedule for class assignation {}", classAssignationEntity.getSchedule());
+        classAssignationEntity =  classAssignationRepository.save(classAssignationEntity);
+        LOGGER.info("Updated schedule for class assignation {}", classAssignationEntity.getSchedule());
+
+    }
+
+    private List<ScheduleEntity> mapSchedule(AssignationCreateDTO classAssignationDTO, ClassAssignationEntity classAssignationEntity) {
+        return classAssignationDTO.getSchedule().stream().map(
+                scheduleDTO -> {
+                    ScheduleEntity scheduleEntity = new ScheduleEntity();
+                    scheduleEntity.setWeekday(scheduleDTO.getWeekday());
+                    scheduleEntity.setStartTime(scheduleDTO.getStartTime());
+                    scheduleEntity.setEndTime(scheduleDTO.getEndTime());
+                    scheduleEntity.setPeriod(scheduleDTO.getPeriod());
+                    scheduleEntity.setClassAssignation(classAssignationEntity);
+                    return scheduleEntity;
+                }
+        ).toList();
     }
 
     private List<ClassAssignationDTO> getClassAssignationDTOS(List<ClassAssignationEntity> classSubjectEntities) {
@@ -66,7 +103,7 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
                     classAssignationDTO.setSubjectName(subjectService.getSubjectName(classAssignationEntity.getSubjectId()));
                     classAssignationDTO.setTeacherName(teacherService.getTeacherName(classAssignationEntity.getTeacherId()));
                     classAssignationDTO.setClassroomName(classroomService.getClassroomName(classAssignationEntity.getClassroomId()));
-                    classAssignationDTO.setSchedule(classAssignationEntity.getSchedules());
+                    classAssignationDTO.setSchedule(classAssignationEntity.getSchedule());
                     return classAssignationDTO;
                 }
         ).toList();

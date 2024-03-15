@@ -10,4 +10,6 @@ public interface ClassAssignationRepository extends JpaRepository<ClassAssignati
     List<ClassAssignationEntity> findAllByClassId(Integer classId);
     List<ClassAssignationEntity> findAllByClassroomId(Integer subjectId);
     List<ClassAssignationEntity> findAllByTeacherId(Integer teacherId);
+    ClassAssignationEntity findByClassIdAndClassroomIdAndTeacherIdAndSubjectId(Integer classId, Integer classroomId, Integer teacherId, Integer subjectId);
+    Boolean existsByClassIdAndClassroomIdAndTeacherIdAndSubjectId(Integer classId, Integer classroomId, Integer teacherId, Integer subjectId);
 }

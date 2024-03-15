@@ -21,7 +21,7 @@ public class ClassAssignationEntity {
     private Integer classId;
     private Integer teacherId;
     private Integer classroomId;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY )
-    @JoinColumn(name = "class_has_subject_id", referencedColumnName = "id")
-    private List<ScheduleEntity> schedules;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "classAssignation" )
+    @ToString.Exclude
+    private List<ScheduleEntity> schedule;
 }
