@@ -37,6 +37,7 @@ public class SubjectServiceImpl implements SubjectService {
         GradeEntity gradeEntity = gradeService.getById(subjectDTO.getGradeId());
         SubjectEntity subjectEntity = SubjectMapper.toEntity(subjectDTO, gradeEntity);
         subjectEntity.setStatus(1);
+        subjectEntity.setId(null);
         subjectEntity.setRequirements(subjectDTO.getRequirements().stream().map(
                 requirementDTO -> requirementRepository.getReferenceById(requirementDTO.getId())
         ).collect(Collectors.toList()
@@ -87,5 +88,10 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public String getSubjectName(Integer subjectId) {
         return subjectRepository.getReferenceById(subjectId).getName();
+    }
+
+    @Override
+    public List<SubjectDTO> getSubjectsNotAssigned(Integer classId, Integer gradeId) {
+        return subjectRepository.findAllByClassIdWithoutAssignation(classId, gradeId).stream().map(SubjectMapper::toDTO).collect(Collectors.toList());
     }
 }

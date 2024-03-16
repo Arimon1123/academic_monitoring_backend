@@ -57,5 +57,15 @@ public class SubjectController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
+    @GetMapping("/notAssigned")
+    public ResponseEntity<ResponseDTO<List<SubjectDTO>>> getSubjectsNotAssigned(@RequestParam Integer classId, @RequestParam Integer gradeId){
+        try{
+            return ResponseEntity.ok(new ResponseDTO<>(subjectService.getSubjectsNotAssigned(classId, gradeId),"Materias obtenidas correctamente", 200));
+        }catch (Exception e){
+            return ResponseEntity.ok(new ResponseDTO<>(null,e.getMessage(), 500));
+        }
+    }
+
 
 }

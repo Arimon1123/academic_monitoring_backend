@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 @Service
 public class ClassAssignationServiceImpl implements ClassAssignationService {
@@ -53,17 +52,34 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void createClassAssignation(AssignationCreateDTO classAssignationDTO) {
-        if(classAssignationRepository.existsByClassIdAndClassroomIdAndTeacherIdAndSubjectId(classAssignationDTO.getClassId(), classAssignationDTO.getClassroomId(), classAssignationDTO.getTeacherId(), classAssignationDTO.getSubjectId())){
-            updateSchedule(classAssignationDTO);
+        boolean exists = classAssignationRepository.existsByClassIdAndSubjectId(classAssignationDTO.getClassId(), classAssignationDTO.getSubjectId());
+
+        if(exists){
+            LOGGER.info("Updating schedule for class assignation");
+            updateAssignation(classAssignationDTO);
         }else{
+            LOGGER.info("Creating class assignation");
             ClassAssignationEntity classAssignationEntity = ClassAssignationMapper.toEntity(classAssignationDTO);
             classAssignationEntity.setSchedule(mapSchedule(classAssignationDTO, classAssignationEntity));
             classAssignationRepository.save(classAssignationEntity);
         }
 
     }
-    private void updateSchedule(AssignationCreateDTO classAssignationDTO){
-        ClassAssignationEntity classAssignationEntity = classAssignationRepository.findByClassIdAndClassroomIdAndTeacherIdAndSubjectId(classAssignationDTO.getClassId(), classAssignationDTO.getClassroomId(), classAssignationDTO.getTeacherId(), classAssignationDTO.getSubjectId());
+
+    @Override
+    public ClassAssignationEntity getClassAssignationByClassIdAndSubjectId(Integer classId, Integer subjectId) {
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return classAssignationRepository.findByClassIdAndSubjectId(classId, subjectId);
+    }
+
+    private void updateAssignation(AssignationCreateDTO classAssignationDTO){
+        ClassAssignationEntity classAssignationEntity = classAssignationRepository.findByClassIdAndSubjectId(classAssignationDTO.getClassId(), classAssignationDTO.getSubjectId());
+        classAssignationEntity.setTeacherId(classAssignationDTO.getTeacherId());
+        classAssignationEntity.setClassroomId(classAssignationDTO.getClassroomId());
         classAssignationEntity.getSchedule().clear();
         classAssignationEntity.getSchedule().add(new ScheduleEntity(
                 classAssignationDTO.getSchedule().get(0).getId(),

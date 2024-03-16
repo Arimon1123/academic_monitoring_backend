@@ -35,7 +35,11 @@ public class ScheduleController {
 
     @GetMapping("/class/{classId}/subject/{subjectId}")
     public ResponseEntity<ResponseDTO<List<ScheduleEntity>>> findAllByClassIdAndSubjectId(@PathVariable Integer classId, @PathVariable Integer subjectId) {
-        return ResponseEntity.ok(new ResponseDTO<>(scheduleService.findAllByClassIdAndSubjectId(classId, subjectId),null, 200));
+       try{
+              return ResponseEntity.ok(new ResponseDTO<>(scheduleService.findAllByClassIdAndSubjectId(classId, subjectId),"Schedules retrieved successfully", 200));
+       }catch (Exception e){
+              return ResponseEntity.ok(new ResponseDTO<>(null,e.getMessage(), 500));
+       }
     }
 
 }

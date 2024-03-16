@@ -15,8 +15,9 @@ public interface SubjectRepository extends JpaRepository<SubjectEntity, Integer>
             "JOIN TeacherSubjectEntity ts ON s.id = ts.subjectId " +
             "WHERE ts.teacherId = :teacherId AND s.status = 1")
     List<SubjectEntity> findAllByTeacher (Integer teacherId);
-    @Query("select s from SubjectEntity s " +
-            "join ClassAssignationEntity ca on s.id = ca.subjectId " +
-            "where ca.classId = :classId" )
-    List<SubjectEntity> findAllByAssignationClassId(Integer classId);
+    @Query("""
+            SELECT s FROM SubjectEntity s WHERE s.grade.id = :gradeId AND s.status = 1 AND s.id NOT IN 
+            (SELECT s.id FROM SubjectEntity s  LEFT JOIN ClassAssignationEntity cs ON s.id = cs.subjectId
+            where cs.classId = :classId group by s.id)""")
+    List<SubjectEntity> findAllByClassIdWithoutAssignation(Integer classId, Integer gradeId);
 }

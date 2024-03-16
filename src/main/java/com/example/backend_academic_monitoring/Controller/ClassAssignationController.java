@@ -3,6 +3,7 @@ package com.example.backend_academic_monitoring.Controller;
 import com.example.backend_academic_monitoring.DTO.AssignationCreateDTO;
 import com.example.backend_academic_monitoring.DTO.ClassAssignationDTO;
 import com.example.backend_academic_monitoring.DTO.ResponseDTO;
+import com.example.backend_academic_monitoring.Entity.ClassAssignationEntity;
 import com.example.backend_academic_monitoring.Service.ClassAssignationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class ClassAssignationController {
         this.classAssignationService = classAssignationService;
     }
 
-    @GetMapping("/schedule/{classroomId}")
+    @GetMapping("/classroom/{classroomId}")
     public ResponseEntity<ResponseDTO<List<ClassAssignationDTO>>> findClassroomSchedule(@PathVariable(value = "classroomId") Integer classroomId){
         try{
             return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByClassroomId(classroomId),"Classrooms retrieved successfully",200));
@@ -26,6 +27,16 @@ public class ClassAssignationController {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
+
+    @GetMapping("")
+    public ResponseEntity<ResponseDTO<ClassAssignationEntity>> findAllClassAssignations(@RequestParam(required = false) Integer classId, @RequestParam(required = false) Integer subjectId){
+        try{
+            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByClassIdAndSubjectId(classId, subjectId),"Class assignations retrieved successfully",200));
+        }catch (Exception e){
+            return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
 
     @PostMapping("")
     public ResponseEntity<ResponseDTO<String>> createClassAssignation(@RequestBody AssignationCreateDTO classAssignationDTO){

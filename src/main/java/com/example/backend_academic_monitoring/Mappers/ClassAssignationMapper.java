@@ -6,22 +6,21 @@ import com.example.backend_academic_monitoring.Entity.ClassAssignationEntity;
 
 public class ClassAssignationMapper {
     public static AssignationCreateDTO toDTO(ClassAssignationEntity classAssignationEntity){
-        return new AssignationCreateDTO(
-                classAssignationEntity.getSubjectId(),
-                classAssignationEntity.getClassId(),
-                classAssignationEntity.getTeacherId(),
-                classAssignationEntity.getClassroomId(),
-                classAssignationEntity.getSchedule()
-        );
+        AssignationCreateDTO classAssignationDTO = new AssignationCreateDTO();
+        classAssignationDTO.setClassId(classAssignationEntity.getClassId());
+        classAssignationDTO.setClassroomId(classAssignationEntity.getClassroomId());
+        classAssignationDTO.setSubjectId(classAssignationEntity.getSubjectId());
+        classAssignationDTO.setTeacherId(classAssignationEntity.getTeacherId());
+        classAssignationDTO.setSchedule(classAssignationEntity.getSchedule());
+        return classAssignationDTO;
     }
     public static ClassAssignationEntity toEntity(AssignationCreateDTO classAssignationDTO){
-        return new ClassAssignationEntity(
-                null,
-                classAssignationDTO.getClassId(),
-                classAssignationDTO.getClassroomId(),
-                classAssignationDTO.getSubjectId(),
-                classAssignationDTO.getTeacherId(),
-                classAssignationDTO.getSchedule()
-        );
+       ClassAssignationEntity classAssignationEntity = new ClassAssignationEntity();
+         classAssignationEntity.setClassId(classAssignationDTO.getClassId());
+         classAssignationEntity.setClassroomId(classAssignationDTO.getClassroomId());
+         classAssignationEntity.setSubjectId(classAssignationDTO.getSubjectId());
+         classAssignationEntity.setTeacherId(classAssignationDTO.getTeacherId());
+         classAssignationEntity.setSchedule(classAssignationDTO.getSchedule());
+         return classAssignationEntity;
     }
 }
