@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
+
 @Entity
 @Table(name = "permission")
 @Getter
@@ -21,4 +23,13 @@ public class PermissionEntity {
     private Timestamp permissionEndDate;
     private String reason;
     private Integer status;
+    private Integer studentId;
+    private Integer permissionStatus;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "permission_image",
+            joinColumns = @JoinColumn(name = "permission_id"),
+            inverseJoinColumns = @JoinColumn(name = "image_id")
+    )
+    private List<ImageEntity> images;
 }

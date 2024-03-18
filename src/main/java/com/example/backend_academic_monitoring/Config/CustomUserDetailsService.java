@@ -19,35 +19,34 @@ import java.util.List;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+    private final UserRepository userDao;
+    private final PasswordEncoder bcryptEncoder;
+    private final Logger LOGGER = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
-	
+    @Autowired
+    public CustomUserDetailsService(UserRepository userDao, PasswordEncoder bcryptEncoder) {
+        this.userDao = userDao;
+        this.bcryptEncoder = bcryptEncoder;
+    }
 
-	private final UserRepository userDao;
-	private final PasswordEncoder bcryptEncoder;
-	private final Logger LOGGER = LoggerFactory.getLogger(CustomUserDetailsService.class);
-	@Autowired
-	public CustomUserDetailsService(UserRepository userDao, PasswordEncoder bcryptEncoder) {
-		this.userDao = userDao;
-		this.bcryptEncoder = bcryptEncoder;
-	}
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        List<SimpleGrantedAuthority> roles = null;
+        UserEntity user = userDao.findByUsernameAndStatus(username, 1);
+        LOGGER.info("{}", user);
+        if (user != null) {
+            roles = user.getRole().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName())).toList();
+            LOGGER.info("{}", roles);
+            return new User(user.getUsername(), user.getPassword(), roles);
+        }
+        throw new UsernameNotFoundException("User not found with the name " + username);
+    }
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		List<SimpleGrantedAuthority> roles = null;
-		UserEntity user = userDao.findByUsernameAndStatus(username,1);
-		LOGGER.info("{}",user);
-		if (user != null) {
-			roles = user.getRole().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName())).toList();
-			LOGGER.info("{}",roles);
-			return new User(user.getUsername(), user.getPassword(), roles);
-		}
-		throw new UsernameNotFoundException("User not found with the name " + username);	}
-	
-	public UserEntity save(UserDTO user) {
-		UserEntity newUser = new UserEntity();
-		newUser.setUsername(user.getUsername());
-		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
-		newUser.setRole(user.getRole());
-		return userDao.save(newUser);
-	}
+    public UserEntity save(UserDTO user) {
+        UserEntity newUser = new UserEntity();
+        newUser.setUsername(user.getUsername());
+        newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+        newUser.setRole(user.getRole());
+        return userDao.save(newUser);
+    }
 }

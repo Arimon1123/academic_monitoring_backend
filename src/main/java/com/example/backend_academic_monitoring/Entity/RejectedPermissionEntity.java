@@ -13,6 +13,9 @@ import lombok.*;
 public class RejectedPermissionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
     private String reason;
+    @Column(name = "permission_id")
+    private Integer permissionId;
 }

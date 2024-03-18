@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setRole(userCreateDTO.getRoles());
         userEntity.setStatus(1);
         if(image != null){
-            Integer imageId = fileService.saveFile(image);
+            Integer imageId = fileService.saveFile(image).getId();
             userEntity.setImageId(imageId);
         }
         userEntity = userRepository.save(userEntity);
@@ -181,7 +181,7 @@ public class UserServiceImpl implements UserService {
     public void updateUserImage(Integer id, MultipartFile image) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow();
         fileService.deleteImage(userEntity.getImageId());
-        Integer imageId = fileService.saveFile(image);
+        Integer imageId = fileService.saveFile(image).getId();
         userEntity.setImageId(imageId);
         userRepository.save(userEntity);
     }

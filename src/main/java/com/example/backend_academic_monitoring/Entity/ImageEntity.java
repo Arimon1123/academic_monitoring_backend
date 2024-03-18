@@ -17,4 +17,5 @@ public class ImageEntity {
     private String uuid;
     private String type;
     private String name;
+
 }

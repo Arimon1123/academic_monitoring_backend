@@ -24,60 +24,55 @@ import java.io.IOException;
 
 @Component
 public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
+    public static final Logger LOGGER = LoggerFactory.getLogger(CustomJwtAuthenticationFilter.class);
+    private final JwtUtil jwtTokenUtil;
+    @Value("${jwt.accesTokenCookieName}")
+    private String cookieName;
 
+    @Autowired
+    public CustomJwtAuthenticationFilter(JwtUtil jwtTokenUtil) {
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
-	private final JwtUtil jwtTokenUtil;
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
+        try {
+            String jwtToken = extractJwtFromRequest(request);
+            if (StringUtils.hasText(jwtToken) && jwtTokenUtil.validateToken(jwtToken)) {
+                UserDetails userDetails = new User(jwtTokenUtil.getUsernameFromToken(jwtToken), "",
+                        jwtTokenUtil.getRolesFromToken(jwtToken));
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                LOGGER.info("{}", usernamePasswordAuthenticationToken);
+            } else {
+                LOGGER.info("Cannot set the Security Context");
+            }
+        } catch (ExpiredJwtException ex) {
+            String isRefreshToken = request.getHeader("isRefreshToken");
+            String requestURL = request.getRequestURL().toString();
+            if (isRefreshToken != null && isRefreshToken.equals("true") && requestURL.contains("refreshToken")) {
+                allowForRefreshToken(ex, request);
+            } else
+                request.setAttribute("exception", ex);
+        } catch (BadCredentialsException ex) {
+            request.setAttribute("exception", ex);
+        }
+        chain.doFilter(request, response);
+    }
 
-	@Value("${jwt.accesTokenCookieName}")
-	private String cookieName;
-	public static final Logger LOGGER = LoggerFactory.getLogger(CustomJwtAuthenticationFilter.class);
-	@Autowired
-	public CustomJwtAuthenticationFilter(JwtUtil jwtTokenUtil) {
-		this.jwtTokenUtil = jwtTokenUtil;
-	}
+    private void allowForRefreshToken(ExpiredJwtException ex, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                null, null, null);
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        request.setAttribute("claims", ex.getClaims());
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-			throws ServletException, IOException {
-		 try{
-			String jwtToken = extractJwtFromRequest(request);
-			if (StringUtils.hasText(jwtToken) && jwtTokenUtil.validateToken(jwtToken)) {
-				UserDetails userDetails = new User(jwtTokenUtil.getUsernameFromToken(jwtToken), "",
-						jwtTokenUtil.getRolesFromToken(jwtToken));
-				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-				LOGGER.info("{}",usernamePasswordAuthenticationToken);
-			} else {
-				LOGGER.info("Cannot set the Security Context");
-			}
-		 }catch(ExpiredJwtException ex)
-		 {
-			 String isRefreshToken = request.getHeader("isRefreshToken");
-				String requestURL = request.getRequestURL().toString();
-				if (isRefreshToken != null && isRefreshToken.equals("true") && requestURL.contains("refreshToken")) {
-					allowForRefreshToken(ex, request);
-				} else
-					request.setAttribute("exception", ex);
-		 }
-		 catch(BadCredentialsException ex)
-		 {
-			 request.setAttribute("exception", ex);
-		 }
-		chain.doFilter(request, response);
-	}
-	
-	private void allowForRefreshToken(ExpiredJwtException ex, HttpServletRequest request) {
-		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-				null, null, null);
-		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-		request.setAttribute("claims", ex.getClaims());
+    }
 
-	}
-
-	private String extractJwtFromRequest(HttpServletRequest request) {
-		Cookie cookie = WebUtils.getCookie(request,cookieName);
-		return cookie != null ? cookie.getValue() : null;
-	}
+    private String extractJwtFromRequest(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, cookieName);
+        return cookie != null ? cookie.getValue() : null;
+    }
 
 }
