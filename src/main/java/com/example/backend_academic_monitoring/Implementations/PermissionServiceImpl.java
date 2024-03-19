@@ -69,7 +69,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<PermissionDTO> getPermissionStatus(Integer statusId) {
         List<PermissionEntity> permissionEntities =
-                permissionRepository.findAllByPermissionStatusAndDateAfter(statusId, new Date(System.currentTimeMillis()));
+                permissionRepository.findAllByPermissionStatusAndDateAfter(statusId, new Date(System.currentTimeMillis() - (24 * 60 * 60 * 1000)));
         return getPermissionDTOS(permissionEntities);
     }
 

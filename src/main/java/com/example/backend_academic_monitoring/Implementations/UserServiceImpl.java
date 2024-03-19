@@ -1,6 +1,9 @@
 package com.example.backend_academic_monitoring.Implementations;
 
-import com.example.backend_academic_monitoring.DTO.*;
+import com.example.backend_academic_monitoring.DTO.PersonDTO;
+import com.example.backend_academic_monitoring.DTO.UserCreateDTO;
+import com.example.backend_academic_monitoring.DTO.UserDTO;
+import com.example.backend_academic_monitoring.DTO.UserDataDTO;
 import com.example.backend_academic_monitoring.Entity.PersonEntity;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 import com.example.backend_academic_monitoring.Mappers.PersonMapper;
@@ -20,14 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 
-import java.nio.file.attribute.UserDefinedFileAttributeView;
-
 
 @Service
 public class UserServiceImpl implements UserService {
     public static final String TEACHER_ROLE = "TEACHER";
     public static final String PARENT_ROLE = "PARENT";
-    public static final String  ADMINISTRATIVE_ROLE = "ADMINISTRATIVE";
+    public static final String ADMINISTRATIVE_ROLE = "ADMINISTRATIVE";
+    public static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final PasswordGenerator passwordGenerator;
@@ -41,7 +43,6 @@ public class UserServiceImpl implements UserService {
     private final String HOST = "192.168.0.181";
     @Value("${server.port}")
     private final String PORT = "8080";
-    public  static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, PasswordGenerator passwordGenerator, EmailService emailService, PersonService personService, AdministrativeService administrativeService, ParentService parentService, TeacherService teacherService, ImageService fileService) {
@@ -57,15 +58,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(propagation= Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     public String saveUser(UserCreateDTO userCreateDTO, MultipartFile image) {
-        if(personService.existsByCi(userCreateDTO.getCi())){
-           throw new RuntimeException("La cedula ya existe");
+        if (personService.existsByCi(userCreateDTO.getCi())) {
+            throw new RuntimeException("La cedula ya existe");
         }
-        if(personService.existsByEmail(userCreateDTO.getEmail())){
+        if (personService.existsByEmail(userCreateDTO.getEmail())) {
             throw new RuntimeException("El email ya existe");
         }
-        if(personService.existsByPhone(userCreateDTO.getPhone())){
+        if (personService.existsByPhone(userCreateDTO.getPhone())) {
             throw new RuntimeException("El telefono ya existe");
         }
         UserEntity userEntity = new UserEntity();
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setPassword(bCryptPasswordEncoder.encode(generatedPassword));
         userEntity.setRole(userCreateDTO.getRoles());
         userEntity.setStatus(1);
-        if(image != null){
+        if (image != null) {
             Integer imageId = fileService.saveFile(image).getId();
             userEntity.setImageId(imageId);
         }
@@ -84,19 +85,19 @@ public class UserServiceImpl implements UserService {
         personDTO.setLastname(userCreateDTO.getLastname());
         personDTO.setAddress(userCreateDTO.getAddress());
         personDTO.setPhone(userCreateDTO.getPhone());
-        personDTO.setEmail(userCreateDTO.getEmail());   
+        personDTO.setEmail(userCreateDTO.getEmail());
         personDTO.setCi(userCreateDTO.getCi());
-        PersonEntity personEntity =  personService.save(personDTO, userEntity.getId());
+        PersonEntity personEntity = personService.save(personDTO, userEntity.getId());
         LOGGER.info("roles {} ", userCreateDTO.getRoles());
-        if(userCreateDTO.getRoles().get(0).getName().equals(ADMINISTRATIVE_ROLE)){
+        if (userCreateDTO.getRoles().get(0).getName().equals(ADMINISTRATIVE_ROLE)) {
             administrativeService.save(personEntity);
             LOGGER.info("Administrative saved");
         }
-        if(userCreateDTO.getRoles().get(0).getName().equals(TEACHER_ROLE)){
+        if (userCreateDTO.getRoles().get(0).getName().equals(TEACHER_ROLE)) {
             teacherService.save(personEntity, userCreateDTO.getAcademicEmail());
             LOGGER.info("Teacher saved");
         }
-        if(userCreateDTO.getRoles().get(0).getName().equals(PARENT_ROLE)){
+        if (userCreateDTO.getRoles().get(0).getName().equals(PARENT_ROLE)) {
             parentService.save(personEntity);
             LOGGER.info("Father saved");
 
@@ -108,6 +109,7 @@ public class UserServiceImpl implements UserService {
 
         return "Usuario guardado correctamente";
     }
+
     @Override
     public void deleteUser(Integer id) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow();
@@ -117,7 +119,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(UserCreateDTO userCreateDTO){
+    public void updateUser(UserCreateDTO userCreateDTO) {
         PersonEntity personEntity = personService.getById(userCreateDTO.getId());
         UserEntity userEntity = userRepository.findById(personEntity.getUserId()).orElseThrow();
         userEntity.setRole(userCreateDTO.getRoles());
@@ -153,27 +155,27 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(id).orElseThrow();
         PersonDTO personDTO;
         personDTO = PersonMapper.entityToDTO(personService.getById(user.getId()));
-        LOGGER.info("PersonDTO: {}, UserEntity {}", personDTO.getId(),user.getId() );
+        LOGGER.info("PersonDTO: {}, UserEntity {}", personDTO.getId(), user.getId());
         UserDataDTO userDataDTO = UserMapper.entityToData(user, personDTO);
-        if(user.getImageId() != null){
+        if (user.getImageId() != null) {
             String uuid = fileService.getImage(user.getImageId()).getUuid();
-            userDataDTO.setImageUrl( "http://"+HOST+":"+PORT+"/file/image/" + uuid);
+            userDataDTO.setImageUrl("http://" + HOST + ":" + PORT + "/file/image/" + uuid);
         }
         LOGGER.info(String.valueOf(user));
         return userDataDTO;
     }
 
 
-
     @Override
     public Page<UserDataDTO> searchUser(String name, String lastname, String role, String ci, Integer page, Integer size) {
         Page<PersonEntity> personList = personService.findAllByNameOrCI(name, lastname, ci, role, page, size);
+        LOGGER.info("PersonList: {}", personList.getContent());
         return personList.map(person -> {
             UserEntity user = userRepository.findById(person.getUserId()).orElseThrow();
             UserDataDTO userDataDTO = UserMapper.entityToData(user, PersonMapper.entityToDTO(person));
-            if(user.getImageId() != null){
+            if (user.getImageId() != null) {
                 String uuid = fileService.getImage(user.getImageId()).getUuid();
-                userDataDTO.setImageUrl( "http://"+HOST+":"+PORT+"/file/image/" + uuid);
+                userDataDTO.setImageUrl("http://" + HOST + ":" + PORT + "/file/image/" + uuid);
             }
             return userDataDTO;
         });
@@ -194,7 +196,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public UserDTO getUserByUsername(String username){
+    public UserDTO getUserByUsername(String username) {
         return UserMapper.entityToDTO(userRepository.findByUsername(username));
     }
 
@@ -207,22 +209,20 @@ public class UserServiceImpl implements UserService {
     public Object getUserRoleDetails(String username, String role) {
         UserDTO user = this.getUserByUsername(username);
         Object a = null;
-        if(!user.getRole().stream().filter(roleEntity -> role.equals(roleEntity.getName())).toList().isEmpty()){
-            if(role.equals(PARENT_ROLE)){
+        if (!user.getRole().stream().filter(roleEntity -> role.equals(roleEntity.getName())).toList().isEmpty()) {
+            if (role.equals(PARENT_ROLE)) {
                 a = parentService.getParentByUserId(user.getId());
             }
-            if(role.equals(TEACHER_ROLE)){
-                a =   teacherService.findTeacherByUserId(user.getId());
+            if (role.equals(TEACHER_ROLE)) {
+                a = teacherService.findTeacherByUserId(user.getId());
             }
-            if(role.equals(ADMINISTRATIVE_ROLE)){
-                a =  administrativeService.findByUserId(user.getId());
+            if (role.equals(ADMINISTRATIVE_ROLE)) {
+                a = administrativeService.findByUserId(user.getId());
             }
         }
 
         return a;
     }
-
-
 
 
 }

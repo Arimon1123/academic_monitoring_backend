@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.sql.Date;
@@ -15,6 +16,7 @@ public class StudentDTO {
     private String ci;
     private String fatherLastname;
     private String motherLastname;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy", timezone = "America/La_Paz")
     private Date birthDate;
     private String address;
     private String rude;

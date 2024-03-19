@@ -640,6 +640,8 @@ VALUES (1, 2024, 1, 'A', 1, 1),
 
 insert into acad_user
 values (2, 'juan', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
+insert into user_roles
+values (2, 3);
 insert into person
 values (2, 'Juan', 'Gomez', '12345678', '2000-01-01', 'a@a.com', 'Calle 1', 1, 2);
 insert into parent
@@ -694,6 +696,8 @@ VALUES (1, 1, 1),
 
 insert into acad_user
 values (3, 'teacher', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
+insert into user_roles
+values (3, 2);
 insert into person
 values (3, 'Teacher', 'Teacher', '12345678', '1831092831', 'q1231231@gmail.com', 'Calle 1', 1, 3);
 insert into teacher
@@ -705,6 +709,8 @@ values (1, 1, 1);
 
 insert into acad_user
 values (4, 'teacher2', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
+insert into user_roles
+values (4, 2);
 insert into person
 values (4, 'Teacher2', 'Teacher2', '12345678', '1831092831', '123123@gmail.com', 'Calle 1', 1, 4);
 insert into teacher
@@ -715,6 +721,8 @@ values (2, 2, 2);
 
 insert into acad_user
 values (5, 'teacher3', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
+insert into user_roles
+values (5, 2);
 insert into person
 values (5, 'Teacher3', 'Teacher3', '12345678', '1831092831', '123@gmail.com', 'Calle 1', 1, 5);
 insert into teacher
@@ -729,14 +737,14 @@ insert into class_has_subject
 values (2, 1, 2, 2, 2);
 
 insert into schedule
-values (1, 'monday', '08:00:00', '08:45:00', 1,1);
+values (1, 'monday', '08:00:00', '08:45:00', 1, 1);
 insert into schedule
-values (2, 'tuesday', '08:45:00', '09:30:00', 1,1);
+values (2, 'tuesday', '08:45:00', '09:30:00', 1, 1);
 
 insert into schedule
-values (3, 'thursday',  '08:00:00', '08:45:00', 2,2);
+values (3, 'thursday', '08:00:00', '08:45:00', 2, 2);
 insert into schedule
-values (4, 'friday', '08:45:00', '09:30:00', 2,2);
+values (4, 'friday', '08:45:00', '09:30:00', 2, 2);
 
 alter sequence classroom_id_seq restart with 5;
 alter sequence classroom_requirement_id_seq restart with 5;
