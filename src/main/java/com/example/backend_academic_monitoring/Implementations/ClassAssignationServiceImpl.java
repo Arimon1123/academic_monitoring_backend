@@ -68,11 +68,6 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
 
     @Override
     public ClassAssignationEntity getClassAssignationByClassIdAndSubjectId(Integer classId, Integer subjectId) {
-        try{
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return classAssignationRepository.findByClassIdAndSubjectId(classId, subjectId);
     }
 

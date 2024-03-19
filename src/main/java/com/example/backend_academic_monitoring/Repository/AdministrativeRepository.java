@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AdministrativeRepository extends JpaRepository<AdministrativeEntity, Integer> {
+    AdministrativeEntity findByPerson_UserId(Integer userId);
 }

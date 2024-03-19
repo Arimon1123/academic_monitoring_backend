@@ -20,11 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 
+import java.nio.file.attribute.UserDefinedFileAttributeView;
+
 
 @Service
 public class UserServiceImpl implements UserService {
     public static final String TEACHER_ROLE = "TEACHER";
-    public static final String FATHER_ROLE = "FATHER";
+    public static final String PARENT_ROLE = "PARENT";
     public static final String  ADMINISTRATIVE_ROLE = "ADMINISTRATIVE";
     private final UserRepository userRepository;
     private final PasswordEncoder bCryptPasswordEncoder;
@@ -94,7 +96,7 @@ public class UserServiceImpl implements UserService {
             teacherService.save(personEntity, userCreateDTO.getAcademicEmail());
             LOGGER.info("Teacher saved");
         }
-        if(userCreateDTO.getRoles().get(0).getName().equals(FATHER_ROLE)){
+        if(userCreateDTO.getRoles().get(0).getName().equals(PARENT_ROLE)){
             parentService.save(personEntity);
             LOGGER.info("Father saved");
 
@@ -200,6 +202,27 @@ public class UserServiceImpl implements UserService {
     public UserEntity getUserByPersonId(Integer id) {
         return null;
     }
+
+    @Override
+    public Object getUserRoleDetails(String username, String role) {
+        UserDTO user = this.getUserByUsername(username);
+        Object a = null;
+        if(!user.getRole().stream().filter(roleEntity -> role.equals(roleEntity.getName())).toList().isEmpty()){
+            if(role.equals(PARENT_ROLE)){
+                a = parentService.getParentByUserId(user.getId());
+            }
+            if(role.equals(TEACHER_ROLE)){
+                a =   teacherService.findTeacherByUserId(user.getId());
+            }
+            if(role.equals(ADMINISTRATIVE_ROLE)){
+                a =  administrativeService.findByUserId(user.getId());
+            }
+        }
+
+        return a;
+    }
+
+
 
 
 }

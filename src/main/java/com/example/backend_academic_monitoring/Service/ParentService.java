@@ -10,4 +10,5 @@ public interface ParentService {
     void save(PersonEntity personEntity);
     ParentEntity getParent(Integer id);
     List<ParentDTO> getParentByCi(String ci);
+    ParentDTO getParentByUserId(Integer id);
 }

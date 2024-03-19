@@ -12,4 +12,6 @@ import java.util.List;
 public interface TeacherRepository extends JpaRepository<TeacherEntity, Integer> {
     @Query("SELECT t FROM TeacherEntity t , TeacherSubjectEntity  ts  where t.id = ts.teacherId and ts.subjectId = :subjectId")
     List<TeacherEntity> findBySubjectId(@Param("subjectId") Integer subjectId);
+
+    TeacherEntity findByPerson_UserId(Integer userId);
 }

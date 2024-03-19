@@ -86,4 +86,10 @@ public class StudentServiceImpl implements StudentService {
     public boolean existsByRude(String rude) {
         return studentRepository.existsByRude(rude);
     }
+
+    @Override
+    public List<StudentDTO> findAllByParentId(Integer fatherId) {
+        List<StudentEntity> studentEntities = studentRepository.findAllByParentId(fatherId);
+        return studentEntities.stream().map(StudentMapper::toDTO).toList();
+    }
 }

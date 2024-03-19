@@ -35,7 +35,7 @@ public class PermissionController {
             permissionService.savePermission(permission, image);
             return ResponseEntity.ok(new ResponseDTO<>(null, "Permission saved successfully", null));
         } catch (Exception e) {
-            return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
 

@@ -41,4 +41,9 @@ public class ParentServiceImpl implements ParentService {
         return fatherEntities.stream().map(ParentMapper::toFatherDTO).toList();
     }
 
+    @Override
+    public ParentDTO getParentByUserId(Integer id) {
+        return ParentMapper.toFatherDTO(parentRepository.findByPerson_UserId(id));
+    }
+
 }

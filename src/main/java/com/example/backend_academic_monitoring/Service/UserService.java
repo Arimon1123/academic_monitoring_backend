@@ -22,4 +22,5 @@ public interface UserService {
     public boolean isUsernameAvaiable(String username);
     public UserDTO getUserByUsername(String username);
     public UserEntity getUserByPersonId(Integer id);
+    public Object getUserRoleDetails(String username, String role);
 }

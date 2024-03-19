@@ -572,15 +572,6 @@ ALTER TABLE user_roles
             NOT DEFERRABLE
                 INITIALLY IMMEDIATE
 ;
-
--- End of file.
-
-
--- End of file.
-
-
--- End of file.
-
 INSERT INTO acad_user
 values (1, 'admin', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
 Insert into role
@@ -652,7 +643,7 @@ values (2, 'juan', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC
 insert into person
 values (2, 'Juan', 'Gomez', '12345678', '2000-01-01', 'a@a.com', 'Calle 1', 1, 2);
 insert into parent
-values (1, 2, 1);
+values (1, 1, 1);
 Insert into student
 values (1, 'Juan', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 1', 1);
 insert into student_parent
@@ -738,15 +729,14 @@ insert into class_has_subject
 values (2, 1, 2, 2, 2);
 
 insert into schedule
-values (1, 'monday', 1, '08:00:00', '08:45:00', 1);
+values (1, 'monday', '08:00:00', '08:45:00', 1,1);
 insert into schedule
-values (2, 'tuesday', 2, '08:45:00', '09:30:00', 1);
+values (2, 'tuesday', '08:45:00', '09:30:00', 1,1);
 
 insert into schedule
-values (3, 'thursday', 1, '08:00:00', '08:45:00', 2);
+values (3, 'thursday',  '08:00:00', '08:45:00', 2,2);
 insert into schedule
-values (4, 'friday', 2, '08:45:00', '09:30:00', 2);
-
+values (4, 'friday', '08:45:00', '09:30:00', 2,2);
 
 alter sequence classroom_id_seq restart with 5;
 alter sequence classroom_requirement_id_seq restart with 5;

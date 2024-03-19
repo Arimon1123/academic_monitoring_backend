@@ -65,4 +65,9 @@ public class TeacherServiceImpl implements TeacherService {
         TeacherEntity teacher = teacherRepository.getReferenceById(teacherId);
         return teacher.getPerson().getName() + " " + teacher.getPerson().getLastname();
     }
+
+    @Override
+    public TeacherDTO findTeacherByUserId(Integer userId) {
+        return TeacherMapper.toDTO(teacherRepository.findByPerson_UserId(userId));
+    }
 }

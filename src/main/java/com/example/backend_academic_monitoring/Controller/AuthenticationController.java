@@ -4,9 +4,7 @@ package com.example.backend_academic_monitoring.Controller;
 import com.example.backend_academic_monitoring.Config.CookieHelper;
 import com.example.backend_academic_monitoring.Config.CustomUserDetailsService;
 import com.example.backend_academic_monitoring.Config.JwtUtil;
-import com.example.backend_academic_monitoring.DTO.AuthenticationRequest;
-import com.example.backend_academic_monitoring.DTO.AuthenticationResponse;
-import com.example.backend_academic_monitoring.DTO.UserDTO;
+import com.example.backend_academic_monitoring.DTO.*;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 import com.example.backend_academic_monitoring.Mappers.UserMapper;
 import com.example.backend_academic_monitoring.Service.UserService;
@@ -111,5 +109,16 @@ public class AuthenticationController {
 		CookieHelper.clear(httpServletResponse, cookieName);
 		return ResponseEntity.ok("Sesion cerrada");
 	}
+
+	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT')")
+	@GetMapping("/role")
+	public ResponseEntity<ResponseDTO<Object>> getUserRoleDetails(@RequestParam String role){
+
+		UserDetails userDetails =  (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String username = userDetails.getUsername();
+		Object a = userService.getUserRoleDetails(username,role);
+		return ResponseEntity.ok(new ResponseDTO<>(a, "Details Retrieved Successfully",200));
+	}
+
 }
 

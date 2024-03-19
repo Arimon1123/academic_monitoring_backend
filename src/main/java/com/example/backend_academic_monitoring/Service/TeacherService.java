@@ -12,4 +12,5 @@ public interface TeacherService {
     void saveTeacherSubjects(Integer teacherId, List<SubjectDTO> subjects);
     List<TeacherDTO> getTeacherBySubject(Integer subjectId);
     String getTeacherName(Integer teacherId);
+    TeacherDTO findTeacherByUserId(Integer userId);
 }

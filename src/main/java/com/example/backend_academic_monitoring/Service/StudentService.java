@@ -1,6 +1,5 @@
 package com.example.backend_academic_monitoring.Service;
 
-import com.example.backend_academic_monitoring.DTO.PersonDTO;
 import com.example.backend_academic_monitoring.DTO.StudentCreateDTO;
 import com.example.backend_academic_monitoring.DTO.StudentDTO;
 import org.springframework.stereotype.Repository;
@@ -15,5 +14,6 @@ public interface StudentService {
     List<StudentDTO> getAllStudent();
     boolean existsByCi(String ci);
     boolean existsByRude(String rude);
+    List<StudentDTO> findAllByParentId(Integer parentId);
 
 }
