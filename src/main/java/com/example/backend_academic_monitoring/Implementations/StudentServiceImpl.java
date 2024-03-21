@@ -68,13 +68,21 @@ public class StudentServiceImpl implements StudentService {
     public StudentDTO getStudent(Integer id) {
         StudentEntity studentEntity = studentRepository.findByIdAndStatus(id,1);
         if(studentEntity == null) throw new RuntimeException("Student not found");
-        return StudentMapper.toDTO(studentEntity);
+        ClassEntity classEntity = classService.getClassByStudentId(id);
+        StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
+        studentDTO.setStudentClass(classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier());
+        return studentDTO;
     }
 
     @Override
     public List<StudentDTO> getAllStudent() {
         List<StudentEntity> studentEntities = studentRepository.findAllByStatus(1);
-        return studentEntities.stream().map(StudentMapper::toDTO).toList();
+        return studentEntities.stream().map(studentEntity -> {
+            StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
+            ClassEntity classEntity = classService.getClassByStudentId(studentEntity.getId());
+            studentDTO.setStudentClass(classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier());
+            return studentDTO;
+        }).toList();
     }
 
     @Override
@@ -90,6 +98,35 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<StudentDTO> findAllByParentId(Integer fatherId) {
         List<StudentEntity> studentEntities = studentRepository.findAllByParentId(fatherId);
-        return studentEntities.stream().map(StudentMapper::toDTO).toList();
+        return studentEntities.stream().map(studentEntity -> {
+            StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
+            ClassEntity classEntity = classService.getClassByStudentId(studentEntity.getId());
+            studentDTO.setStudentClass(classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier());
+            return studentDTO;
+        }).toList();
+    }
+
+    @Override
+    public List<StudentDTO> findAllByClassId(Integer classId) {
+        List<StudentEntity> studentEntities = studentRepository.findAllByClassId(classId);
+        ClassEntity classEntity = classService.getClassByStudentId(classId);
+        String className = classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier();
+        return studentEntities.stream().map(studentEntity -> {
+            StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
+            studentDTO.setStudentClass(className);
+            return studentDTO;
+        }).toList();
+    }
+
+    @Override
+    public List<StudentDTO> findAllByAssignationId(Integer assignationId) {
+        List<StudentEntity> studentEntities = studentRepository.findAllByAssignationId(assignationId);
+        ClassEntity classEntity = classService.getClassByAssignationId(assignationId);
+        String className = classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier();
+        return studentEntities.stream().map(studentEntity -> {
+            StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
+            studentDTO.setStudentClass(className);
+            return studentDTO;
+        }).toList();
     }
 }

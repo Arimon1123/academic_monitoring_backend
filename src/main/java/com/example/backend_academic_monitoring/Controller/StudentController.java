@@ -58,4 +58,22 @@ public class StudentController {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null,"Error al buscar", 500));
         }
     }
+
+    @GetMapping("/class/{classId}")
+    public ResponseEntity<ResponseDTO<List<StudentDTO>>> findAllByClassId(@PathVariable Integer classId){
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(studentService.findAllByClassId(classId),"Estudiantes encontrados", 200));
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null,"Error al buscar", 500));
+        }
+    }
+
+    @GetMapping("/assignation/{assignationId}")
+    public ResponseEntity<ResponseDTO<List<StudentDTO>>> findAllByAssignationId(@PathVariable Integer assignationId){
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(studentService.findAllByAssignationId(assignationId),"Estudiantes encontrados", 200));
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null,"Error al buscar", 500));
+        }
+    }
 }

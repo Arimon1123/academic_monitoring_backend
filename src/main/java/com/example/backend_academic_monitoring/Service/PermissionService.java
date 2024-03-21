@@ -17,4 +17,6 @@ public interface PermissionService {
     void approvePermission(Integer permissionId);
 
     void rejectPermission(RejectedPermissionEntity rejectedPermissionEntity);
+    PermissionDTO getPermission(Integer permissionId);
+    List<PermissionDTO> getPermissionsByClass(Integer classId);
 }

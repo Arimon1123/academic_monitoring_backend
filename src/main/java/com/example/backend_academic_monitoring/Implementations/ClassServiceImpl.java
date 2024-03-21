@@ -51,12 +51,21 @@ public class ClassServiceImpl implements ClassService {
         ).toList();
     }
 
-
-
     @Override
     public String getClassName(Integer classId) {
         ClassEntity classEntity = classRepository.getReferenceById(classId);
-        return classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getShift();
-
+        return classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier();
     }
+
+    @Override
+    public ClassEntity getClassByStudentId(Integer studentId) {
+        return classRepository.findByStudentsId(studentId);
+    }
+
+    @Override
+    public ClassEntity getClassByAssignationId(Integer assignationId) {
+        return classRepository.findByAssignation(assignationId);
+    }
+
+
 }

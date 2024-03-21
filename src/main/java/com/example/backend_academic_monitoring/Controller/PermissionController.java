@@ -76,4 +76,24 @@ public class PermissionController {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
+
+    @GetMapping("/{permissionId}")
+    public ResponseEntity<ResponseDTO<PermissionDTO>> getPermission(@PathVariable Integer permissionId) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(permissionService.getPermission(permissionId), "Permission retrieved successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
+    @GetMapping("/class/{classId}")
+    public ResponseEntity<ResponseDTO<List<PermissionDTO>>> getPermissionByClass(@PathVariable Integer classId){
+        try{
+            return ResponseEntity.ok(new ResponseDTO<>(permissionService.getPermissionsByClass(classId),"Permissions retrieved successfully" , 200));
+
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(),500));
+        }
+    }
+
 }

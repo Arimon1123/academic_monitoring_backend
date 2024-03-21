@@ -2,6 +2,7 @@ package com.example.backend_academic_monitoring.Service;
 
 import com.example.backend_academic_monitoring.DTO.StudentCreateDTO;
 import com.example.backend_academic_monitoring.DTO.StudentDTO;
+import com.example.backend_academic_monitoring.Entity.ClassEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,5 +16,7 @@ public interface StudentService {
     boolean existsByCi(String ci);
     boolean existsByRude(String rude);
     List<StudentDTO> findAllByParentId(Integer parentId);
+    List<StudentDTO> findAllByClassId(Integer classId);
+    List<StudentDTO> findAllByAssignationId(Integer assignationId);
 
 }

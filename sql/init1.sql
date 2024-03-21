@@ -54,7 +54,7 @@ CREATE TABLE attendance
     id                   serial NOT NULL,
     attendance           int    NOT NULL,
     date                 date   NOT NULL,
-    estudiante_id        int    NOT NULL,
+    student_id        int    NOT NULL,
     class_has_subject_id int    NOT NULL,
     CONSTRAINT attendance_pk PRIMARY KEY (id)
 );
@@ -351,7 +351,7 @@ ALTER TABLE administrative
 -- Reference: asistencia_estudiante (table: attendance)
 ALTER TABLE attendance
     ADD CONSTRAINT asistencia_estudiante
-        FOREIGN KEY (estudiante_id)
+        FOREIGN KEY (student_id)
             REFERENCES student (id)
             NOT DEFERRABLE
                 INITIALLY IMMEDIATE
@@ -639,19 +639,33 @@ VALUES (1, 2024, 1, 'A', 1, 1),
        (15, 2024, 1, 'E', 1, 3);
 
 insert into acad_user
-values (2, 'juan', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
+-- <- password : parent
+values (2, 'parent', '$2a$12$8WTe1XMY2hyP0BAL8FaqNuya2yrG3IwQMAuvRG1W5HWeWbr6sfOd.', 1, null);
 insert into user_roles
 values (2, 3);
 insert into person
 values (2, 'Juan', 'Gomez', '12345678', '2000-01-01', 'a@a.com', 'Calle 1', 1, 2);
 insert into parent
-values (1, 1, 1);
+values (1, 1, 2);
 Insert into student
 values (1, 'Juan', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 1', 1);
 insert into student_parent
 values (1, 1, 1);
 Insert into student_class
 values (1, 1, 1);
+insert into student
+values (2, 'Pedro', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 2', 1),
+        (3, 'Maria', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 3', 1),
+        (4, 'Ana', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 4', 1),
+        (5, 'Luis', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 5', 1);
+insert into student_class values (2,2,1),
+                                    (3,3,1),
+                                    (4,4,1),
+                                    (5,5,1);
+insert into student_parent values (2, 2, 1),
+                                  (3, 3, 1),
+                                  (4, 4, 1),
+                                  (5, 5, 1);
 
 INSERT INTO requirement (requirement, description)
 VALUES ('Pizarrón Interactivo', 'Superficie táctil para proyecciones digitales.'),
@@ -746,6 +760,23 @@ values (3, 'thursday', '08:00:00', '08:45:00', 2, 2);
 insert into schedule
 values (4, 'friday', '08:45:00', '09:30:00', 2, 2);
 
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (1, 3, '2024-03-20', 2, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (2, 1, '2024-03-20', 1, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (3, 1, '2024-03-20', 3, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (4, 1, '2024-03-20', 4, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (5, 1, '2024-03-20', 5, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (6, 3, '2024-03-19', 2, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (7, 1, '2024-03-19', 1, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (8, 1, '2024-03-19', 3, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (9, 1, '2024-03-19', 4, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (10, 1, '2024-03-19', 5, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (11, 1, '2024-03-14', 2, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (12, 2, '2024-03-14', 1, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (13, 3, '2024-03-14', 3, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (14, 2, '2024-03-14', 4, 1);
+INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (15, 1, '2024-03-14', 5, 1);
+
+
 alter sequence classroom_id_seq restart with 5;
 alter sequence classroom_requirement_id_seq restart with 5;
 alter sequence teacher_id_seq restart with 4;
@@ -755,7 +786,7 @@ alter sequence acad_user_id_seq restart with 6;
 alter sequence person_id_seq restart with 6;
 alter sequence administrative_id_seq restart with 2;
 alter sequence parent_id_seq restart with 2;
-alter sequence student_id_seq restart with 2;
+alter sequence student_id_seq restart with 7;
 alter sequence student_parent_id_seq restart with 2;
 alter sequence student_class_id_seq restart with 2;
 alter sequence class_id_seq restart with 13;
@@ -763,4 +794,5 @@ alter sequence grade_id_seq restart with 2;
 alter sequence subject_id_seq restart with 24;
 alter sequence class_has_subject_id_seq restart with 3;
 alter sequence schedule_id_seq restart with 5;
+alter sequence attendance_id_seq restart with 16;
 

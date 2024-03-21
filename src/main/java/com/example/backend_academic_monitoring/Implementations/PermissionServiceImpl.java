@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,21 +77,7 @@ public class PermissionServiceImpl implements PermissionService {
     private List<PermissionDTO> getPermissionDTOS(List<PermissionEntity> permissionEntities) {
         List<PermissionDTO> permissionDTOS = new ArrayList<>();
         for (PermissionEntity permissionEntity : permissionEntities) {
-            PermissionDTO permissionDTO = new PermissionDTO();
-            permissionDTO.setId(permissionEntity.getId());
-            permissionDTO.setDate(permissionEntity.getDate());
-            permissionDTO.setPermissionStartDate(permissionEntity.getPermissionStartDate());
-            permissionDTO.setPermissionEndDate(permissionEntity.getPermissionEndDate());
-            permissionDTO.setPermissionStatus(permissionEntity.getPermissionStatus());
-            permissionDTO.setReason(permissionEntity.getReason());
-            permissionDTO.setStudent(studentService.getStudent(permissionEntity.getStudentId()));
-            List<String> images = new ArrayList<>();
-            for (ImageEntity imageEntity : permissionEntity.getImages()) {
-                images.add(imageService.getImageURL(imageEntity.getUuid()));
-            }
-            permissionDTO.setImages(images);
-            permissionDTOS.add(permissionDTO);
-            logger.info("Permission DTO {}", permissionDTO);
+            permissionDTOS.add(mapDTO(permissionEntity));
         }
         return permissionDTOS;
     }
@@ -117,5 +104,37 @@ public class PermissionServiceImpl implements PermissionService {
         rejectedPermissionEntity1.setPermissionId(rejectedPermissionEntity.getPermissionId());
         rejectedPermissionEntity1.setReason(rejectedPermissionEntity.getReason());
         rejectPermissionRepository.save(rejectedPermissionEntity1);
+    }
+
+    @Override
+    public PermissionDTO getPermission(Integer permissionId) {
+        PermissionEntity permissionEntity = permissionRepository.getReferenceById(permissionId);
+        return mapDTO(permissionEntity);
+
+    }
+
+    @Override
+    public List<PermissionDTO> getPermissionsByClass(Integer classId) {
+        List<PermissionEntity> permissionEntities =
+                permissionRepository.findAllByClassIdAndDate(classId, new Timestamp(System.currentTimeMillis()),1);
+        return getPermissionDTOS(permissionEntities);
+
+    }
+
+    private PermissionDTO mapDTO(PermissionEntity permissionEntity) {
+        PermissionDTO permissionDTO = new PermissionDTO();
+        permissionDTO.setId(permissionEntity.getId());
+        permissionDTO.setDate(permissionEntity.getDate());
+        permissionDTO.setPermissionStartDate(permissionEntity.getPermissionStartDate());
+        permissionDTO.setPermissionEndDate(permissionEntity.getPermissionEndDate());
+        permissionDTO.setPermissionStatus(permissionEntity.getPermissionStatus());
+        permissionDTO.setReason(permissionEntity.getReason());
+        permissionDTO.setStudent(studentService.getStudent(permissionEntity.getStudentId()));
+        List<String> images = new ArrayList<>();
+        for (ImageEntity imageEntity : permissionEntity.getImages()) {
+            images.add(imageService.getImageURL(imageEntity.getUuid()));
+        }
+        permissionDTO.setImages(images);
+        return permissionDTO;
     }
 }

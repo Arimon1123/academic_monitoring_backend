@@ -6,16 +6,17 @@ import com.example.backend_academic_monitoring.Entity.StudentEntity;
 
 public class StudentMapper {
     public static StudentDTO toDTO(StudentEntity studentEntity) {
-        return new StudentDTO(
-                studentEntity.getId(),
-                studentEntity.getName(),
-                studentEntity.getCi(),
-                studentEntity.getFatherLastname(),
-                studentEntity.getMotherLastname(),
-                studentEntity.getBirthdate(),
-                studentEntity.getAddress(),
-                studentEntity.getRude()
-        );
+        StudentDTO student = new StudentDTO();
+        student.setId(studentEntity.getId());
+        student.setName(studentEntity.getName());
+        student.setCi(studentEntity.getCi());
+        student.setFatherLastname(studentEntity.getFatherLastname());
+        student.setMotherLastname(studentEntity.getMotherLastname());
+        student.setBirthDate(studentEntity.getBirthdate());
+        student.setAddress(studentEntity.getAddress());
+        student.setRude(studentEntity.getRude());
+        return student;
+
     }
     public static StudentEntity toEntity(StudentCreateDTO studentDTO) {
         return new StudentEntity(
