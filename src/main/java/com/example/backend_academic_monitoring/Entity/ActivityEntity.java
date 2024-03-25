@@ -21,4 +21,6 @@ public class ActivityEntity {
     @Enumerated(EnumType.STRING)
     private DimensionEnum dimension;
     private Integer status;
+    @Column(name = "class_has_subject_id")
+    private Integer assignationId;
 }
