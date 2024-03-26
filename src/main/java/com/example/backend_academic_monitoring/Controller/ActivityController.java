@@ -43,4 +43,13 @@ public class ActivityController {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error finding activities",500));
         }
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDTO<String>> deleteActivity(@PathVariable Integer id) {
+        try {
+            activityService.deleteActivity(id);
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Activity deleted successfully",200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error deleting activity",500));
+        }
+    }
 }

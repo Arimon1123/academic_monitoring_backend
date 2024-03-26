@@ -12,6 +12,10 @@ public interface ActivityGradeRepository extends JpaRepository<ActivityGradeEnti
     @Query("SELECT a FROM ActivityGradeEntity a " +
             "join ActivityEntity ae on a.activityId = ae.id " +
             "where  a.studentId = :studentId " +
-            "AND ae.assignationId = :assignatioId order by a.id desc")
+            "AND ae.assignationId = :assignationId order by a.id desc")
     List<ActivityGradeEntity> findAllByStudentIdAndAssignationId(Integer studentId, Integer assignationId);
+    @Query("SELECT a FROM ActivityGradeEntity a " +
+            "join ActivityEntity ae on a.activityId = ae.id " +
+            "where  ae.assignationId = :assignationId order by a.id asc")
+    List<ActivityGradeEntity> findAllByAssignationId(Integer assignationId);
 }

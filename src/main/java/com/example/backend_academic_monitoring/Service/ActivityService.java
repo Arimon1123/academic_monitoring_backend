@@ -10,4 +10,6 @@ public interface ActivityService {
     void updateActivity(ActivityEntity activityCreateDTO);
 
     List<ActivityEntity> findActivitiesByAssignationId(Integer assignationId);
+
+    void deleteActivity (Integer id);
 }
