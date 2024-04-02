@@ -23,6 +23,9 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
 
     @Override
     public void saveGrades(List<ActivityGradeEntity> activityGradeEntity) {
+        activityGradeEntity = activityGradeEntity.stream().peek(
+                grade -> grade.setStatus(1)
+        ).collect(Collectors.toList());
         activityGradeRepository.saveAll(activityGradeEntity);
     }
 

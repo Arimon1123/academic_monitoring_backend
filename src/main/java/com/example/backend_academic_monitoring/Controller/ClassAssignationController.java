@@ -63,4 +63,14 @@ public class ClassAssignationController {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
+
+    @GetMapping("/student")
+    public ResponseEntity<ResponseDTO<List<ClassAssignationDTO>>> findStudentSchedule(@RequestParam Integer studentId, @RequestParam Integer year){
+        try{
+            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByStudentAndYear(studentId, year),"Student schedule retrieved successfully",200));
+        }catch (Exception e){
+            return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
 }

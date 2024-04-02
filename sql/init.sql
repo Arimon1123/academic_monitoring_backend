@@ -1,507 +1,112 @@
--- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2023-11-29 22:20:20.114
 
--- tables
--- Table: actividad
-CREATE  DATABASE acad_monitoring;
-\c acad_monitoring;
-CREATE TABLE actividad (
-    id serial  NOT NULL,
-    nombre varchar(150)  NOT NULL,
-    valor int  NOT NULL,
-    dimension int  NOT NULL,
-    bimestre int  NOT NULL,
-    curso_materia_id int  NOT NULL,
-    status int  NOT NULL,
-    CONSTRAINT actividad_pk PRIMARY KEY (id)
-);
+select sum(grade * activity.value * dimension.value)/10000 as total_grade ,student_id, student.name, activity.bimester, subject.id as subject_id, subject.name as subject_name
+from activity_has_grade
+         left join activity on activity_has_grade.activity_id = activity.id
+         join class_has_subject on activity.class_has_subject_id = class_has_subject.id
+         join class on class_has_subject.class_id = class.id
+         join student on activity_has_grade.student_id = student.id
+         join subject on class_has_subject.subject_id = subject.id
+         join dimension on activity.dimension = dimension.name
+where student_id = 13 and subject_id = 1
+group by student_id, student.name,activity.bimester, subject.name, subject.id;
 
--- Table: administrativo
-CREATE TABLE administrativo (
-    id serial  NOT NULL,
-    nombre varchar(100)  NOT NULL,
-    apellido varchar(100)  NOT NULL,
-    telefono varchar(20)  NOT NULL,
-    email varchar(100)  NOT NULL,
-    direccion varchar(200)  NOT NULL,
-    id_usuario int  NOT NULL,
-    status int  NOT NULL,
-    CONSTRAINT administrativo_pk PRIMARY KEY (id)
-);
+insert into activity values (34, 'Tarea 6: Álgebra', 50, 'HACER', 3, 1, 1),
+                            (35, 'Examen 4', 100, 'SABER', 3, 1, 1),
+                            (36, 'Tarea 7: Ortografía', 50, 'HACER', 3, 1, 1),
+                            (37, 'Tarea 3: Gramática', 100, 'DECIDIR', 3, 1, 1),
+                            (38, 'Examen 3', 100, 'SER', 3, 1, 1),
+                            (39, 'Actividad 3', 100, 'HACER', 4, 1, 1),
+                            (40, 'Test 8', 100, 'SABER', 4, 1, 1),
+                            (41, 'Test 9', 100, 'SER', 4, 1, 1),
+                            (42, 'Test 10', 100, 'DECIDIR', 4, 1, 1);
 
--- Table: asistencia
-CREATE TABLE asistencia (
-    id serial  NOT NULL,
-    asistencia int  NOT NULL,
-    fecha date  NOT NULL,
-    curso_materia_id int  NOT NULL,
-    estudiante_id int  NOT NULL,
-    CONSTRAINT asistencia_pk PRIMARY KEY (id)
-);
+-- Inserts para class_has_subject_id = 15
+INSERT INTO activity (id, name, value, dimension, bimester, status, class_has_subject_id) VALUES
+                                                                                              (43, 'Tarea 8: Historia', 50, 'HACER', 1, 1, 15),
+                                                                                              (44, 'Examen 5', 100, 'SABER', 1, 1, 15),
+                                                                                              (45, 'Tarea 9: Ciencias Naturales', 50, 'HACER', 1, 1, 15),
+                                                                                              (46, 'Tarea 4: Física', 100, 'DECIDIR', 1, 1, 15),
+                                                                                              (47, 'Examen 4', 100, 'SER', 1, 1, 15),
+                                                                                              (48, 'Actividad 4', 100, 'HACER', 2, 1, 15),
+                                                                                              (49, 'Test 11', 100, 'SABER', 2, 1, 15),
+                                                                                              (50, 'Test 12', 100, 'SER', 2, 1, 15),
+                                                                                              (51, 'Test 13', 100, 'DECIDIR', 2, 1, 15),
+                                                                                              (52, 'Tarea 10: Geografía', 50, 'HACER', 3, 1, 15),
+                                                                                              (53, 'Examen 6', 100, 'SABER', 3, 1, 15),
+                                                                                              (54, 'Tarea 11: Química', 50, 'HACER', 3, 1, 15),
+                                                                                              (55, 'Tarea 5: Biología', 100, 'DECIDIR', 3, 1, 15),
+                                                                                              (56, 'Examen 5', 100, 'SER', 3, 1, 15),
+                                                                                              (57, 'Actividad 5', 100, 'HACER', 4, 1, 15),
+                                                                                              (58, 'Test 14', 100, 'SABER', 4, 1, 15),
+                                                                                              (59, 'Test 15', 100, 'SER', 4, 1, 15),
+                                                                                              (60, 'Test 16', 100, 'DECIDIR', 4, 1, 15);
 
--- Table: aula
-CREATE TABLE aula (
-    id serial  NOT NULL,
-    numero int  NOT NULL,
-    bloque varchar(15)  NOT NULL,
-    tipo varchar(100)  NOT NULL,
-    CONSTRAINT aula_pk PRIMARY KEY (id)
-);
+-- Inserts para class_has_subject_id = 16
+INSERT INTO activity (id, name, value, dimension, bimester, status, class_has_subject_id) VALUES
+                                                                                              (61, 'Tarea 12: Educación Física', 50, 'HACER', 1, 1, 16),
+                                                                                              (62, 'Examen 7', 100, 'SABER', 1, 1, 16),
+                                                                                              (63, 'Tarea 13: Arte', 50, 'HACER', 1, 1, 16),
+                                                                                              (64, 'Tarea 6: Música', 100, 'DECIDIR', 1, 1, 16),
+                                                                                              (65, 'Examen 6', 100, 'SER', 1, 1, 16),
+                                                                                              (66, 'Actividad 6', 100, 'HACER', 2, 1, 16),
+                                                                                              (67, 'Test 17', 100, 'SABER', 2, 1, 16),
+                                                                                              (68, 'Test 18', 100, 'SER', 2, 1, 16),
+                                                                                              (69, 'Test 19', 100, 'DECIDIR', 2, 1, 16),
+                                                                                              (70, 'Tarea 14: Tecnología', 50, 'HACER', 3, 1, 16),
+                                                                                              (71, 'Examen 8', 100, 'SABER', 3, 1, 16),
+                                                                                              (72, 'Tarea 15: Inglés', 50, 'HACER', 3, 1, 16),
+                                                                                              (73, 'Tarea 7: Francés', 100, 'DECIDIR', 3, 1, 16),
+                                                                                              (74, 'Examen 7', 100, 'SER', 3, 1, 16),
+                                                                                              (75, 'Actividad 7', 100, 'HACER', 4, 1, 16),
+                                                                                              (76, 'Test 20', 100, 'SABER', 4, 1, 16),
+                                                                                              (77, 'Test 21', 100, 'SER', 4, 1, 16),
+                                                                                              (78, 'Test 22', 100, 'DECIDIR', 4, 1, 16);
+INSERT INTO activity_has_grade (id, grade, status, activity_id, student_id) VALUES
 
--- Table: aula_caracteristica
-CREATE TABLE aula_caracteristica (
-    id serial  NOT NULL,
-    aula_id int  NOT NULL,
-    caracteristicas_id int  NOT NULL,
-    CONSTRAINT aula_caracteristica_pk PRIMARY KEY (id)
-);
+                                                                                (10, 100, 1, 34, 13),
+                                                                                (11, 100, 1, 35, 13),
+                                                                                (12, 100, 1, 36, 13),
+                                                                                (13, 100, 1, 37, 13),
+                                                                                (14, 100, 1, 38, 13),
+                                                                                (15, 100, 1, 39, 13),
+                                                                                (16, 100, 1, 40, 13),
+                                                                                (17, 100, 1, 41, 13),
+                                                                                (18, 100, 1, 42, 13),
+                                                                                (19, 100, 1, 43, 13),
+                                                                                (20, 100, 1, 44, 13),
+                                                                                (21, 100, 1, 45, 13),
+                                                                                (22, 100, 1, 46, 13),
+                                                                                (23, 100, 1, 47, 13),
+                                                                                (24, 100, 1, 48, 13),
+                                                                                (25, 100, 1, 49, 13),
+                                                                                (26, 100, 1, 50, 13),
+                                                                                (27, 100, 1, 51, 13),
+                                                                                (28, 100, 1, 52, 13),
+                                                                                (29, 100, 1, 53, 13),
+                                                                                (30, 100, 1, 54, 13),
+                                                                                (31, 100, 1, 55, 13),
+                                                                                (32, 100, 1, 56, 13),
+                                                                                (33, 100, 1, 57, 13),
+                                                                                (34, 100, 1, 58, 13),
+                                                                                (35, 100, 1, 59, 13),
+                                                                                (36, 100, 1, 60, 13),
+                                                                                (37, 100, 1, 61, 13),
+                                                                                (38, 100, 1, 62, 13),
+                                                                                (39, 100, 1, 63, 13),
+                                                                                (40, 100, 1, 64, 13),
+                                                                                (41, 100, 1, 65, 13),
+                                                                                (42, 100, 1, 66, 13),
+                                                                                (43, 100, 1, 67, 13),
+                                                                                (44, 100, 1, 68, 13),
+                                                                                (45, 100, 1, 69, 13),
+                                                                                (46, 100, 1, 70, 13),
+                                                                                (47, 100, 1, 71, 13),
+                                                                                (48, 100, 1, 72, 13),
+                                                                                (49, 100, 1, 73, 13),
+                                                                                (50, 100, 1, 74, 13),
+                                                                                (51, 100, 1, 75, 13),
+                                                                                (52, 100, 1, 76, 13),
+                                                                                (53, 100, 1, 77, 13),
+                                                                                (54, 100, 1, 78, 13);
 
--- Table: caracteristicas
-CREATE TABLE caracteristicas (
-    id serial  NOT NULL,
-    caracteristica varchar(150)  NOT NULL,
-    CONSTRAINT caracteristicas_pk PRIMARY KEY (id)
-);
-
--- Table: curso
-CREATE TABLE curso (
-    id serial  NOT NULL,
-    gestion int  NOT NULL,
-    turno int  NOT NULL,
-    identificador varchar(20)  NOT NULL,
-    id_grado int  NOT NULL,
-    status int  NOT NULL,
-    CONSTRAINT curso_pk PRIMARY KEY (id)
-);
-
--- Table: curso_estudiante
-CREATE TABLE curso_estudiante (
-    id serial  NOT NULL,
-    id_estudiante int  NOT NULL,
-    id_curso int  NOT NULL,
-    CONSTRAINT curso_estudiante_pk PRIMARY KEY (id)
-);
-
--- Table: curso_materia
-CREATE TABLE curso_materia (
-    id serial  NOT NULL,
-    id_curso int  NOT NULL,
-    id_profesor int  NOT NULL,
-    id_materia int  NOT NULL,
-    aula_id int  NOT NULL,
-    CONSTRAINT id PRIMARY KEY (id)
-);
-
--- Table: estudiante
-CREATE TABLE estudiante (
-    id serial  NOT NULL,
-    nombre varchar(150)  NOT NULL,
-    apellido_paterno varchar(100)  NOT NULL,
-    apellido_materno varchar(100)  NOT NULL,
-    fecha_nacimiento date  NOT NULL,
-    direccion varchar(200)  NOT NULL,
-    status int  NOT NULL,
-    CONSTRAINT estudiante_pk PRIMARY KEY (id)
-);
-
--- Table: estudiante_padre
-CREATE TABLE estudiante_padre (
-    id serial  NOT NULL,
-    id_estudiante int  NOT NULL,
-    id_padre int  NOT NULL,
-    CONSTRAINT estudiante_padre_pk PRIMARY KEY (id)
-);
-
--- Table: grado
-CREATE TABLE grado (
-    id serial  NOT NULL,
-    seccion varchar(100)  NOT NULL,
-    numero int  NOT NULL,
-    CONSTRAINT grado_pk PRIMARY KEY (id)
-);
-
--- Table: horario
-CREATE TABLE horario (
-    id serial  NOT NULL,
-    curso_materia_id int  NOT NULL,
-    dia_semana int  NOT NULL,
-    hora_inicio time  NOT NULL,
-    hora_fin time  NOT NULL,
-    CONSTRAINT horario_pk PRIMARY KEY (id)
-);
-
--- Table: image
-CREATE TABLE image (
-    id serial  NOT NULL,
-    uuid varchar(20)  NOT NULL,
-    tipo varchar(20)  NOT NULL,
-    nombre varchar(100)  NOT NULL,
-    CONSTRAINT image_pk PRIMARY KEY (id)
-);
-
--- Table: licencia
-CREATE TABLE licencia (
-    id serial  NOT NULL,
-    fecha_envio date  NOT NULL,
-    fecha_inicio_licencia timestamp  NOT NULL,
-    fecha_fin_licencia timestamp  NOT NULL,
-    padre_id int  NOT NULL,
-    estudiante_id int  NOT NULL,
-    estado int  NOT NULL,
-    motivo varchar(400)  NOT NULL,
-    status int  NOT NULL,
-    CONSTRAINT licencia_pk PRIMARY KEY (id)
-);
-
--- Table: licencia_image
-CREATE TABLE licencia_image (
-    id int  NOT NULL,
-    licencia_id int  NOT NULL,
-    image_id int  NOT NULL,
-    CONSTRAINT licencia_image_pk PRIMARY KEY (id)
-);
-
--- Table: materia
-CREATE TABLE materia (
-    id serial  NOT NULL,
-    nombre varchar(100)  NOT NULL,
-    id_grado int  NOT NULL,
-    horas int  NOT NULL,
-    status int  NOT NULL,
-    CONSTRAINT materia_pk PRIMARY KEY (id)
-);
-
--- Table: materia_requisitos
-CREATE TABLE materia_requisitos (
-    id serial  NOT NULL,
-    requisitos_id int  NOT NULL,
-    materia_id int  NOT NULL,
-    CONSTRAINT materia_requisitos_pk PRIMARY KEY (id)
-);
-
--- Table: nota_actividad
-CREATE TABLE nota_actividad (
-    id serial  NOT NULL,
-    id_estudiante int  NOT NULL,
-    id_actividad int  NOT NULL,
-    nota int  NOT NULL,
-    status int  NOT NULL,
-    CONSTRAINT nota_actividad_pk PRIMARY KEY (id)
-);
-
--- Table: padre
-CREATE TABLE padre (
-    id serial  NOT NULL,
-    nombre varchar(150)  NOT NULL,
-    apellido varchar(150)  NOT NULL,
-    direccion varchar(100)  NOT NULL,
-    email varchar(100)  NOT NULL,
-    telefono varchar(30)  NOT NULL,
-    id_usuario int  NOT NULL,
-    status int  NOT NULL,
-    CONSTRAINT padre_pk PRIMARY KEY (id)
-);
-
--- Table: profeso_materia
-CREATE TABLE profeso_materia (
-    id serial  NOT NULL,
-    id_materia int  NOT NULL,
-    id_profesor int  NOT NULL,
-    CONSTRAINT profeso_materia_pk PRIMARY KEY (id)
-);
-
--- Table: profesor
-CREATE TABLE profesor (
-    id serial  NOT NULL,
-    nombre varchar(100)  NOT NULL,
-    apellidos varchar(100)  NOT NULL,
-    telefono varchar(20)  NOT NULL,
-    email varchar(100)  NOT NULL,
-    direccion varchar(200)  NOT NULL,
-    creado timestamp  NOT NULL,
-    actualizado timestamp  NOT NULL,
-    id_usuario int  NOT NULL,
-    status int  NOT NULL,
-    CONSTRAINT profesor_pk PRIMARY KEY (id)
-);
-
--- Table: rechazo
-CREATE TABLE rechazo (
-    id int  NOT NULL,
-    justificacion varchar(400)  NOT NULL,
-    solicitud_licencia_id int  NOT NULL,
-    administrativo_id int  NOT NULL,
-    CONSTRAINT rechazo_pk PRIMARY KEY (id)
-);
-
--- Table: requisitos
-CREATE TABLE requisitos (
-    id serial  NOT NULL,
-    requisito varchar(100)  NOT NULL,
-    descripcion varchar(400)  NOT NULL,
-    CONSTRAINT requisitos_pk PRIMARY KEY (id)
-);
-
--- Table: usuario
-CREATE TABLE usuario (
-    id serial  NOT NULL,
-    usuario varchar(100)  NOT NULL,
-    password varchar(200)  NOT NULL,
-    creado timestamp  NOT NULL,
-    actualizado timestamp  NOT NULL,
-    status int  NOT NULL,
-    image_id int  NULL,
-    CONSTRAINT usuario_pk PRIMARY KEY (id)
-);
-
--- foreign keys
--- Reference: Table_20_curso_materia (table: horario)
-ALTER TABLE horario ADD CONSTRAINT Table_20_curso_materia
-    FOREIGN KEY (curso_materia_id)
-    REFERENCES curso_materia (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: actividad_curso_materia (table: actividad)
-ALTER TABLE actividad ADD CONSTRAINT actividad_curso_materia
-    FOREIGN KEY (curso_materia_id)
-    REFERENCES curso_materia (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: adminitrative_user (table: administrativo)
-ALTER TABLE administrativo ADD CONSTRAINT adminitrative_user
-    FOREIGN KEY (id_usuario)
-    REFERENCES usuario (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: asistencia_curso_materia (table: asistencia)
-ALTER TABLE asistencia ADD CONSTRAINT asistencia_curso_materia
-    FOREIGN KEY (curso_materia_id)
-    REFERENCES curso_materia (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: asistencia_estudiante (table: asistencia)
-ALTER TABLE asistencia ADD CONSTRAINT asistencia_estudiante
-    FOREIGN KEY (estudiante_id)
-    REFERENCES estudiante (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: aula_caracteristica_aula (table: aula_caracteristica)
-ALTER TABLE aula_caracteristica ADD CONSTRAINT aula_caracteristica_aula
-    FOREIGN KEY (aula_id)
-    REFERENCES aula (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: aula_caracteristica_caracteristicas (table: aula_caracteristica)
-ALTER TABLE aula_caracteristica ADD CONSTRAINT aula_caracteristica_caracteristicas
-    FOREIGN KEY (caracteristicas_id)
-    REFERENCES caracteristicas (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: class_Grade (table: curso)
-ALTER TABLE curso ADD CONSTRAINT class_Grade
-    FOREIGN KEY (id_grado)
-    REFERENCES grado (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: class_has_subject_class (table: curso_materia)
-ALTER TABLE curso_materia ADD CONSTRAINT class_has_subject_class
-    FOREIGN KEY (id_curso)
-    REFERENCES curso (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: class_has_subject_subject (table: curso_materia)
-ALTER TABLE curso_materia ADD CONSTRAINT class_has_subject_subject
-    FOREIGN KEY (id_materia)
-    REFERENCES materia (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: class_has_subject_teacher (table: curso_materia)
-ALTER TABLE curso_materia ADD CONSTRAINT class_has_subject_teacher
-    FOREIGN KEY (id_profesor)
-    REFERENCES profesor (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: curso_materia_aula (table: curso_materia)
-ALTER TABLE curso_materia ADD CONSTRAINT curso_materia_aula
-    FOREIGN KEY (aula_id)
-    REFERENCES aula (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: father_user (table: padre)
-ALTER TABLE padre ADD CONSTRAINT father_user
-    FOREIGN KEY (id_usuario)
-    REFERENCES usuario (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: grade_activitie_activities (table: nota_actividad)
-ALTER TABLE nota_actividad ADD CONSTRAINT grade_activitie_activities
-    FOREIGN KEY (id_actividad)
-    REFERENCES actividad (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: grade_activitie_student (table: nota_actividad)
-ALTER TABLE nota_actividad ADD CONSTRAINT grade_activitie_student
-    FOREIGN KEY (id_estudiante)
-    REFERENCES estudiante (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: licencia_image_image (table: licencia_image)
-ALTER TABLE licencia_image ADD CONSTRAINT licencia_image_image
-    FOREIGN KEY (image_id)
-    REFERENCES image (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: licencia_image_licencia (table: licencia_image)
-ALTER TABLE licencia_image ADD CONSTRAINT licencia_image_licencia
-    FOREIGN KEY (licencia_id)
-    REFERENCES licencia (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: materia_requisitos_materia (table: materia_requisitos)
-ALTER TABLE materia_requisitos ADD CONSTRAINT materia_requisitos_materia
-    FOREIGN KEY (materia_id)
-    REFERENCES materia (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: materia_requisitos_requisitos (table: materia_requisitos)
-ALTER TABLE materia_requisitos ADD CONSTRAINT materia_requisitos_requisitos
-    FOREIGN KEY (requisitos_id)
-    REFERENCES requisitos (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: motivo_rechazo_administrativo (table: rechazo)
-ALTER TABLE rechazo ADD CONSTRAINT motivo_rechazo_administrativo
-    FOREIGN KEY (administrativo_id)
-    REFERENCES administrativo (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: motivo_rechazo_solicitud_licencia (table: rechazo)
-ALTER TABLE rechazo ADD CONSTRAINT motivo_rechazo_solicitud_licencia
-    FOREIGN KEY (solicitud_licencia_id)
-    REFERENCES licencia (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: solicitud_licencia_estudiante (table: licencia)
-ALTER TABLE licencia ADD CONSTRAINT solicitud_licencia_estudiante
-    FOREIGN KEY (estudiante_id)
-    REFERENCES estudiante (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: solicitud_licencia_padre (table: licencia)
-ALTER TABLE licencia ADD CONSTRAINT solicitud_licencia_padre
-    FOREIGN KEY (padre_id)
-    REFERENCES padre (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: student_class_class (table: curso_estudiante)
-ALTER TABLE curso_estudiante ADD CONSTRAINT student_class_class
-    FOREIGN KEY (id_curso)
-    REFERENCES curso (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: student_class_student (table: curso_estudiante)
-ALTER TABLE curso_estudiante ADD CONSTRAINT student_class_student
-    FOREIGN KEY (id_estudiante)
-    REFERENCES estudiante (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: student_has_father_father (table: estudiante_padre)
-ALTER TABLE estudiante_padre ADD CONSTRAINT student_has_father_father
-    FOREIGN KEY (id_padre)
-    REFERENCES padre (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: student_has_father_student (table: estudiante_padre)
-ALTER TABLE estudiante_padre ADD CONSTRAINT student_has_father_student
-    FOREIGN KEY (id_estudiante)
-    REFERENCES estudiante (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: subject_Grade (table: materia)
-ALTER TABLE materia ADD CONSTRAINT subject_Grade
-    FOREIGN KEY (id_grado)
-    REFERENCES grado (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: teacher_has_subject_subject (table: profeso_materia)
-ALTER TABLE profeso_materia ADD CONSTRAINT teacher_has_subject_subject
-    FOREIGN KEY (id_materia)
-    REFERENCES materia (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: teacher_has_subject_teacher (table: profeso_materia)
-ALTER TABLE profeso_materia ADD CONSTRAINT teacher_has_subject_teacher
-    FOREIGN KEY (id_profesor)
-    REFERENCES profesor (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: teacher_user (table: profesor)
-ALTER TABLE profesor ADD CONSTRAINT teacher_user
-    FOREIGN KEY (id_usuario)
-    REFERENCES usuario (id)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- End of file.
 

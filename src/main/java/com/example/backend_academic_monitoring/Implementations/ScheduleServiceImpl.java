@@ -40,4 +40,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         LOGGER.info("Finding schedule by classId {} and subjectId {}", classId, subjectId);
         return scheduleRepository.findAllByClassAssignation_SubjectIdAndClassAssignation_ClassId(subjectId, classId);
     }
+
+
 }

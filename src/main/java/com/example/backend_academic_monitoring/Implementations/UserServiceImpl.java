@@ -102,11 +102,10 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Father saved");
 
         }
-        Context context = new Context();
-        context.setVariable("password", generatedPassword);
-        context.setVariable("username", userCreateDTO.getCi());
-        emailService.sendPasswordEmail(userCreateDTO.getEmail(), "Contraseña generada", context);
-
+//        Context context = new Context();
+//        context.setVariable("password", generatedPassword);
+//        context.setVariable("username", userCreateDTO.getCi());
+//        emailService.sendPasswordEmail(userCreateDTO.getEmail(), "Contraseña generada", context);
         return "Usuario guardado correctamente";
     }
 

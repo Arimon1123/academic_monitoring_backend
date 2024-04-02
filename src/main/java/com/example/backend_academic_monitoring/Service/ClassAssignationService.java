@@ -12,5 +12,6 @@ public interface ClassAssignationService {
     List<ClassAssignationDTO> getClassAssignationByTeacherId(Integer teacherId);
     void createClassAssignation(AssignationCreateDTO classAssignationDTO);
     ClassAssignationEntity getClassAssignationByClassIdAndSubjectId(Integer classId, Integer subjectId);
+    List<ClassAssignationDTO> getClassAssignationByStudentAndYear(Integer studentId, Integer year);
 
 }

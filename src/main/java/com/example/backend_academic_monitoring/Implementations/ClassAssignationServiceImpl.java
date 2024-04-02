@@ -71,6 +71,13 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
         return classAssignationRepository.findByClassIdAndSubjectId(classId, subjectId);
     }
 
+    @Override
+    public List<ClassAssignationDTO> getClassAssignationByStudentAndYear(Integer studentId, Integer year) {
+        List<ClassAssignationEntity> classAssignation = classAssignationRepository.findAllByStudentAndYear(studentId, year);
+        LOGGER.info("entities {}" , classAssignation);
+        return getClassAssignationDTOS(classAssignation);
+    }
+
     private void updateAssignation(AssignationCreateDTO classAssignationDTO){
         ClassAssignationEntity classAssignationEntity = classAssignationRepository.findByClassIdAndSubjectId(classAssignationDTO.getClassId(), classAssignationDTO.getSubjectId());
         classAssignationEntity.setTeacherId(classAssignationDTO.getTeacherId());
