@@ -49,10 +49,10 @@ public class ActivityGradeController {
         }
     }
 
-    @GetMapping("/assignation/{assignationId}")
-    public ResponseEntity<ResponseDTO<Map<Integer,List<ActivityGradeEntity>>>> getGradesByAssignationId(@PathVariable Integer assignationId) {
+    @GetMapping("/assignation/{assignationId}/{bimester}")
+    public ResponseEntity<ResponseDTO<Map<Integer,List<ActivityGradeEntity>>>> getGradesByAssignationId(@PathVariable Integer assignationId, @PathVariable Integer bimester) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(activityGradeService.getGradesByAssignationId(assignationId), "Grades found successfully",200));
+            return ResponseEntity.ok(new ResponseDTO<>(activityGradeService.getGradesByAssignationIdAndBimester(assignationId,bimester), "Grades found successfully",200));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error finding grades",500));
         }

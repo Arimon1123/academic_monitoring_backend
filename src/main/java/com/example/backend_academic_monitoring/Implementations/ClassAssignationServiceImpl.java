@@ -65,7 +65,6 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
         }
 
     }
-
     @Override
     public ClassAssignationEntity getClassAssignationByClassIdAndSubjectId(Integer classId, Integer subjectId) {
         return classAssignationRepository.findByClassIdAndSubjectId(classId, subjectId);

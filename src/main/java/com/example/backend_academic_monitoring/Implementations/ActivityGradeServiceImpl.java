@@ -40,8 +40,8 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
     }
 
     @Override
-    public Map<Integer,List<ActivityGradeEntity>> getGradesByAssignationId(Integer assignationId) {
-        List<ActivityGradeEntity> activityGradeEntities = activityGradeRepository.findAllByAssignationId(assignationId);
+    public Map<Integer,List<ActivityGradeEntity>> getGradesByAssignationIdAndBimester(Integer assignationId,Integer bimester ) {
+        List<ActivityGradeEntity> activityGradeEntities = activityGradeRepository.findAllByAssignationIdAndBimester(assignationId, bimester);
         return activityGradeEntities.stream().collect(Collectors.groupingBy(ActivityGradeEntity::getStudentId));
     }
 

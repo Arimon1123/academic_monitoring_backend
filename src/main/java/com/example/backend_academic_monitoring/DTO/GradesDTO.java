@@ -2,17 +2,13 @@ package com.example.backend_academic_monitoring.DTO;
 
 import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-public class GradesDTO {
-    public Integer id;
-    public Integer studentId;
-    public Integer totalGrade;
-    public String name;
-    public Integer bimester;
-    public Integer subjectId;
-    public String subjectName;
+
+public interface GradesDTO {
+    Integer getId();
+    Integer getStudent_Id();
+    Integer gettotal_grade();
+    String getName();
+    Integer getBimester();
+    Integer getSubject_Id();
+    String getSubject_Name();
 }

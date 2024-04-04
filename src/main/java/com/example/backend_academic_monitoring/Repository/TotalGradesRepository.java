@@ -11,7 +11,7 @@ import java.util.List;
 public class TotalGradesRepository {
     @Autowired
     private EntityManager entityManager;
-    public List<GradesDTO> gradeList (Integer studentId, Integer year, Integer subjectId){
+    public List gradeList (Integer studentId, Integer year, Integer subjectId){
         Query query =  entityManager.createNativeQuery("select sum(grade * activity.value * dimension.value)/10000 as total_grade ,student_id, student.name, activity.bimester, subject.id as subject_id, subject.name as subject_name\n" +
                         "       from activity_has_grade\n" +
                         "           left join activity on activity_has_grade.activity_id = activity.id\n" +
@@ -25,9 +25,6 @@ public class TotalGradesRepository {
                 .setParameter(1, studentId)
                 .setParameter(3, year)
                 .setParameter(2, subjectId);
-        List<GradesDTO> list = query.getResultList().stream().map(
-                result -> result[0]
-        ).toList();
-        )
+        return query.getResultList();
     }
 }

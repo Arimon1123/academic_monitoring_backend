@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ActivityRepository extends JpaRepository<ActivityEntity, Integer> {
-    List<ActivityEntity> findAllByAssignationIdAndStatusOrderById(Integer assignationId,Integer status);
+    List<ActivityEntity> findAllByAssignationIdAndStatusAndBimesterOrderById(Integer assignationId,Integer status,Integer bimester);
 }

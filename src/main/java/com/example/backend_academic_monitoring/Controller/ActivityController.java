@@ -35,10 +35,10 @@ public class ActivityController {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error updating activity",500));
         }
     }
-    @GetMapping("/assignation/{assignationId}")
-    public ResponseEntity<ResponseDTO<List<ActivityEntity>>> findActivitiesByAssignationId(@PathVariable Integer assignationId) {
+    @GetMapping("/assignation/{assignationId}/bimester/{bimester}")
+    public ResponseEntity<ResponseDTO<List<ActivityEntity>>> findActivitiesByAssignationId(@PathVariable Integer assignationId, @PathVariable Integer bimester) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(activityService.findActivitiesByAssignationId(assignationId), "Activities found successfully",200));
+            return ResponseEntity.ok(new ResponseDTO<>(activityService.findActivitiesByAssignationIdAndBimester(assignationId,bimester), "Activities found successfully",200));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error finding activities",500));
         }
