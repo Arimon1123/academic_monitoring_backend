@@ -1,9 +1,6 @@
 package com.example.backend_academic_monitoring.Implementations;
 
-import com.example.backend_academic_monitoring.DTO.PersonDTO;
-import com.example.backend_academic_monitoring.DTO.UserCreateDTO;
-import com.example.backend_academic_monitoring.DTO.UserDTO;
-import com.example.backend_academic_monitoring.DTO.UserDataDTO;
+import com.example.backend_academic_monitoring.DTO.*;
 import com.example.backend_academic_monitoring.Entity.PersonEntity;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 import com.example.backend_academic_monitoring.Mappers.PersonMapper;
@@ -11,6 +8,7 @@ import com.example.backend_academic_monitoring.Mappers.UserMapper;
 import com.example.backend_academic_monitoring.Repository.UserRepository;
 import com.example.backend_academic_monitoring.Service.*;
 import com.example.backend_academic_monitoring.Utilities.PasswordGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.thymeleaf.context.Context;
 
 
 @Service
@@ -39,13 +36,15 @@ public class UserServiceImpl implements UserService {
     private final ParentService parentService;
     private final TeacherService teacherService;
     private final ImageService fileService;
+    private final StudentService studentService;
+    private final ClassAssignationService classAssignationService;
     @Value("${server.host}")
     private final String HOST = "192.168.0.181";
     @Value("${server.port}")
     private final String PORT = "8080";
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, PasswordGenerator passwordGenerator, EmailService emailService, PersonService personService, AdministrativeService administrativeService, ParentService parentService, TeacherService teacherService, ImageService fileService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, PasswordGenerator passwordGenerator, EmailService emailService, PersonService personService, AdministrativeService administrativeService, ParentService parentService, TeacherService teacherService, ImageService fileService, StudentService studentService, ClassAssignationService classAssignationService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.passwordGenerator = passwordGenerator;
@@ -55,6 +54,8 @@ public class UserServiceImpl implements UserService {
         this.parentService = parentService;
         this.teacherService = teacherService;
         this.fileService = fileService;
+        this.studentService = studentService;
+        this.classAssignationService = classAssignationService;
     }
 
     @Override
@@ -205,22 +206,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Object getUserRoleDetails(String username, String role) {
+    public UserDetailsDTO getUserRoleDetails(String username, String role) {
         UserDTO user = this.getUserByUsername(username);
-        Object a = null;
+        UserDetailsDTO userDetails = new UserDetailsDTO();
+        ObjectMapper mapper = new ObjectMapper();
         if (!user.getRole().stream().filter(roleEntity -> role.equals(roleEntity.getName())).toList().isEmpty()) {
             if (role.equals(PARENT_ROLE)) {
-                a = parentService.getParentByUserId(user.getId());
+                userDetails.setDetails(parentService.getParentByUserId(user.getId()));
             }
             if (role.equals(TEACHER_ROLE)) {
-                a = teacherService.findTeacherByUserId(user.getId());
+                userDetails.setDetails(teacherService.findTeacherByUserId(user.getId()));
             }
             if (role.equals(ADMINISTRATIVE_ROLE)) {
-                a = administrativeService.findByUserId(user.getId());
+                userDetails.setDetails(administrativeService.findByUserId(user.getId()));
             }
+        } else {
+            throw new RuntimeException("El usuario no tiene el rol solicitado");
         }
+        userDetails.setUser(user);
+        LOGGER.info("{}", userDetails);
+        if (role.equals(PARENT_ROLE)) {
+            ParentDTO parent = mapper.convertValue(userDetails.getDetails(), ParentDTO.class);
+            userDetails.setStudents(studentService.findAllByParentId(parent.getId()));
+        }
+        if (role.equals(TEACHER_ROLE)) {
+            TeacherDTO teacher = mapper.convertValue(userDetails.getDetails(), TeacherDTO.class);
+            userDetails.setClassAssignations(classAssignationService.getClassAssignationByTeacherId(teacher.getId()));
+        }
+        userDetails.setRole(role);
+        return userDetails;
 
-        return a;
     }
 
 

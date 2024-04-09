@@ -1,11 +1,8 @@
 package com.example.backend_academic_monitoring.Implementations;
 
-import com.example.backend_academic_monitoring.DTO.StudentDTO;
 import com.example.backend_academic_monitoring.Entity.ActivityGradeEntity;
-import com.example.backend_academic_monitoring.Entity.StudentEntity;
 import com.example.backend_academic_monitoring.Repository.ActivityGradeRepository;
 import com.example.backend_academic_monitoring.Service.ActivityGradeService;
-import com.example.backend_academic_monitoring.Service.StudentService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,12 +32,12 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
     }
 
     @Override
-    public List<ActivityGradeEntity> getGradesByStudentIdAndAssignationId(Integer studentId, Integer assignationId) {
-        return activityGradeRepository.findAllByStudentIdAndAssignationId(studentId, assignationId);
+    public List<ActivityGradeEntity> getGradesByStudentIdAndAssignationId(Integer assignationId, Integer studentId, Integer bimester) {
+        return activityGradeRepository.findAllByStudentIdAndAssignationId(studentId, assignationId, bimester);
     }
 
     @Override
-    public Map<Integer,List<ActivityGradeEntity>> getGradesByAssignationIdAndBimester(Integer assignationId,Integer bimester ) {
+    public Map<Integer, List<ActivityGradeEntity>> getGradesByAssignationIdAndBimester(Integer assignationId, Integer bimester) {
         List<ActivityGradeEntity> activityGradeEntities = activityGradeRepository.findAllByAssignationIdAndBimester(assignationId, bimester);
         return activityGradeEntities.stream().collect(Collectors.groupingBy(ActivityGradeEntity::getStudentId));
     }

@@ -7,8 +7,8 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class ParentDTO{
-    private Integer parentId;
+public class ParentDTO {
+    private Integer id;
     private PersonDTO person;
     private Integer status;
 }
