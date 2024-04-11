@@ -38,16 +38,7 @@ public class ClassServiceImpl implements ClassService {
     public List<ClassListDTO> getClassByGradeAndYearAndShift(Integer gradeId, Integer year, Integer shift) {
         List<ClassEntity> classEntities = classRepository.findByGrade_IdAndYearAndShift(gradeId, year, shift);
         return classEntities.stream().map(
-                classEntity ->{
-                    ClassListDTO classListDTO = new ClassListDTO();
-                    classListDTO.setId(classEntity.getId());
-                    classListDTO.setYear(classEntity.getYear());
-                    classListDTO.setShift(classEntity.getShift());
-                    classListDTO.setIdentifier(classEntity.getIdentifier());
-                    classListDTO.setGrade(classEntity.getGrade().getNumber()+ "°" + classEntity.getGrade().getSection());
-                    classListDTO.setStudentCount(classRepository.getStudentCount(classEntity.getId()));
-                    return classListDTO;
-                }
+                this::getClassDTO
         ).toList();
     }
 
@@ -65,6 +56,16 @@ public class ClassServiceImpl implements ClassService {
     @Override
     public ClassEntity getClassByAssignationId(Integer assignationId) {
         return classRepository.findByAssignation(assignationId);
+    }
+    public ClassListDTO getClassDTO(ClassEntity classEntity){
+        ClassListDTO classListDTO = new ClassListDTO();
+        classListDTO.setId(classEntity.getId());
+        classListDTO.setYear(classEntity.getYear());
+        classListDTO.setShift(classEntity.getShift());
+        classListDTO.setIdentifier(classEntity.getIdentifier());
+        classListDTO.setGrade(classEntity.getGrade().getNumber()+ "°" + classEntity.getGrade().getSection());
+        classListDTO.setStudentCount(classRepository.getStudentCount(classEntity.getId()));
+        return classListDTO;
     }
 
 

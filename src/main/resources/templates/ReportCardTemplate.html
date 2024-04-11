@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    </meta>
+    <title>Boleta de Notas</title>
+    <style>
+        @page{
+            size: A5 landscape;
+        }
+        *{
+            font-family: Arial, sans-serif;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            justify-content: center;
+        }
+        section {
+            display: flex;
+            width: 80%;
+            justify-content: space-around;
+        }
+
+        section table th,
+        section table td {
+            width: 8rem;
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        footer {
+            display: flex;
+            width: 80%;
+            justify-content: center;
+        }
+
+        footer div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section>
+            <span>Rude<span th:text="${rude}"></span></span>
+            <span>Apellidos y Nombres<span th:text="${fullname}"></span></span>
+            <span>Curso: <span th:text="${className}"></span></span>
+            <span>Gestión: <span th:text="${year}"></span></span>
+        </section>
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Materia</th>
+                        <th>1er bimestre</th>
+                        <th>2do bimestre</th>
+                        <th>3er bimestre</th>
+                        <th>4to bimestre</th>
+                        <th>Promedio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="subject: ${subjects}">
+                        <td th:text="${subject.subjectName}"></td>
+                        <td th:text="${subject.firstGrade}"></td>
+                        <td th:text="${subject.secondGrade}"></td>
+                        <td th:text="${subject.thirdGrade}"></td>
+                        <td th:text="${subject.fourthGrade}"></td>
+                        <td th:text="${subject.average}"> </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

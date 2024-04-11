@@ -109,7 +109,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<StudentDTO> findAllByClassId(Integer classId) {
         List<StudentEntity> studentEntities = studentRepository.findAllByClassId(classId);
-        ClassEntity classEntity = classService.getClassByStudentId(classId);
+        ClassEntity classEntity = classService.getClass(classId);
         String className = classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier();
         return studentEntities.stream().map(studentEntity -> {
             StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
