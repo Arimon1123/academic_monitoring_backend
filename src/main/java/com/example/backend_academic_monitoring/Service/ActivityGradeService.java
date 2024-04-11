@@ -10,7 +10,9 @@ public interface ActivityGradeService {
 
     List<ActivityGradeEntity> getGradesByActivityId(Integer activityId);
 
-    List<ActivityGradeEntity> getGradesByStudentIdAndAssignationId(Integer studentId, Integer assignationId);
+    List<ActivityGradeEntity> getGradesByStudentIdAndAssignationId(Integer studentId, Integer assignationId, Integer bimester);
+
     Map<Integer, List<ActivityGradeEntity>> getGradesByAssignationIdAndBimester(Integer assignationId, Integer bimester);
+
     void deleteAllGradesByActivityId(Integer activityId);
 }

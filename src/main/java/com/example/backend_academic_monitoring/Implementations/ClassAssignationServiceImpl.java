@@ -14,14 +14,15 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 @Service
 public class ClassAssignationServiceImpl implements ClassAssignationService {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ClassAssignationServiceImpl.class);
     private final ClassAssignationRepository classAssignationRepository;
     private final SubjectService subjectService;
     private final TeacherService teacherService;
     private final ClassroomService classroomService;
     private final ClassService classService;
-    public static final Logger LOGGER = LoggerFactory.getLogger(ClassAssignationServiceImpl.class);
 
     public ClassAssignationServiceImpl(ClassAssignationRepository classAssignationRepository, SubjectService subjectService, TeacherService teacherService, ClassroomService classroomService, ClassService classService) {
         this.classAssignationRepository = classAssignationRepository;
@@ -54,10 +55,10 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
     public void createClassAssignation(AssignationCreateDTO classAssignationDTO) {
         boolean exists = classAssignationRepository.existsByClassIdAndSubjectId(classAssignationDTO.getClassId(), classAssignationDTO.getSubjectId());
 
-        if(exists){
+        if (exists) {
             LOGGER.info("Updating schedule for class assignation");
             updateAssignation(classAssignationDTO);
-        }else{
+        } else {
             LOGGER.info("Creating class assignation");
             ClassAssignationEntity classAssignationEntity = ClassAssignationMapper.toEntity(classAssignationDTO);
             classAssignationEntity.setSchedule(mapSchedule(classAssignationDTO, classAssignationEntity));
@@ -65,6 +66,7 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
         }
 
     }
+
     @Override
     public ClassAssignationEntity getClassAssignationByClassIdAndSubjectId(Integer classId, Integer subjectId) {
         return classAssignationRepository.findByClassIdAndSubjectId(classId, subjectId);
@@ -73,11 +75,17 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
     @Override
     public List<ClassAssignationDTO> getClassAssignationByStudentAndYear(Integer studentId, Integer year) {
         List<ClassAssignationEntity> classAssignation = classAssignationRepository.findAllByStudentAndYear(studentId, year);
-        LOGGER.info("entities {}" , classAssignation);
+        LOGGER.info("entities {}", classAssignation);
         return getClassAssignationDTOS(classAssignation);
     }
 
-    private void updateAssignation(AssignationCreateDTO classAssignationDTO){
+    @Override
+    public ClassAssignationDTO getClassAssignationById(Integer id) {
+        ClassAssignationEntity classAssignationEntity = classAssignationRepository.findById(id).orElseThrow();
+        return getClassAssignationDTOS(List.of(classAssignationEntity)).get(0);
+    }
+
+    private void updateAssignation(AssignationCreateDTO classAssignationDTO) {
         ClassAssignationEntity classAssignationEntity = classAssignationRepository.findByClassIdAndSubjectId(classAssignationDTO.getClassId(), classAssignationDTO.getSubjectId());
         classAssignationEntity.setTeacherId(classAssignationDTO.getTeacherId());
         classAssignationEntity.setClassroomId(classAssignationDTO.getClassroomId());
@@ -92,7 +100,7 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
         ));
         classAssignationEntity.getSchedule().addAll(mapSchedule(classAssignationDTO, classAssignationEntity));
         LOGGER.info("Updating schedule for class assignation {}", classAssignationEntity.getSchedule());
-        classAssignationEntity =  classAssignationRepository.save(classAssignationEntity);
+        classAssignationEntity = classAssignationRepository.save(classAssignationEntity);
         LOGGER.info("Updated schedule for class assignation {}", classAssignationEntity.getSchedule());
 
     }

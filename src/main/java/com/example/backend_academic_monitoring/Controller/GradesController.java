@@ -6,7 +6,10 @@ import com.example.backend_academic_monitoring.Entity.ActivityGradeEntity;
 import com.example.backend_academic_monitoring.Service.ActivityGradeService;
 import com.example.backend_academic_monitoring.Service.GradesService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -23,19 +26,20 @@ public class GradesController {
     }
 
     @GetMapping("")
-    public ResponseEntity<ResponseDTO<Map<Integer,List<GradesDTO>>>> getAllGradesByStudentAndYear(@RequestParam Integer studentId, @RequestParam Integer year) {
-        try{
+    public ResponseEntity<ResponseDTO<Map<Integer, List<GradesDTO>>>> getAllGradesByStudentAndYear(@RequestParam Integer studentId, @RequestParam Integer year) {
+        try {
             return ResponseEntity.ok(new ResponseDTO<>(gradesService.getAllGradesByStudentAndYear(studentId, year), "Grades retrieved successfully", 200));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null,e.getMessage(),500));
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
+
     @GetMapping("/activities")
-    public ResponseEntity<ResponseDTO<List<ActivityGradeEntity>>> getAllActivityGradesByStudent(@RequestParam Integer assignationId, @RequestParam Integer studentId){
-        try{
-            return ResponseEntity.ok(new ResponseDTO<>(activityGradeService.getGradesByStudentIdAndAssignationId(assignationId,studentId), "Grades retrieved succesfully",200));
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(),500));
+    public ResponseEntity<ResponseDTO<List<ActivityGradeEntity>>> getAllActivityGradesByStudent(@RequestParam Integer assignationId, @RequestParam Integer studentId, @RequestParam Integer bimester) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(activityGradeService.getGradesByStudentIdAndAssignationId(assignationId, studentId, bimester), "Grades retrieved succesfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
 }
