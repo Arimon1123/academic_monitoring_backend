@@ -16,7 +16,6 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
     public ActivityGradeServiceImpl(ActivityGradeRepository activityGradeRepository) {
         this.activityGradeRepository = activityGradeRepository;
     }
-git
 
     @Override
     public void saveGrades(List<ActivityGradeEntity> activityGradeEntity) {

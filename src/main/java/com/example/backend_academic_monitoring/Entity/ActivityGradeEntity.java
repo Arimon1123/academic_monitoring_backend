@@ -1,6 +1,9 @@
 package com.example.backend_academic_monitoring.Entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +16,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActivityGradeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+
+    @EmbeddedId
+    private ActivityGradeId id;
     private Integer status;
     private Integer grade;
+    @Column(insertable = false, updatable = false)
     private Integer activityId;
+    @Column(insertable = false, updatable = false)
     private Integer studentId;
 }

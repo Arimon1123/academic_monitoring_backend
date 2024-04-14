@@ -15,8 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/student")
 public class StudentController {
-    private final StudentService studentService;
     public static Logger LOGGER = LoggerFactory.getLogger(StudentController.class);
+    private final StudentService studentService;
 
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
@@ -24,56 +24,57 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
     @PostMapping()
-    public ResponseEntity<ResponseDTO<String>> save(@RequestBody StudentCreateDTO studentDTO ){
+    public ResponseEntity<ResponseDTO<String>> save(@RequestBody StudentCreateDTO studentDTO) {
         LOGGER.info("Guardando  {}", studentDTO);
         studentService.saveStudent(studentDTO);
-        return  ResponseEntity.ok(new ResponseDTO<>(null,"Estudiante guardado correctamente", 200));
+        return ResponseEntity.ok(new ResponseDTO<>(null, "Estudiante guardado correctamente", 200));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
     @GetMapping("exists/ci/{ci}")
-    public ResponseEntity<ResponseDTO<Boolean>> existsByCi(@PathVariable String ci){
+    public ResponseEntity<ResponseDTO<Boolean>> existsByCi(@PathVariable String ci) {
         try {
-           return ResponseEntity.ok(new ResponseDTO<>(studentService.existsByCi(ci),"Busqueda exitosa", 200));
-        }catch (Exception e){
-            return ResponseEntity.ok(new ResponseDTO<>(null,"Error al buscar", 500));
+            return ResponseEntity.ok(new ResponseDTO<>(studentService.existsByCi(ci), "Busqueda exitosa", 200));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Error al buscar", 500));
         }
     }
+
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
     @GetMapping("exists/rude/{rude}")
-    public ResponseEntity<ResponseDTO<Boolean>> existsByRude(@PathVariable String rude){
+    public ResponseEntity<ResponseDTO<Boolean>> existsByRude(@PathVariable String rude) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(studentService.existsByRude(rude),"Busqueda exitosa", 200));
-        }catch (Exception e){
-            return ResponseEntity.ok(new ResponseDTO<>(null,"Error al buscar", 500));
+            return ResponseEntity.ok(new ResponseDTO<>(studentService.existsByRude(rude), "Busqueda exitosa", 200));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Error al buscar", 500));
         }
     }
 
     @PreAuthorize("hasRole('ROLE_PARENT')")
     @GetMapping("/parent/{parentId}")
-    public ResponseEntity<ResponseDTO<List<StudentDTO>>> findAllByFatherId(@PathVariable Integer parentId){
+    public ResponseEntity<ResponseDTO<List<StudentDTO>>> findAllByFatherId(@PathVariable Integer parentId) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(studentService.findAllByParentId(parentId),"Estudiantes encontrados", 200));
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null,"Error al buscar", 500));
+            return ResponseEntity.ok(new ResponseDTO<>(studentService.findAllByParentId(parentId), "Estudiantes encontrados", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error al buscar", 500));
         }
     }
 
     @GetMapping("/class/{classId}")
-    public ResponseEntity<ResponseDTO<List<StudentDTO>>> findAllByClassId(@PathVariable Integer classId){
+    public ResponseEntity<ResponseDTO<List<StudentDTO>>> findAllByClassId(@PathVariable Integer classId) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(studentService.findAllByClassId(classId),"Estudiantes encontrados", 200));
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null,"Error al buscar", 500));
+            return ResponseEntity.ok(new ResponseDTO<>(studentService.findAllByClassId(classId), "Estudiantes encontrados", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error al buscar", 500));
         }
     }
 
     @GetMapping("/assignation/{assignationId}")
-    public ResponseEntity<ResponseDTO<List<StudentDTO>>> findAllByAssignationId(@PathVariable Integer assignationId){
-        try {
-            return ResponseEntity.ok(new ResponseDTO<>(studentService.findAllByAssignationId(assignationId),"Estudiantes encontrados", 200));
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null,"Error al buscar", 500));
-        }
+    public ResponseEntity<ResponseDTO<List<StudentDTO>>> findAllByAssignationId(@PathVariable Integer assignationId) {
+        //try {
+        return ResponseEntity.ok(new ResponseDTO<>(studentService.findAllByAssignationId(assignationId), "Estudiantes encontrados", 200));
+//        } catch (Exception e) {
+//            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+//        }
     }
 }

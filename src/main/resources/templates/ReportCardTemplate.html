@@ -1,33 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    </meta>
+    <meta charset="UTF-8"/>
     <title>Boleta de Notas</title>
     <style>
-        @page{
+        @page {
             size: A5 landscape;
         }
-        *{
-            font-family: Arial, sans-serif;
+
+        * {
+            font-family: "Segoe UI", sans-serif;
         }
+
         main {
             display: flex;
             flex-direction: column;
-            width: 100%;
+            width: 100vw;
             justify-content: center;
-        }
-        section {
-            display: flex;
-            width: 80%;
-            justify-content: space-around;
+            align-items: center;
+            padding: 5rem;
         }
 
-        section table th,
-        section table td {
+        th, td {
             width: 8rem;
-            border: 1px solid black;
+            max-width: 8rem;
+            border: 1px solid #5a5a5a;
             text-align: center;
+        }
+
+        td {
+            font-weight: 500;
+        }
+
+        table {
+            display: block;
+            width: 100%;
+            border-collapse: collapse;
+            font-family: "Segoe UI", sans-serif;
+            font-size: 1.2rem;
         }
 
         footer {
@@ -41,40 +51,81 @@
             flex-direction: column;
             justify-content: center;
         }
+
+        .student-info {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+        }
+
+        .inst-info {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        span {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        section, div {
+            margin-top: 0.5rem;
+        }
     </style>
 </head>
 <body>
-    <main>
-        <section>
-            <span>Rude<span th:text="${rude}"></span></span>
-            <span>Apellidos y Nombres<span th:text="${fullname}"></span></span>
+<main>
+    <section class="inst-info">
+        <span>UNIDAD EDUCATIVA <span> </span></span>
+        <span>BOLETÍN DE NOTAS</span>
+        <span>Turno:Mañana</span>
+    </section>
+    <section class="student-info">
+        <div class="inst-info">
+            <span>Estudiante:<span th:text="${fullname}"></span></span>
+            <span>Rude:<span th:text="${rude}"></span></span>
+        </div>
+        <div class="inst-info">
             <span>Curso: <span th:text="${className}"></span></span>
             <span>Gestión: <span th:text="${year}"></span></span>
-        </section>
-        <section>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Materia</th>
-                        <th>1er bimestre</th>
-                        <th>2do bimestre</th>
-                        <th>3er bimestre</th>
-                        <th>4to bimestre</th>
-                        <th>Promedio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="subject: ${subjects}">
-                        <td th:text="${subject.subjectName}"></td>
-                        <td th:text="${subject.firstGrade}"></td>
-                        <td th:text="${subject.secondGrade}"></td>
-                        <td th:text="${subject.thirdGrade}"></td>
-                        <td th:text="${subject.fourthGrade}"></td>
-                        <td th:text="${subject.average}"> </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-    </main>
+        </div>
+    </section>
+    <section class="container">
+        <table>
+            <thead>
+            <tr>
+                <th>Materia</th>
+                <th th:if="${bimester}>=1">1er bimestre</th>
+                <th th:if="${bimester}>=2">2do bimestre</th>
+                <th th:if="${bimester}>=3">3er bimestre</th>
+                <th th:if="${bimester}>=4">4to bimestre</th>
+                <th th:if="${isFinalReport}">Promedio</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="subject: ${subjects}">
+                <td th:text="${subject.subjectName}"></td>
+                <td th:if="${bimester}>=1" th:text="${subject.firstGrade}"></td>
+                <td th:if="${bimester}>=2" th:text="${subject.secondGrade}"></td>
+                <td th:if="${bimester}>=3" th:text="${subject.thirdGrade}"></td>
+                <td th:if="${bimester}>=4" th:text="${subject.fourthGrade}"></td>
+                <td th:if="${isFinalReport}" th:text="${subject.average}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
 </body>
 </html>
