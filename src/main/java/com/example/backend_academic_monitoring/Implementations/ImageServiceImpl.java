@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -101,6 +103,16 @@ public class ImageServiceImpl implements ImageService {
         resourceDTO.setImageDTO(imageDTO);
         resourceDTO.setResource(resource);
         return resourceDTO;
+    }
+
+    @Override
+    public List<ImageEntity> saveFiles(MultipartFile[] files) {
+        List<ImageEntity> imageEntities = new ArrayList<>();
+        for (MultipartFile image : files) {
+            ImageEntity imageEntity = saveFile(image);
+            imageEntities.add(imageEntity);
+        }
+        return imageEntities;
     }
 
     public ImageDTO getImageByUserId(Integer userId) {

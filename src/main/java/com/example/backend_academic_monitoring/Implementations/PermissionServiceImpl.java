@@ -52,11 +52,7 @@ public class PermissionServiceImpl implements PermissionService {
         permissionEntity.setStatus(1);
         permissionEntity.setPermissionStatus(0);
         permissionEntity.setStudentId(permissionCreateDTO.getStudentId());
-        List<ImageEntity> imageEntities = new ArrayList<>();
-        for (MultipartFile image : images) {
-            ImageEntity imageEntity = imageService.saveFile(image);
-            imageEntities.add(imageEntity);
-        }
+        List<ImageEntity> imageEntities = imageService.saveFiles(images);
         permissionEntity.setImages(imageEntities);
         permissionRepository.save(permissionEntity);
     }
@@ -116,7 +112,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<PermissionDTO> getPermissionsByClass(Integer classId) {
         List<PermissionEntity> permissionEntities =
-                permissionRepository.findAllByClassIdAndDate(classId, new Timestamp(System.currentTimeMillis()),1);
+                permissionRepository.findAllByClassIdAndDate(classId, new Timestamp(System.currentTimeMillis()), 1);
         return getPermissionDTOS(permissionEntities);
 
     }

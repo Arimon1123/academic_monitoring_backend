@@ -6,6 +6,7 @@ import com.example.backend_academic_monitoring.Entity.ImageEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface ImageService {
     ImageEntity saveFile(MultipartFile file);
@@ -18,7 +19,7 @@ public interface ImageService {
 
     ResourceDTO getResource(String uuid) throws IOException;
 
-    ImageDTO getImageByUserId(Integer userId);
+    List<ImageEntity> saveFiles(MultipartFile[] files);
 
     String getImageURL(String uuid);
 }
