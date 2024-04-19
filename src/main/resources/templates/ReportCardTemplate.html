@@ -12,6 +12,10 @@
             font-family: "Segoe UI", sans-serif;
         }
 
+        span {
+            display: inline-block;
+        }
+
         main {
             display: flex;
             flex-direction: column;
@@ -22,17 +26,18 @@
         }
 
         th, td {
-            width: 8rem;
-            max-width: 8rem;
+            min-width: 105px;
             border: 1px solid #5a5a5a;
             text-align: center;
         }
 
         td {
             font-weight: 500;
+            font-size: 15px;
         }
 
         table {
+            table-layout: fixed;
             display: block;
             width: 100%;
             border-collapse: collapse;
@@ -55,7 +60,7 @@
         .student-info {
             display: flex;
             flex-direction: column;
-            width: 100%;
+            width: 100vw;
             align-items: center;
             justify-content: space-between;
         }
@@ -68,10 +73,8 @@
         }
 
         .inst-info {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            width: 100%;
+            display: block;
+            width: 100vw;
             margin-bottom: 2rem;
         }
 
@@ -83,35 +86,62 @@
         section, div {
             margin-top: 0.5rem;
         }
+
+        .info {
+            display: inline-block;
+            min-width: 222px;
+        }
     </style>
 </head>
 <body>
 <main>
-    <section class="inst-info">
-        <span>UNIDAD EDUCATIVA <span> </span></span>
-        <span>BOLETÍN DE NOTAS</span>
-        <span>Turno:Mañana</span>
-    </section>
+    <table style="margin-bottom: 10px">
+        <thead style="width: 100%; display: inline-block;">
+        <tr style="width: 100%; display: inline-block;">
+            <th class="info" style="text-align: left; border:none;">
+                Unidad Educativa
+            </th>
+            <th class="info" style="border:none;">Boletín de notas</th>
+            <th class="info" style="text-align: right; border:none;">Turno: Mañana</th>
+        </tr>
+        </thead>
+    </table>
     <section class="student-info">
-        <div class="inst-info">
-            <span>Estudiante:<span th:text="${fullname}"></span></span>
-            <span>Rude:<span th:text="${rude}"></span></span>
-        </div>
-        <div class="inst-info">
-            <span>Curso: <span th:text="${className}"></span></span>
-            <span>Gestión: <span th:text="${year}"></span></span>
-        </div>
+        <table style="margin-bottom: 10px">
+            <thead style="width: 100%; display: inline-block;">
+            <tr style="width: 100%; display: inline-block;">
+                <th style="text-align: left; border:none; display: inline-block; width: 333px">
+                    <span>Estudiante: <span th:text="${fullname}"></span></span>
+                </th>
+                <th style="text-align: right; border:none; display: inline-block; width: 333px">
+                    <span>Rude: <span th:text="${rude}"></span></span>
+                </th>
+            </tr>
+            </thead>
+        </table>
+        <table style="margin-bottom: 10px">
+            <thead style="width: 100%; display: inline-block;">
+            <tr style="width: 100%; display: inline-block;">
+                <th style="text-align: left; border:none; display: inline-block; width: 333px">
+                    <span>Curso: <span th:text="${className}"></span></span>
+                </th>
+                <th style="text-align: right; border:none; display: inline-block; width: 333px">
+                    <span>Gestión: <span th:text="${year}"></span></span>
+                </th>
+            </tr>
+            </thead>
+        </table>
     </section>
     <section class="container">
-        <table>
+        <table style=" border-collapse: separate; ">
             <thead>
             <tr>
-                <th>Materia</th>
+                <th style=" border-top-left-radius: 10px;">Materia</th>
                 <th th:if="${bimester}>=1">1er bimestre</th>
                 <th th:if="${bimester}>=2">2do bimestre</th>
                 <th th:if="${bimester}>=3">3er bimestre</th>
                 <th th:if="${bimester}>=4">4to bimestre</th>
-                <th th:if="${isFinalReport}">Promedio</th>
+                <th style="border-top-right-radius: 10px;" th:if="${isFinalReport}">Promedio</th>
             </tr>
             </thead>
             <tbody>

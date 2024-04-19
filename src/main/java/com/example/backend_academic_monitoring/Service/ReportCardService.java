@@ -9,4 +9,6 @@ public interface ReportCardService {
     void generateReportCardsByClass(ClassEntity classEntity, Integer bimester, boolean isFinalReport, String outputFolder) throws IOException;
 
     String generateReportClassList(List<Integer> classIds, Integer bimester, boolean isFinalReport) throws IOException;
+
+    void generateTestReportCard() throws IOException;
 }

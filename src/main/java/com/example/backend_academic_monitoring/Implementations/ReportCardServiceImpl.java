@@ -63,6 +63,62 @@ public class ReportCardServiceImpl implements ReportCardService {
     }
 
     @Override
+    public void generateTestReportCard() throws IOException {
+        StudentDTO studentDTO = studentService.getStudent(13);
+        ClassEntity classEntity = classService.getClass(1);
+        String outputFolder = System.getProperty("user.dir") + File.separator + "reportCards";
+        Map<Integer, List<GradesDTO>> gradeMap = gradesService.getAllGradesByStudentAndYear(studentDTO.getId(), 2024);
+        List<ReportCardDTO> reportCards = new ArrayList<>();
+        for (Integer gradeId : gradeMap.keySet()) {
+            List<GradesDTO> grades = gradeMap.get(gradeId);
+            ReportCardDTO reportCardDTO = new ReportCardDTO();
+            reportCardDTO.setSubjectName(grades.get(0).getSubject_Name());
+            int avg = 0;
+            for (int i = 0; i < 4; i++) {
+                try {
+                    int grade = grades.get(i).gettotal_grade();
+                    avg += grade;
+                    switch (i) {
+                        case 0:
+                            reportCardDTO.setFirstGrade(grade);
+                            break;
+                        case 1:
+                            reportCardDTO.setSecondGrade(grade);
+                            break;
+                        case 2:
+                            reportCardDTO.setThirdGrade(grade);
+                            break;
+                        case 3:
+                            reportCardDTO.setFourthGrade(grade);
+                            break;
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    switch (i) {
+                        case 0:
+                            reportCardDTO.setFirstGrade(0);
+                            break;
+                        case 1:
+                            reportCardDTO.setSecondGrade(0);
+                            break;
+                        case 2:
+                            reportCardDTO.setThirdGrade(0);
+                            break;
+                        case 3:
+                            reportCardDTO.setFourthGrade(0);
+                            break;
+                    }
+                }
+            }
+            reportCardDTO.setAverage(avg / 4);
+            reportCards.add(reportCardDTO);
+        }
+        String fullName = studentDTO.getFatherLastname() + " " + studentDTO.getMotherLastname() + " " + studentDTO.getName();
+        String html = buildReportCard(studentDTO, "1° Primaria A", classEntity, reportCards, 4, true, outputFolder);
+        LOGGER.info("html {}", html);
+        createPdf(outputFolder, fullName, html);
+    }
+
+    @Override
     public void generateReportCardsByClass(ClassEntity classEntity, Integer bimester, boolean isFinalReport, String outputFolder) throws IOException {
         List<StudentDTO> studentList = studentService.findAllByClassId(classEntity.getId());
         String className = classService.getClassName(classEntity.getId());
