@@ -8,7 +8,12 @@ import java.util.List;
 
 public interface ParentService {
     void save(PersonEntity personEntity);
+
     ParentEntity getParent(Integer id);
+
+    ParentDTO getParentDTOById(Integer id);
+
     List<ParentDTO> getParentByCi(String ci);
+
     ParentDTO getParentByUserId(Integer id);
 }

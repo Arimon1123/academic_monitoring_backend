@@ -201,8 +201,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity getUserByPersonId(Integer id) {
-        return null;
+    public UserDTO getUserByPersonId(Integer id) {
+        return UserMapper.entityToDTO(userRepository.findByPersonId(id));
     }
 
     @Override

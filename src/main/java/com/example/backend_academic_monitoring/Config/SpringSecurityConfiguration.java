@@ -68,6 +68,7 @@ public class SpringSecurityConfiguration {
                         .requestMatchers("/parent/**").authenticated()
                         .requestMatchers("/classroom/**").authenticated()
                         .requestMatchers("/schedule/**").authenticated()
+                        .requestMatchers("/websocket").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -78,7 +79,7 @@ public class SpringSecurityConfiguration {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200", "http://192.168.0.181:4200", "http://192.168.0.18:4200", "http://172.31.112.1:4200"));
+        config.setAllowedOrigins(List.of("http://localhost:4200", "http://192.168.0.181:4200", "http://192.168.0.18:4200", "http://172.31.112.1:4200", "http://127.0.0.1:3000"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

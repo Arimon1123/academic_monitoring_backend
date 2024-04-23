@@ -36,6 +36,11 @@ public class ParentServiceImpl implements ParentService {
     }
 
     @Override
+    public ParentDTO getParentDTOById(Integer id) {
+        return ParentMapper.toFatherDTO(getParent(id));
+    }
+
+    @Override
     public List<ParentDTO> getParentByCi(String ci) {
         List<ParentEntity> fatherEntities = parentRepository.findAllByPersonCiContainingAndStatus(ci, 1);
         return fatherEntities.stream().map(ParentMapper::toFatherDTO).toList();

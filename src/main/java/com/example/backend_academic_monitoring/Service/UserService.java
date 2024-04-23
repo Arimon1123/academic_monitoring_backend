@@ -4,7 +4,6 @@ import com.example.backend_academic_monitoring.DTO.UserCreateDTO;
 import com.example.backend_academic_monitoring.DTO.UserDTO;
 import com.example.backend_academic_monitoring.DTO.UserDataDTO;
 import com.example.backend_academic_monitoring.DTO.UserDetailsDTO;
-import com.example.backend_academic_monitoring.Entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +28,8 @@ public interface UserService {
 
     public UserDTO getUserByUsername(String username);
 
-    public UserEntity getUserByPersonId(Integer id);
+    public UserDTO getUserByPersonId(Integer id);
 
     public UserDetailsDTO getUserRoleDetails(String username, String role);
+
 }

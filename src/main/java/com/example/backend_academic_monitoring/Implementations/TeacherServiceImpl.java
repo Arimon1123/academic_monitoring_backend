@@ -3,7 +3,6 @@ package com.example.backend_academic_monitoring.Implementations;
 import com.example.backend_academic_monitoring.DTO.SubjectDTO;
 import com.example.backend_academic_monitoring.DTO.TeacherDTO;
 import com.example.backend_academic_monitoring.Entity.PersonEntity;
-import com.example.backend_academic_monitoring.Entity.SubjectEntity;
 import com.example.backend_academic_monitoring.Entity.TeacherEntity;
 import com.example.backend_academic_monitoring.Entity.TeacherSubjectEntity;
 import com.example.backend_academic_monitoring.Mappers.TeacherMapper;
@@ -55,7 +54,7 @@ public class TeacherServiceImpl implements TeacherService {
         List<TeacherEntity> teachers = teacherRepository.findBySubjectId(subjectId);
         List<TeacherDTO> teacherDTOS = new ArrayList<>();
         for (TeacherEntity teacher : teachers) {
-           teacherDTOS.add(TeacherMapper.toDTO(teacher));
+            teacherDTOS.add(TeacherMapper.toDTO(teacher));
         }
         return teacherDTOS;
     }
@@ -70,4 +69,11 @@ public class TeacherServiceImpl implements TeacherService {
     public TeacherDTO findTeacherByUserId(Integer userId) {
         return TeacherMapper.toDTO(teacherRepository.findByPerson_UserId(userId));
     }
+
+    @Override
+    public TeacherDTO findTeacherById(Integer teacherId) {
+        return TeacherMapper.toDTO(teacherRepository.getReferenceById(teacherId));
+    }
+
+
 }
