@@ -29,5 +29,8 @@ public class MessageEntity {
     @Column(name = "chat_id", nullable = false, length = 100)
     private String chatId;
 
+    @Column(name = "is_seen", nullable = false)
+    private boolean isSeen;
+
 
 }

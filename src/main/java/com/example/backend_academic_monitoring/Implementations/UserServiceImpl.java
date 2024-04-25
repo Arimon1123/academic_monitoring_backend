@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
         UserDataDTO userDataDTO = UserMapper.entityToData(user, personDTO);
         if (user.getImageId() != null) {
             String uuid = fileService.getImage(user.getImageId()).getUuid();
-            userDataDTO.setImageUrl("http://" + HOST + ":" + PORT + "/file/image/" + uuid);
+            fileService.getImageURL(uuid);
         }
         LOGGER.info(String.valueOf(user));
         return userDataDTO;

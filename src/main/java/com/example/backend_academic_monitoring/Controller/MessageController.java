@@ -25,5 +25,16 @@ public class MessageController {
     public void sendMessage(@Payload MessageDTO messageDTO) {
         logger.info("message received {}", messageDTO);
         template.convertAndSend("/topic/chat/" + messageDTO.getChatId(), messageService.saveMessage(messageDTO));
+        logger.info("messaged sent");
+        sendNotification(messageDTO);
+        logger.info("notification sent");
+    }
+
+    @MessageMapping("/notification")
+    public void sendNotification(MessageDTO messageDTO) {
+        String destination = "/topic/notification/" + messageDTO.getReceiver();
+        logger.info("Notification destination {}", destination);
+        template.convertAndSend(destination, messageService.getNotification(messageDTO.getChatId(), messageDTO.getReceiver()));
+        template.convertAndSend("/topic/notification/" + messageDTO.getSender(), messageService.getNotification(messageDTO.getChatId(), messageDTO.getSender()));
     }
 }

@@ -11,8 +11,9 @@ public class MessageDTO {
     private String content;
     private String sender;
     private String receiver;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/La_Paz")
     private Timestamp date;
     private String chatId;
+    private boolean isSeen;
 
 }
