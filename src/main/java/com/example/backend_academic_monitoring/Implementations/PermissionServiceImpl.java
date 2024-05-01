@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.Implementations;
 
+import com.example.backend_academic_monitoring.DTO.ImageDTO;
 import com.example.backend_academic_monitoring.DTO.PermissionCreateDTO;
 import com.example.backend_academic_monitoring.DTO.PermissionDTO;
 import com.example.backend_academic_monitoring.Entity.ImageEntity;
@@ -126,9 +127,9 @@ public class PermissionServiceImpl implements PermissionService {
         permissionDTO.setPermissionStatus(permissionEntity.getPermissionStatus());
         permissionDTO.setReason(permissionEntity.getReason());
         permissionDTO.setStudent(studentService.getStudent(permissionEntity.getStudentId()));
-        List<String> images = new ArrayList<>();
+        List<ImageDTO> images = new ArrayList<>();
         for (ImageEntity imageEntity : permissionEntity.getImages()) {
-            images.add(imageService.getImageURL(imageEntity.getUuid()));
+            images.add(imageService.getImage(imageEntity.getId()));
         }
         permissionDTO.setImages(images);
         return permissionDTO;

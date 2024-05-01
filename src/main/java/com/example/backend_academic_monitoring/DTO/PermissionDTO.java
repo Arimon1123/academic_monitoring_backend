@@ -22,6 +22,6 @@ public class PermissionDTO {
     private Timestamp permissionEndDate;
     private String reason;
     private Integer permissionStatus;
-    private List<String> images;
+    private List<ImageDTO> images;
     private StudentDTO student;
 }
