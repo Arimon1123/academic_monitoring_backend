@@ -1,10 +1,8 @@
 package com.example.backend_academic_monitoring.Controller;
 
-import com.example.backend_academic_monitoring.DTO.ResponseDTO;
-import com.example.backend_academic_monitoring.DTO.UserCreateDTO;
-import com.example.backend_academic_monitoring.DTO.UserDTO;
-import com.example.backend_academic_monitoring.DTO.UserDataDTO;
+import com.example.backend_academic_monitoring.DTO.*;
 import com.example.backend_academic_monitoring.Service.UserService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -29,18 +29,22 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<ResponseDTO<String>> saveUser(@RequestParam("user") String userDTO, @RequestParam(value = "image", required = false) MultipartFile image) {
+    public ResponseEntity<ResponseDTO<String>> saveUser(@RequestParam("user") String userDTO,
+                                                        @RequestParam(value = "image", required = false) MultipartFile image,
+                                                        @RequestParam(value = "subjects", required = false) String subjects) {
         if (image != null)
             LOGGER.info("DTO {}, image {}, type {}", userDTO, image.getOriginalFilename(), image.getContentType());
         try {
             UserCreateDTO userDto = objectMapper.readValue(userDTO, UserCreateDTO.class);
+            List<SubjectDTO> subjectDTOList = objectMapper.readValue(subjects, new TypeReference<>() {
+            });
             return ResponseEntity.ok(
                     new ResponseDTO<>(
-                            userService.saveUser(userDto, image),
+                            userService.saveUser(userDto, image, subjectDTOList),
                             "Usuario creado",
                             200));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.info("Error al crear el usuario", e);
             return ResponseEntity.badRequest().body(
                     new ResponseDTO<>(
                             null,
@@ -153,7 +157,7 @@ public class UserController {
 
     @PutMapping()
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
-    public ResponseEntity<ResponseDTO<String>> updateUser(@RequestBody() UserCreateDTO user) {
+    public ResponseEntity<ResponseDTO<String>> updateUser(@RequestBody() UserCreateDTO user, @RequestParam(value = "subjects", required = false) String subjects) {
         try {
             userService.updateUser(user);
         } catch (Exception e) {
@@ -175,6 +179,15 @@ public class UserController {
     public ResponseEntity<ResponseDTO<UserDTO>> getUserByPersonId(@PathVariable Integer personId) {
         try {
             return ResponseEntity.ok(new ResponseDTO<>(userService.getUserByPersonId(personId), "User retrieved successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
+    @GetMapping("/details")
+    public ResponseEntity<ResponseDTO<UserDetailsDTO>> getUserDetails(@RequestParam String username, @RequestParam String role) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(userService.getUserRoleDetails(username, role), "Details Retrieved Successfully", 200));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }

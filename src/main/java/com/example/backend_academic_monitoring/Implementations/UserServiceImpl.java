@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public String saveUser(UserCreateDTO userCreateDTO, MultipartFile image) {
+    public String saveUser(UserCreateDTO userCreateDTO, MultipartFile image, List<SubjectDTO> subjects) {
         if (personService.existsByCi(userCreateDTO.getCi())) {
             throw new RuntimeException("La cedula ya existe");
         }
@@ -95,7 +97,7 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Administrative saved");
         }
         if (userCreateDTO.getRoles().get(0).getName().equals(TEACHER_ROLE)) {
-            teacherService.save(personEntity, userCreateDTO.getAcademicEmail());
+            teacherService.save(personEntity, userCreateDTO.getAcademicEmail(), subjects);
             LOGGER.info("Teacher saved");
         }
         if (userCreateDTO.getRoles().get(0).getName().equals(PARENT_ROLE)) {
@@ -103,6 +105,7 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Father saved");
 
         }
+        //TODO:Uncomment to launch in production
 //        Context context = new Context();
 //        context.setVariable("password", generatedPassword);
 //        context.setVariable("username", userCreateDTO.getCi());
@@ -235,7 +238,6 @@ public class UserServiceImpl implements UserService {
         }
         userDetails.setRole(role);
         return userDetails;
-
     }
 
 

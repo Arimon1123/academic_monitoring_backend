@@ -7,7 +7,7 @@ import com.example.backend_academic_monitoring.Entity.PersonEntity;
 import java.util.List;
 
 public interface TeacherService {
-    void save(PersonEntity personEntity, String academicEmail);
+    void save(PersonEntity personEntity, String academicEmail, List<SubjectDTO> subjects);
 
     void saveTeacherSubjects(Integer teacherId, List<SubjectDTO> subjects);
 

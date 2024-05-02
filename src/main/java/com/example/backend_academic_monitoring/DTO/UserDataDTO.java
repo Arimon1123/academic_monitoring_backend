@@ -1,7 +1,9 @@
 package com.example.backend_academic_monitoring.DTO;
 
 import com.example.backend_academic_monitoring.Entity.RoleEntity;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -14,5 +16,4 @@ public class UserDataDTO extends PersonDTO {
     private List<RoleEntity> roles;
     private String ci;
     private Integer status;
-
 }

@@ -121,6 +121,5 @@ public class AuthenticationController {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
-
 }
 

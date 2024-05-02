@@ -1,20 +1,14 @@
 package com.example.backend_academic_monitoring.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.Subselect;
+import lombok.Data;
 
 import java.util.List;
 
 @Entity
 @Table(name = "subject")
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+@Data
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SubjectEntity {
     @Id

@@ -14,16 +14,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class SubjectServiceImpl implements SubjectService {
+    public static final Logger LOGGER = LoggerFactory.getLogger(SubjectServiceImpl.class);
     private final SubjectRepository subjectRepository;
     private final GradeService gradeService;
     private final RequirementRepository requirementRepository;
-    public static final Logger LOGGER = LoggerFactory.getLogger(SubjectServiceImpl.class);
 
     @Autowired
     public SubjectServiceImpl(SubjectRepository subjectRepository, GradeService gradeService, RequirementRepository requirementRepository) {
@@ -33,7 +32,7 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public void save(SubjectCreateDTO subjectDTO){
+    public void save(SubjectCreateDTO subjectDTO) {
         GradeEntity gradeEntity = gradeService.getById(subjectDTO.getGradeId());
         SubjectEntity subjectEntity = SubjectMapper.toEntity(subjectDTO, gradeEntity);
         subjectEntity.setStatus(1);
@@ -93,5 +92,10 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public List<SubjectDTO> getSubjectsNotAssigned(Integer classId, Integer gradeId) {
         return subjectRepository.findAllByClassIdWithoutAssignation(classId, gradeId).stream().map(SubjectMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public SubjectDTO getDTOById(Integer id) {
+        return SubjectMapper.toDTO(subjectRepository.getReferenceById(id));
     }
 }

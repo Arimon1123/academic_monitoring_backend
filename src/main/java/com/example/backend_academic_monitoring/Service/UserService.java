@@ -1,14 +1,13 @@
 package com.example.backend_academic_monitoring.Service;
 
-import com.example.backend_academic_monitoring.DTO.UserCreateDTO;
-import com.example.backend_academic_monitoring.DTO.UserDTO;
-import com.example.backend_academic_monitoring.DTO.UserDataDTO;
-import com.example.backend_academic_monitoring.DTO.UserDetailsDTO;
+import com.example.backend_academic_monitoring.DTO.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface UserService {
-    public String saveUser(UserCreateDTO userCreateDTO, MultipartFile image);
+    public String saveUser(UserCreateDTO userCreateDTO, MultipartFile image, List<SubjectDTO> subjects);
 
     public void deleteUser(Integer id);
 

@@ -14,6 +14,8 @@ public class TeacherSubjectEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "teacher_id")
     private Integer teacherId;
+    @Column(name = "subject_id")
     private Integer subjectId;
 }
