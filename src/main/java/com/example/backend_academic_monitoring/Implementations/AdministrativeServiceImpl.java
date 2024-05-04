@@ -28,7 +28,17 @@ public class AdministrativeServiceImpl implements AdministrativeService {
     }
 
     @Override
-    public AdministrativeDTO findByUserId(Integer userId) {
+    public void update(AdministrativeEntity administrative) {
+        administrativeRepository.save(administrative);
+    }
+
+    @Override
+    public AdministrativeDTO findDTOByUserId(Integer userId) {
         return AdministrativeMapper.toDTO(administrativeRepository.findByPerson_UserId(userId));
+    }
+
+    @Override
+    public AdministrativeEntity findEntityByUserId(Integer userId) {
+        return administrativeRepository.findByPerson_UserId(userId);
     }
 }

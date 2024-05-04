@@ -26,4 +26,7 @@ public class TeacherEntity {
             joinColumns = @JoinColumn(name = "teacher_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id"))
     private List<SubjectEntity> subjects;
+    @OneToMany(mappedBy = "teacherEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ConsultHourEntity> consultHours;
+
 }

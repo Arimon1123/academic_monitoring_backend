@@ -1,7 +1,11 @@
-CREATE DATABASE acad_monitoring;
+\c template1;
+create database acad_monitoring;
 \c acad_monitoring;
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2024-03-18 01:38:22.721
+-- Last modification date: 2024-05-04 01:33:53.267
+
+---- Created by Vertabelo (http://vertabelo.com)
+-- Last modification date: 2024-05-04 01:37:48.559
 
 -- tables
 -- Table: acad_user
@@ -21,10 +25,10 @@ CREATE TABLE activity
     id                   serial       NOT NULL,
     name                 varchar(150) NOT NULL,
     value                int          NOT NULL,
-    dimension            int          NOT NULL,
     bimester             int          NOT NULL,
     status               int          NOT NULL,
     class_has_subject_id int          NOT NULL,
+    dimension            varchar(40)  NOT NULL,
     CONSTRAINT activity_pk PRIMARY KEY (id)
 );
 
@@ -46,6 +50,26 @@ CREATE TABLE administrative
     person_id int    NOT NULL,
     status    int    NOT NULL,
     CONSTRAINT administrative_pk PRIMARY KEY (id)
+);
+
+-- Table: announcement
+CREATE TABLE announcement
+(
+    id             serial        NOT NULL,
+    date           date          NOT NULL,
+    publishingDate date          NOT NULL,
+    message        varchar(2500) NOT NULL,
+    receivers      json          NOT NULL,
+    title          varchar(100)  NOT NULL,
+    CONSTRAINT announcement_pk PRIMARY KEY (id)
+);
+
+-- Table: announcement_image
+CREATE TABLE announcement_image
+(
+    announcement_id int NOT NULL,
+    image_id        int NOT NULL,
+    CONSTRAINT announcement_image_pk PRIMARY KEY (announcement_id, image_id)
 );
 
 -- Table: attendance
@@ -101,6 +125,27 @@ CREATE TABLE classroom_requirement
     CONSTRAINT classroom_requirement_pk PRIMARY KEY (id)
 );
 
+-- Table: consultation_hours
+CREATE TABLE consultation_hours
+(
+    id         serial      NOT NULL,
+    start_time time        NOT NULL,
+    end_time   time        NOT NULL,
+    weekday    varchar(20) NOT NULL,
+    period     int         NOT NULL,
+    teacher_id int         NOT NULL,
+    CONSTRAINT consultation_hours_pk PRIMARY KEY (id)
+);
+
+-- Table: dimension
+CREATE TABLE dimension
+(
+    id    serial      NOT NULL,
+    name  varchar(20) NOT NULL,
+    value int         NOT NULL,
+    CONSTRAINT dimension_pk PRIMARY KEY (id)
+);
+
 -- Table: grade
 CREATE TABLE grade
 (
@@ -118,6 +163,19 @@ CREATE TABLE image
     type varchar(20)  NOT NULL,
     name varchar(100) NOT NULL,
     CONSTRAINT image_pk PRIMARY KEY (id)
+);
+
+-- Table: messages
+CREATE TABLE messages
+(
+    id       serial        NOT NULL,
+    content  varchar(1000) NOT NULL,
+    date     timestamp     NOT NULL,
+    sender   varchar(100)  NOT NULL,
+    receiver varchar(100)  NOT NULL,
+    is_seen  boolean       NOT NULL,
+    chat_id  varchar(50)   NOT NULL,
+    CONSTRAINT messages_pk PRIMARY KEY (id)
 );
 
 -- Table: parent
@@ -216,6 +274,7 @@ CREATE TABLE student
     rude            varchar(20)  NOT NULL,
     address         varchar(200) NOT NULL,
     status          int          NOT NULL,
+    acad_user_id    int          NULL,
     CONSTRAINT student_pk PRIMARY KEY (id)
 );
 
@@ -348,6 +407,24 @@ ALTER TABLE administrative
                 INITIALLY IMMEDIATE
 ;
 
+-- Reference: announcement_image_announcement (table: announcement_image)
+ALTER TABLE announcement_image
+    ADD CONSTRAINT announcement_image_announcement
+        FOREIGN KEY (announcement_id)
+            REFERENCES announcement (id)
+            NOT DEFERRABLE
+                INITIALLY IMMEDIATE
+;
+
+-- Reference: announcement_image_image (table: announcement_image)
+ALTER TABLE announcement_image
+    ADD CONSTRAINT announcement_image_image
+        FOREIGN KEY (image_id)
+            REFERENCES image (id)
+            NOT DEFERRABLE
+                INITIALLY IMMEDIATE
+;
+
 -- Reference: asistencia_estudiante (table: attendance)
 ALTER TABLE attendance
     ADD CONSTRAINT asistencia_estudiante
@@ -405,6 +482,15 @@ ALTER TABLE class_has_subject
 -- Reference: class_has_subject_teacher (table: class_has_subject)
 ALTER TABLE class_has_subject
     ADD CONSTRAINT class_has_subject_teacher
+        FOREIGN KEY (teacher_id)
+            REFERENCES teacher (id)
+            NOT DEFERRABLE
+                INITIALLY IMMEDIATE
+;
+
+-- Reference: consultation_hours_teacher (table: consultation_hours)
+ALTER TABLE consultation_hours
+    ADD CONSTRAINT consultation_hours_teacher
         FOREIGN KEY (teacher_id)
             REFERENCES teacher (id)
             NOT DEFERRABLE
@@ -501,6 +587,15 @@ ALTER TABLE schedule
                 INITIALLY IMMEDIATE
 ;
 
+-- Reference: student_acad_user (table: student)
+ALTER TABLE student
+    ADD CONSTRAINT student_acad_user
+        FOREIGN KEY (acad_user_id)
+            REFERENCES acad_user (id)
+            NOT DEFERRABLE
+                INITIALLY IMMEDIATE
+;
+
 -- Reference: student_parent_parent (table: student_parent)
 ALTER TABLE student_parent
     ADD CONSTRAINT student_parent_parent
@@ -572,227 +667,6 @@ ALTER TABLE user_roles
             NOT DEFERRABLE
                 INITIALLY IMMEDIATE
 ;
--- INSERT INTO acad_user
--- values (1, 'admin', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
--- Insert into role
--- values (1, 'ADMINISTRATIVE'),
---        (2, 'TEACHER'),
---        (3, 'PARENT');
--- Insert into user_roles
--- values (1, 1);
--- INSERT INTO person
--- values (1, 'Administrador', 'Administrador', '12345678', '3697984', '', '', 1, 1);
--- insert into administrative
--- values (1, 1, 1);
--- Insert into grade
--- values (1, 'Primaria', '1'),
---        (2, 'Primaria', '2'),
---        (3, 'Primaria', '3'),
---        (4, 'Primaria', '4'),
---        (5, 'Primaria', '5'),
---        (6, 'Primaria', '6'),
---        (7, 'Secundaria', '1'),
---        (8, 'Secundaria', '2'),
---        (9, 'Secundaria', '3'),
---        (10, 'Secundaria', '4'),
---        (11, 'Secundaria', '5'),
---        (12, 'Secundaria', '6');
--- Insert into subject
--- values (1, 'Matemática', 2, 1, 1),
---        (2, 'Lenguaje', 2, 1, 1),
---        (3, 'Ciencias Naturales', 2, 1, 1),
---        (4, 'Ciencias Sociales', 2, 1, 1),
---        (5, 'Educación Física', 2, 1, 1),
---        (6, 'Educación Artística', 2, 1, 1),
---        (7, 'Educación Religiosa', 2, 1, 1),
---        (8, 'Inglés', 2, 1, 1),
---        (9, 'Matemática', 2, 1, 2),
---        (10, 'Lenguaje', 2, 1, 2),
---        (11, 'Ciencias Naturales', 2, 1, 2),
---        (12, 'Ciencias Sociales', 2, 1, 2),
---        (13, 'Educación Física', 2, 1, 2),
---        (14, 'Educación Artística', 2, 1, 2),
---        (15, 'Educación Religiosa', 2, 1, 2),
---        (16, 'Inglés', 2, 1, 2),
---        (17, 'Matemática', 2, 1, 3),
---        (18, 'Lenguaje', 2, 1, 3),
---        (19, 'Ciencias Naturales', 2, 1, 3),
---        (20, 'Ciencias Sociales', 2, 1, 3),
---        (21, 'Educación Física', 2, 1, 3),
---        (22, 'Educación Artística', 2, 1, 3),
---        (23, 'Educación Religiosa', 2, 1, 3);
--- INSERT INTO class
--- VALUES (1, 2024, 1, 'A', 1, 1),
---        (2, 2024, 1, 'B', 1, 1),
---        (3, 2024, 1, 'C', 1, 1),
---        (4, 2024, 1, 'D', 1, 1),
---        (5, 2024, 1, 'E', 1, 1),
---        (6, 2024, 1, 'A', 1, 2),
---        (7, 2024, 1, 'B', 1, 2),
---        (8, 2024, 1, 'C', 1, 2),
---        (9, 2024, 1, 'D', 1, 2),
---        (10, 2024, 1, 'E', 1, 2),
---        (11, 2024, 1, 'A', 1, 3),
---        (12, 2024, 1, 'B', 1, 3),
---        (13, 2024, 1, 'C', 1, 3),
---        (14, 2024, 1, 'D', 1, 3),
---        (15, 2024, 1, 'E', 1, 3);
---
--- insert into acad_user
--- -- <- password : parent
--- values (2, 'parent', '$2a$12$8WTe1XMY2hyP0BAL8FaqNuya2yrG3IwQMAuvRG1W5HWeWbr6sfOd.', 1, null);
--- insert into user_roles
--- values (2, 3);
--- insert into person
--- values (2, 'Juan', 'Gomez', '12345678', '2000-01-01', 'a@a.com', 'Calle 1', 1, 2);
--- insert into parent
--- values (1, 1, 2);
--- Insert into student
--- values (1, 'Juan', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 1', 1);
--- insert into student_parent
--- values (1, 1, 1);
--- Insert into student_class
--- values (1, 1, 1);
--- insert into student
--- values (2, 'Pedro', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 2', 1),
---         (3, 'Maria', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 3', 1),
---         (4, 'Ana', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 4', 1),
---         (5, 'Luis', '12345678', 'Perez', 'Gomez', '2000-01-01', '123456', 'Calle 5', 1);
--- insert into student_class values (2,2,1),
---                                     (3,3,1),
---                                     (4,4,1),
---                                     (5,5,1);
--- insert into student_parent values (2, 2, 1),
---                                   (3, 3, 1),
---                                   (4, 4, 1),
---                                   (5, 5, 1);
---
--- INSERT INTO requirement (requirement, description)
--- VALUES ('Pizarrón Interactivo', 'Superficie táctil para proyecciones digitales.'),
---        ('Proyector Multimedia', 'Dispositivo para presentaciones visuales.'),
---        ('Conexión a Internet', 'Acceso a la red para recursos en línea.'),
---        ('Escritorios o mesas individuales', 'Superficies de trabajo individuales.'),
---        ('Sillas cómodas y ergonómicas', 'Asientos confortables y ergonómicos.'),
---        ('Iluminación adecuada', 'Luz suficiente y uniforme.'),
---        ('Aire acondicionado o calefacción', 'Climatización adecuada.'),
---        ('Espacio amplio para movilidad', 'Amplitud para movimiento.'),
---        ('Pizarra blanca o de tiza', 'Superficie de escritura.'),
---        ('Espacio de almacenamiento para materiales educativos', 'Área para guardar materiales.');
---
--- INSERT INTO subject_requirement
--- VALUES (1, 1, 1),
---        (2, 2, 2),
---        (3, 3, 3),
---        (4, 1, 4),
---        (5, 4, 5),
---        (6, 5, 6);
---
--- INSERT INTO classroom
--- VALUES (1, 1, 'A', 'Aula'),
---        (2, 2, 'A', 'Aula'),
---        (3, 3, 'A', 'Aula'),
---        (4, 4, 'A', 'Aula'),
---        (5, 5, 'A', 'Aula');
---
---
--- INSERT INTO classroom_requirement
--- VALUES (1, 1, 1),
---        (2, 1, 4),
---        (3, 2, 1),
---        (4, 2, 2),
---        (5, 3, 1),
---        (6, 3, 3),
---        (7, 4, 1),
---        (8, 4, 5),
---        (9, 5, 1),
---        (10, 5, 6);
---
---
--- insert into acad_user
--- values (3, 'teacher', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
--- insert into user_roles
--- values (3, 2);
--- insert into person
--- values (3, 'Teacher', 'Teacher', '12345678', '1831092831', 'q1231231@gmail.com', 'Calle 1', 1, 3);
--- insert into teacher
--- values (1, 3, '', 1);
--- -- Profesor que enseña matemáticas
--- insert into teacher_subject
--- values (1, 1, 1);
---
---
--- insert into acad_user
--- values (4, 'teacher2', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
--- insert into user_roles
--- values (4, 2);
--- insert into person
--- values (4, 'Teacher2', 'Teacher2', '12345678', '1831092831', '123123@gmail.com', 'Calle 1', 1, 4);
--- insert into teacher
--- values (2, 4, '', 1);
--- -- Profesor que enseña lenguaje
--- insert into teacher_subject
--- values (2, 2, 2);
---
--- insert into acad_user
--- values (5, 'teacher3', '$2a$12$Mgq.HqqQl1sCqEpvYFf80uXOWCml.9C/eX4TYxh30.XTmLAQXf9xC', 1, null);
--- insert into user_roles
--- values (5, 2);
--- insert into person
--- values (5, 'Teacher3', 'Teacher3', '12345678', '1831092831', '123@gmail.com', 'Calle 1', 1, 5);
--- insert into teacher
--- values (3, 5, '', 1);
--- -- Profesor que enseña ciencias naturales
--- insert into teacher_subject
--- values (3, 3, 3);
---
--- insert into class_has_subject
--- values (1, 1, 1, 1, 1);
--- insert into class_has_subject
--- values (2, 1, 2, 2, 2);
---
--- insert into schedule
--- values (1, 'monday', '08:00:00', '08:45:00', 1, 1);
--- insert into schedule
--- values (2, 'tuesday', '08:45:00', '09:30:00', 1, 1);
---
--- insert into schedule
--- values (3, 'thursday', '08:00:00', '08:45:00', 2, 2);
--- insert into schedule
--- values (4, 'friday', '08:45:00', '09:30:00', 2, 2);
---
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (1, 3, '2024-03-20', 2, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (2, 1, '2024-03-20', 1, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (3, 1, '2024-03-20', 3, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (4, 1, '2024-03-20', 4, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (5, 1, '2024-03-20', 5, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (6, 3, '2024-03-19', 2, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (7, 1, '2024-03-19', 1, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (8, 1, '2024-03-19', 3, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (9, 1, '2024-03-19', 4, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (10, 1, '2024-03-19', 5, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (11, 1, '2024-03-14', 2, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (12, 2, '2024-03-14', 1, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (13, 3, '2024-03-14', 3, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (14, 2, '2024-03-14', 4, 1);
--- INSERT INTO public.attendance (id, attendance, date, student_id, class_has_subject_id) VALUES (15, 1, '2024-03-14', 5, 1);
---
---
--- alter sequence classroom_id_seq restart with 5;
--- alter sequence classroom_requirement_id_seq restart with 5;
--- alter sequence teacher_id_seq restart with 4;
--- alter sequence teacher_subject_id_seq restart with 4;
--- alter sequence requirement_id_seq restart with 11;
--- alter sequence acad_user_id_seq restart with 110;
--- alter sequence person_id_seq restart with 110;
--- alter sequence administrative_id_seq restart with 2;
--- alter sequence parent_id_seq restart with 110;
--- alter sequence student_id_seq restart with 110;
--- alter sequence student_parent_id_seq restart with 110;
--- alter sequence student_class_id_seq restart with 110;
--- alter sequence class_id_seq restart with 13;
--- alter sequence grade_id_seq restart with 2;
--- alter sequence subject_id_seq restart with 24;
--- alter sequence class_has_subject_id_seq restart with 3;
--- alter sequence schedule_id_seq restart with 5;
--- alter sequence attendance_id_seq restart with 16;
---
+
+-- End of file.
+

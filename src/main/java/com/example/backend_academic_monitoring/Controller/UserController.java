@@ -31,16 +31,22 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<ResponseDTO<String>> saveUser(@RequestParam("user") String userDTO,
                                                         @RequestParam(value = "image", required = false) MultipartFile image,
-                                                        @RequestParam(value = "subjects", required = false) String subjects) {
+                                                        @RequestParam(value = "subjects", required = false) String subjects,
+                                                        @RequestParam(value = "consultHours", required = false) String consultHours) {
         if (image != null)
             LOGGER.info("DTO {}, image {}, type {}", userDTO, image.getOriginalFilename(), image.getContentType());
         try {
             UserCreateDTO userDto = objectMapper.readValue(userDTO, UserCreateDTO.class);
             List<SubjectDTO> subjectDTOList = objectMapper.readValue(subjects, new TypeReference<>() {
             });
+            List<ConsultHourDTO> consultHourDTOS = null;
+            if (consultHours != null) {
+                consultHourDTOS = objectMapper.readValue(consultHours, new TypeReference<>() {
+                });
+            }
             return ResponseEntity.ok(
                     new ResponseDTO<>(
-                            userService.saveUser(userDto, image, subjectDTOList),
+                            userService.saveUser(userDto, image, subjectDTOList, consultHourDTOS),
                             "Usuario creado",
                             200));
         } catch (Exception e) {
@@ -157,7 +163,7 @@ public class UserController {
 
     @PutMapping()
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
-    public ResponseEntity<ResponseDTO<String>> updateUser(@RequestBody() UserCreateDTO user, @RequestParam(value = "subjects", required = false) String subjects) {
+    public ResponseEntity<ResponseDTO<String>> updateUser(@RequestBody() UserCreateDTO user) {
         try {
             userService.updateUser(user);
         } catch (Exception e) {
@@ -173,6 +179,17 @@ public class UserController {
                         null,
                         "Usuario actualizado",
                         200));
+    }
+
+    @PutMapping("/roles")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
+    public ResponseEntity<?> updateUseRoles(@RequestBody() UserDTO user) {
+        try {
+            userService.updateUserRole(user.getUsername(), user.getRole());
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Roles updated successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO<>(e.getMessage(), "Error trying to update roles", 200));
+        }
     }
 
     @GetMapping("/person/{personId}")

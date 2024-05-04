@@ -14,4 +14,6 @@ public interface TeacherRepository extends JpaRepository<TeacherEntity, Integer>
     List<TeacherEntity> findBySubjectId(@Param("subjectId") Integer subjectId);
 
     TeacherEntity findByPerson_UserId(Integer userId);
+
+    boolean existsByAcademicEmail(String academicEmail);
 }

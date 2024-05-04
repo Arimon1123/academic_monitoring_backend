@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.Controller;
 
+import com.example.backend_academic_monitoring.DTO.ConsultHourDTO;
 import com.example.backend_academic_monitoring.DTO.ResponseDTO;
 import com.example.backend_academic_monitoring.DTO.SubjectDTO;
 import com.example.backend_academic_monitoring.DTO.TeacherDTO;
@@ -20,11 +21,21 @@ public class TeacherController {
         this.teacherService = teacherService;
     }
 
-    @PostMapping("/{teacherId}/subject")
+    @PutMapping("/{teacherId}/subject")
     public ResponseEntity<ResponseDTO<String>> saveTeacherSubjects(@RequestBody List<SubjectDTO> subjects, @PathVariable Integer teacherId) {
         try {
             teacherService.saveTeacherSubjects(teacherId, subjects);
             return ResponseEntity.ok(new ResponseDTO<>(null, "Subjects saved successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
+    @PutMapping("/{teacherId}/consultHours")
+    public ResponseEntity<ResponseDTO<String>> saveTeacherConsultHours(@RequestBody List<ConsultHourDTO> consultHourDTOS, @PathVariable Integer teacherId) {
+        try {
+            teacherService.saveConsultHours(teacherId, consultHourDTOS);
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Consult hours saved successfully", 200));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -43,9 +54,29 @@ public class TeacherController {
     @GetMapping("/{teacherId}")
     public ResponseEntity<ResponseDTO<TeacherDTO>> findTeacherByUserId(@PathVariable Integer teacherId) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(teacherService.findTeacherById(teacherId), "Teacher retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(teacherService.findTeacherDTOById(teacherId), "Teacher retrieved successfully", 200));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
+
+    @GetMapping("exists/{academicEmail}")
+    public ResponseEntity<ResponseDTO<Boolean>> existAcademicEmail(@PathVariable String academicEmail) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(teacherService.existAcademicEmail(academicEmail), "Teacher retrieved successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
+    @PutMapping("/{teacherId}/academicEmail")
+    public ResponseEntity<ResponseDTO<String>> updateAcademicEmail(@PathVariable Integer teacherId, @RequestBody String academicEmail) {
+        try {
+            teacherService.updateAcademicEmail(academicEmail, teacherId);
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Academic email updated successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
 }

@@ -9,11 +9,15 @@ import java.util.List;
 public interface ParentService {
     void save(PersonEntity personEntity);
 
-    ParentEntity getParent(Integer id);
+    void update(ParentEntity parent);
 
-    ParentDTO getParentDTOById(Integer id);
+    ParentEntity getParent(Integer id);
 
     List<ParentDTO> getParentByCi(String ci);
 
-    ParentDTO getParentByUserId(Integer id);
+    ParentDTO getParentDTOById(Integer id);
+
+    ParentDTO getParentDTOByUserId(Integer id);
+
+    ParentEntity getParentEntityByUserId(Integer userId);
 }

@@ -96,10 +96,15 @@ public class AuthenticationController {
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT')")
     @GetMapping("/details")
     public ResponseEntity<Object> getUserDetails() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
-        Optional<UserDTO> user = Optional.ofNullable(userService.getUserByUsername(username));
-        return ResponseEntity.ok(new ResponseDTO<>(user.orElse(null), "Details Retrieved Successfully", 200));
+        try {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Optional<UserDTO> user = Optional.ofNullable(userService.getUserByUsername(username));
+            return ResponseEntity.ok(new ResponseDTO<>(user.orElse(null), "Details Retrieved Successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT')")

@@ -10,4 +10,5 @@ public class TeacherDTO {
     private PersonDTO person;
     private String academicEmail;
     private List<SubjectDTO> subjects;
+    private List<ConsultHourDTO> consultHours;
 }
