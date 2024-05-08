@@ -92,4 +92,29 @@ public class StudentController {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
+
+    @PutMapping("{id}/parent")
+    public ResponseEntity<ResponseDTO<String>> updateParents(@PathVariable Integer id, @RequestBody List<Integer> parentsId) {
+        try {
+            LOGGER.info("Actualizando padres del estudiante {}", id);
+            LOGGER.info("Padres nuevos {}", parentsId);
+            studentService.updateStudentParents(id, parentsId);
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Parents updated successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
+    @PutMapping("{id}/class/{classId}")
+    public ResponseEntity<ResponseDTO<String>> updateClass(@PathVariable Integer id, @PathVariable Integer classId) {
+        try {
+            LOGGER.info("Actualizando clase del estudiante {}", id);
+            LOGGER.info("Clase nueva {}", classId);
+            studentService.updateStudentClass(id, classId);
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Class updated successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
 }

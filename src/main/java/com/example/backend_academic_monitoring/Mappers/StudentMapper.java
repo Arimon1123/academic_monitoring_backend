@@ -18,6 +18,7 @@ public class StudentMapper {
         return student;
 
     }
+
     public static StudentEntity toEntity(StudentCreateDTO studentDTO) {
         return new StudentEntity(
                 studentDTO.getId(),
@@ -28,9 +29,11 @@ public class StudentMapper {
                 studentDTO.getBirthDate(),
                 studentDTO.getAddress(),
                 1,
-                studentDTO.getRude()
+                studentDTO.getRude(),
+                null
         );
     }
+
     public static StudentEntity toEntity(StudentDTO studentDTO) {
         return new StudentEntity(
                 studentDTO.getId(),
@@ -41,7 +44,8 @@ public class StudentMapper {
                 studentDTO.getBirthDate(),
                 studentDTO.getAddress(),
                 1,
-                studentDTO.getRude()
+                studentDTO.getRude(),
+                null
         );
     }
 }

@@ -283,12 +283,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetailsDTO getUserRoleDetails(String username, String role) {
+        LOGGER.info("Username: {}, Role: {}", username, role);
         UserDTO user = this.getUserByUsername(username);
         UserDetailsDTO userDetails = new UserDetailsDTO();
         ObjectMapper mapper = new ObjectMapper();
         if (!user.getRole().stream().filter(roleEntity -> role.equals(roleEntity.getName())).toList().isEmpty()) {
             if (role.equals(PARENT_ROLE)) {
-                userDetails.setDetails(parentService.getParentDTOById(user.getId()));
+                LOGGER.info("Parent");
+                userDetails.setDetails(parentService.getParentDTOByUserId(user.getId()));
             }
             if (role.equals(TEACHER_ROLE)) {
                 userDetails.setDetails(teacherService.findTeacherDTOByUserId(user.getId()));

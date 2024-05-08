@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "student")
@@ -26,4 +27,11 @@ public class StudentEntity {
     private String address;
     private Integer status;
     private String rude;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "student_parent",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "parent_id")
+    )
+    private List<ParentEntity> parents;
 }

@@ -39,7 +39,11 @@ public class TeacherServiceImpl implements TeacherService {
         teacherEntity.setAcademicEmail(academicEmail);
         teacherEntity.setPerson(personEntity);
         teacherEntity.setStatus(1);
-        if (subjects != null) saveTeacherSubjects(teacherEntity.getId(), subjects);
+        if (subjects != null) {
+            teacherEntity.setSubjects(subjects.stream().map(
+                    subjectDTO -> subjectService.getById(subjectDTO.getId())
+            ).toList());
+        }
         if (consultHours != null) {
             teacherEntity.setConsultHours(consultHours.stream().map(
                     consultHourDTO -> ConsultHourMapper.toEntity(consultHourDTO, teacherEntity)

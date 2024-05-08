@@ -20,4 +20,6 @@ public interface ClassService {
     ClassEntity getClassByAssignationId(Integer assignationId);
 
     List<ClassEntity> getClassByGradeAndYear(Integer gradeId, Integer year);
+
+    boolean removeStudentFromClass(ClassEntity classEntity, StudentEntity student);
 }

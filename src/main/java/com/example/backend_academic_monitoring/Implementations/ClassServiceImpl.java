@@ -18,7 +18,6 @@ public class ClassServiceImpl implements ClassService {
         this.classRepository = classRepository;
     }
 
-
     @Override
     public ClassEntity getClass(Integer classId) {
         return classRepository.getReferenceById(classId);
@@ -30,6 +29,7 @@ public class ClassServiceImpl implements ClassService {
         classEntity.getStudents().add(student);
         classRepository.save(classEntity);
     }
+
 
     @Override
     public List<ClassListDTO> getClassByGradeAndYearAndShift(Integer gradeId, Integer year, Integer shift) {
@@ -58,6 +58,17 @@ public class ClassServiceImpl implements ClassService {
     @Override
     public List<ClassEntity> getClassByGradeAndYear(Integer gradeId, Integer year) {
         return classRepository.findByGrade_IdAndYearAndShift(gradeId, year, 1);
+    }
+
+    @Override
+    public boolean removeStudentFromClass(ClassEntity newClass, StudentEntity student) {
+        ClassEntity prevClass = classRepository.findByStudentIdAndYearAndShift(student.getId(), newClass.getYear(), newClass.getShift());
+        if (prevClass != null) {
+            prevClass.getStudents().remove(student);
+            classRepository.save(newClass);
+            return true;
+        }
+        return false;
     }
 
     public ClassListDTO getClassDTO(ClassEntity classEntity) {

@@ -16,7 +16,7 @@ public class ParentStudentEntity {
     private Integer id;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "parent_id")
-    private ParentEntity father;
+    private ParentEntity parent;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "student_id")
     private StudentEntity student;

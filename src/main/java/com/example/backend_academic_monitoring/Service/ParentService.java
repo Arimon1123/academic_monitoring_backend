@@ -20,4 +20,6 @@ public interface ParentService {
     ParentDTO getParentDTOByUserId(Integer id);
 
     ParentEntity getParentEntityByUserId(Integer userId);
+
+    List<ParentDTO> getParentsByStudentId(Integer id);
 }

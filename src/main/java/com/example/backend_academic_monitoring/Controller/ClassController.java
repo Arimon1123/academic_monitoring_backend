@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/class")
 public class ClassController {
 
-    private final ClassService classService;
     public static final Logger LOGGER = LoggerFactory.getLogger(ClassController.class);
+    private final ClassService classService;
 
     public ClassController(ClassService classService) {
         this.classService = classService;
@@ -26,19 +26,18 @@ public class ClassController {
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
     @GetMapping("/{classId}")
     public ResponseEntity<ResponseDTO<ClassEntity>> getClass(@PathVariable Integer classId) {
-        return ResponseEntity.ok(new ResponseDTO<>(classService.getClass(classId), "Clase obtenida" ,200));
+        return ResponseEntity.ok(new ResponseDTO<>(classService.getClass(classId), "Clase obtenida", 200));
     }
+
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
     @GetMapping("")
-    public ResponseEntity<ResponseDTO<List<ClassListDTO>>> getClassByYearAndShift(@RequestParam Integer gradeId, @RequestParam Integer year, @RequestParam Integer shift){
+    public ResponseEntity<ResponseDTO<List<ClassListDTO>>> getClassByYearAndShift(@RequestParam Integer gradeId, @RequestParam Integer year, @RequestParam Integer shift) {
         try {
             LOGGER.info("Obteniendo clases por año y turno");
             return ResponseEntity.ok(new ResponseDTO<>(classService.getClassByGradeAndYearAndShift(gradeId, year, shift), "Clases obtenidas", 200));
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
-
-
 }
 
