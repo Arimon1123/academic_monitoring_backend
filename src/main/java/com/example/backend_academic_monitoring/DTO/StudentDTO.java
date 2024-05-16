@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,5 +21,8 @@ public class StudentDTO {
     private Date birthDate;
     private String address;
     private String rude;
+    private String email;
     private String studentClass;
+    private UserDTO user;
+    private List<ParentDTO> parents;
 }

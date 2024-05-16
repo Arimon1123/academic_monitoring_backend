@@ -7,16 +7,17 @@ import com.example.backend_academic_monitoring.DTO.UserDataDTO;
 import com.example.backend_academic_monitoring.Entity.UserEntity;
 
 public class UserMapper {
-    public static UserDTO entityToDTO(UserEntity user){
+    public static UserDTO entityToDTO(UserEntity user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
         userDTO.setRole(user.getRole());
-        userDTO.setStatus(user.getStatus() );
+        userDTO.setStatus(user.getStatus());
         return userDTO;
 
     }
-    public static UserDataDTO entityToData( UserEntity user, PersonDTO personDTO){
+
+    public static UserDataDTO entityToData(UserEntity user, PersonDTO personDTO) {
         UserDataDTO userDataDTO = new UserDataDTO();
         userDataDTO.setId(personDTO.getId());
         userDataDTO.setName(personDTO.getName());
@@ -30,7 +31,8 @@ public class UserMapper {
         userDataDTO.setStatus(user.getStatus());
         return userDataDTO;
     }
-    public static UserCreateDTO entityToCreate( UserEntity user, PersonDTO personDTO) {
+
+    public static UserCreateDTO entityToCreate(UserEntity user, PersonDTO personDTO) {
         UserCreateDTO userCreateDTO = new UserCreateDTO();
         userCreateDTO.setName(personDTO.getName());
         userCreateDTO.setLastname(personDTO.getLastname());
@@ -40,6 +42,15 @@ public class UserMapper {
         userCreateDTO.setUsername(user.getUsername());
         userCreateDTO.setRoles(user.getRole());
         return userCreateDTO;
+    }
+
+    public static UserEntity DTOtoEntity(UserDTO userDTO) {
+        UserEntity user = new UserEntity();
+        user.setUsername(userDTO.getUsername());
+        user.setStatus(userDTO.getStatus());
+        user.setId(userDTO.getId());
+        user.setRole(userDTO.getRole());
+        return user;
     }
 
 }

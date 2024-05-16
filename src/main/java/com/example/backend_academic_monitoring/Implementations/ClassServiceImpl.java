@@ -1,10 +1,12 @@
 package com.example.backend_academic_monitoring.Implementations;
 
+import com.example.backend_academic_monitoring.DTO.ClassDTO;
 import com.example.backend_academic_monitoring.DTO.ClassListDTO;
 import com.example.backend_academic_monitoring.Entity.ClassEntity;
 import com.example.backend_academic_monitoring.Entity.StudentEntity;
 import com.example.backend_academic_monitoring.Repository.ClassRepository;
 import com.example.backend_academic_monitoring.Service.ClassService;
+import com.example.backend_academic_monitoring.Service.GradeService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +15,11 @@ import java.util.List;
 public class ClassServiceImpl implements ClassService {
 
     private final ClassRepository classRepository;
+    private final GradeService gradeService;
 
-    public ClassServiceImpl(ClassRepository classRepository) {
+    public ClassServiceImpl(ClassRepository classRepository, GradeService gradeService) {
         this.classRepository = classRepository;
+        this.gradeService = gradeService;
     }
 
     @Override
@@ -69,6 +73,16 @@ public class ClassServiceImpl implements ClassService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void saveClass(ClassDTO classDTO) {
+        ClassEntity classEntity = new ClassEntity();
+        classEntity.setYear(classDTO.getYear());
+        classEntity.setShift(classDTO.getShift());
+        classEntity.setIdentifier(classDTO.getIdentifier());
+        classEntity.setGrade(gradeService.getById(classDTO.getGradeId()));
+        classRepository.save(classEntity);
     }
 
     public ClassListDTO getClassDTO(ClassEntity classEntity) {

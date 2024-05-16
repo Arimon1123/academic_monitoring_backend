@@ -46,7 +46,7 @@ public class UserController {
             }
             return ResponseEntity.ok(
                     new ResponseDTO<>(
-                            userService.saveUser(userDto, image, subjectDTOList, consultHourDTOS),
+                            userService.saveUserRole(userDto, image, subjectDTOList, consultHourDTOS),
                             "Usuario creado",
                             200));
         } catch (Exception e) {
@@ -207,6 +207,16 @@ public class UserController {
             return ResponseEntity.ok(new ResponseDTO<>(userService.getUserRoleDetails(username, role), "Details Retrieved Successfully", 200));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
+    @PostMapping("/student")
+    public ResponseEntity<ResponseDTO<String>> saveStudent(@RequestBody StudentCreateDTO studentCreateDTO) {
+        try {
+            userService.saveStudentUser(studentCreateDTO);
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Student created successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO<>(e.getMessage(), "Error trying to create student", 500));
         }
     }
 }

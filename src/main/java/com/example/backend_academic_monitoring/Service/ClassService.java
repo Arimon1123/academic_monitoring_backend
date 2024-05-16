@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.Service;
 
+import com.example.backend_academic_monitoring.DTO.ClassDTO;
 import com.example.backend_academic_monitoring.DTO.ClassListDTO;
 import com.example.backend_academic_monitoring.Entity.ClassEntity;
 import com.example.backend_academic_monitoring.Entity.StudentEntity;
@@ -22,4 +23,6 @@ public interface ClassService {
     List<ClassEntity> getClassByGradeAndYear(Integer gradeId, Integer year);
 
     boolean removeStudentFromClass(ClassEntity classEntity, StudentEntity student);
+
+    void saveClass(ClassDTO classDTO);
 }

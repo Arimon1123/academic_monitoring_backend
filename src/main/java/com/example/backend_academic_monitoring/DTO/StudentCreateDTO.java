@@ -9,7 +9,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class StudentCreateDTO extends StudentDTO{
+public class StudentCreateDTO extends StudentDTO {
     private Integer classId;
     private List<Integer> parentId;
+    private boolean isUser;
 }

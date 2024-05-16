@@ -27,6 +27,7 @@ public class UserServiceImpl implements UserService {
     public static final String TEACHER_ROLE = "TEACHER";
     public static final String PARENT_ROLE = "PARENT";
     public static final String ADMINISTRATIVE_ROLE = "ADMINISTRATIVE";
+    public static final String STUDENT_ROLE = "STUDENT";
     public static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final PasswordEncoder bCryptPasswordEncoder;
@@ -57,27 +58,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public String saveUser(UserCreateDTO userCreateDTO, MultipartFile image, List<SubjectDTO> subjects, List<ConsultHourDTO> consultHours) {
-        if (personService.existsByCi(userCreateDTO.getCi())) {
-            throw new RuntimeException("La cedula ya existe");
+    public String saveUserRole(UserCreateDTO userCreateDTO, MultipartFile image, List<SubjectDTO> subjects, List<ConsultHourDTO> consultHours) {
+        if (personService.existsByCi(userCreateDTO.getCi())) throw new RuntimeException("La cedula ya existe");
+
+        if (personService.existsByEmail(userCreateDTO.getEmail())) throw new RuntimeException("El email ya existe");
+
+        if (personService.existsByPhone(userCreateDTO.getPhone())) throw new RuntimeException("El telefono ya existe");
+
+        UserEntity user = new UserEntity();
+        user.setUsername(userCreateDTO.getCi());
+        user.setStatus(1);
+        user = saveUser(user, image, userCreateDTO.getEmail());
+
+        PersonEntity personEntity = getPersonEntity(userCreateDTO, user);
+
+        if (userCreateDTO.getRoles().get(0).getName().equals(ADMINISTRATIVE_ROLE)) {
+            administrativeService.save(personEntity);
         }
-        if (personService.existsByEmail(userCreateDTO.getEmail())) {
-            throw new RuntimeException("El email ya existe");
+        if (userCreateDTO.getRoles().get(0).getName().equals(TEACHER_ROLE)) {
+            teacherService.save(personEntity, userCreateDTO.getAcademicEmail(), subjects, consultHours);
         }
-        if (personService.existsByPhone(userCreateDTO.getPhone())) {
-            throw new RuntimeException("El telefono ya existe");
+        if (userCreateDTO.getRoles().get(0).getName().equals(PARENT_ROLE)) {
+            parentService.save(personEntity);
         }
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(userCreateDTO.getCi());
-        String generatedPassword = passwordGenerator.generatePassword();
-        userEntity.setPassword(bCryptPasswordEncoder.encode(generatedPassword));
-        userEntity.setRole(userCreateDTO.getRoles());
-        userEntity.setStatus(1);
-        if (image != null) {
-            Integer imageId = fileService.saveFile(image).getId();
-            userEntity.setImageId(imageId);
-        }
-        userEntity = userRepository.save(userEntity);
+
+        return "Usuario guardado correctamente";
+    }
+
+    private PersonEntity getPersonEntity(UserCreateDTO userCreateDTO, UserEntity user) {
         PersonDTO personDTO = new PersonDTO();
         personDTO.setName(userCreateDTO.getName());
         personDTO.setLastname(userCreateDTO.getLastname());
@@ -85,27 +93,38 @@ public class UserServiceImpl implements UserService {
         personDTO.setPhone(userCreateDTO.getPhone());
         personDTO.setEmail(userCreateDTO.getEmail());
         personDTO.setCi(userCreateDTO.getCi());
-        PersonEntity personEntity = personService.save(personDTO, userEntity.getId());
-        LOGGER.info("roles {} ", userCreateDTO.getRoles());
-        if (userCreateDTO.getRoles().get(0).getName().equals(ADMINISTRATIVE_ROLE)) {
-            administrativeService.save(personEntity);
-            LOGGER.info("Administrative saved");
-        }
-        if (userCreateDTO.getRoles().get(0).getName().equals(TEACHER_ROLE)) {
-            teacherService.save(personEntity, userCreateDTO.getAcademicEmail(), subjects, consultHours);
-            LOGGER.info("Teacher saved");
-        }
-        if (userCreateDTO.getRoles().get(0).getName().equals(PARENT_ROLE)) {
-            parentService.save(personEntity);
-            LOGGER.info("Father saved");
+        return personService.save(personDTO, user.getId());
+    }
 
+    @Override
+    public UserEntity saveUser(UserEntity user, MultipartFile image, String email) {
+        String generatedPassword = passwordGenerator.generatePassword();
+        user.setPassword(bCryptPasswordEncoder.encode(generatedPassword));
+        if (image != null) {
+            Integer imageId = fileService.saveFile(image).getId();
+            user.setImageId(imageId);
         }
-        //TODO:Uncomment to launch in production
+        sendPasswordEmail(user, generatedPassword, email);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public void saveStudentUser(StudentCreateDTO studentCreateDTO) {
+        if (studentService.existsByCi(studentCreateDTO.getCi())) throw new RuntimeException("Ci ya existe");
+        if (studentService.existsByRude(studentCreateDTO.getRude())) throw new RuntimeException("Rude ya existe");
+        UserEntity user = new UserEntity();
+        user.setUsername(studentCreateDTO.getCi());
+        user.setStatus(1);
+        LOGGER.info("User: {}, email {}", user, studentCreateDTO.getEmail());
+        user = this.saveUser(user, null, studentCreateDTO.getEmail());
+        studentService.saveStudent(studentCreateDTO, user);
+    }
+
+    public void sendPasswordEmail(UserEntity user, String password, String email) {
         Context context = new Context();
-        context.setVariable("password", generatedPassword);
-        context.setVariable("username", userCreateDTO.getCi());
-        emailService.sendPasswordEmail(userCreateDTO.getEmail(), "Contraseña generada", context);
-        return "Usuario guardado correctamente";
+        context.setVariable("password", password);
+        context.setVariable("username", user.getUsername());
+        emailService.sendPasswordEmail(email, "Contraseña generada", context);
     }
 
     @Override
@@ -297,6 +316,9 @@ public class UserServiceImpl implements UserService {
             }
             if (role.equals(ADMINISTRATIVE_ROLE)) {
                 userDetails.setDetails(administrativeService.findDTOByUserId(user.getId()));
+            }
+            if (role.equals(STUDENT_ROLE)) {
+                userDetails.setStudentDetails(studentService.findByUserId(user.getId()));
             }
         } else {
             throw new RuntimeException("El usuario no tiene el rol solicitado");

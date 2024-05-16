@@ -93,11 +93,12 @@ public class AuthenticationController {
         return new HashMap<String, Object>(claims);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT','ROLE_STUDENT')")
     @GetMapping("/details")
     public ResponseEntity<Object> getUserDetails() {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            LOGGER.info("{}", userDetails);
             String username = userDetails.getUsername();
             Optional<UserDTO> user = Optional.ofNullable(userService.getUserByUsername(username));
             return ResponseEntity.ok(new ResponseDTO<>(user.orElse(null), "Details Retrieved Successfully", 200));
@@ -107,14 +108,14 @@ public class AuthenticationController {
 
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT','ROLE_STUDENT')")
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse httpServletResponse) {
         CookieHelper.clear(httpServletResponse, cookieName, host);
         return ResponseEntity.ok("Sesion cerrada");
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT','ROLE_STUDENT')")
     @GetMapping("/role")
     public ResponseEntity<ResponseDTO<Object>> getUserRoleDetails(@RequestParam String role) {
         try {

@@ -26,7 +26,9 @@ public interface ClassRepository extends JpaRepository<ClassEntity, Integer> {
             JOIN grade g ON c.grade_id = g.id
             JOIN student_class sc ON c.id = sc.class_id
             JOIN student s ON s.id = sc.student_id
-            WHERE s.id = :studentId""", nativeQuery = true)
+            WHERE s.id = :studentId
+            ORDER BY c.year DESC
+            LIMIT 1""", nativeQuery = true)
     ClassEntity findByStudentsId(Integer studentId);
 
     @Query(value = """

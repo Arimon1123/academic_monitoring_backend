@@ -15,97 +15,104 @@ import java.util.*;
 @Service
 public class JwtUtil {
 
-	private String secret;
-	private int jwtExpirationInMs;
-	private int refreshExpirationDateInMs;
-	public static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
+    private String secret;
+    private int jwtExpirationInMs;
+    private int refreshExpirationDateInMs;
 
-	@Value("${jwt.secret}")
-	public void setSecret(String secret) {
-		this.secret = secret;
-	}
+    @Value("${jwt.secret}")
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
 
-	@Value("${jwt.expirationDateInMs}")
-	public void setJwtExpirationInMs(int jwtExpirationInMs) {
-		this.jwtExpirationInMs = jwtExpirationInMs;
-	}
-	
-	@Value("${jwt.refreshExpirationDateInMs}")
-	public void setRefreshExpirationDateInMs(int refreshExpirationDateInMs) {
-		this.refreshExpirationDateInMs = refreshExpirationDateInMs;
-	}
+    @Value("${jwt.expirationDateInMs}")
+    public void setJwtExpirationInMs(int jwtExpirationInMs) {
+        this.jwtExpirationInMs = jwtExpirationInMs;
+    }
 
-	public String generateToken(UserDetails userDetails) {
-		Map<String, Object> claims = new HashMap<>();
+    @Value("${jwt.refreshExpirationDateInMs}")
+    public void setRefreshExpirationDateInMs(int refreshExpirationDateInMs) {
+        this.refreshExpirationDateInMs = refreshExpirationDateInMs;
+    }
 
-		LOGGER.info("UserDetails: {}", userDetails.getAuthorities());
-		Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
 
-		if (roles.contains(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"))) {
-			claims.put("isAdmin", true);
-		}
-		if (roles.contains(new SimpleGrantedAuthority("ROLE_PARENT"))) {
-			claims.put("isParent", true);
-		}
-		if(roles.contains(new SimpleGrantedAuthority("ROLE_TEACHER"))){
-			claims.put("isTeacher", true);
-		}
-		
-		return doGenerateToken(claims, userDetails.getUsername());
-	}
+        LOGGER.info("UserDetails: {}", userDetails.getAuthorities());
+        Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
 
-	private String doGenerateToken(Map<String, Object> claims, String subject) {
-		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
+        if (roles.contains(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"))) {
+            claims.put("isAdmin", true);
+        }
+        if (roles.contains(new SimpleGrantedAuthority("ROLE_PARENT"))) {
+            claims.put("isParent", true);
+        }
+        if (roles.contains(new SimpleGrantedAuthority("ROLE_TEACHER"))) {
+            claims.put("isTeacher", true);
+        }
+        if (roles.contains(new SimpleGrantedAuthority("ROLE_STUDENT"))) {
+            claims.put("isStudent", true);
+        }
 
-	}
-	
-	public String doGenerateRefreshToken(Map<String, Object> claims, String subject) {
+        return doGenerateToken(claims, userDetails.getUsername());
+    }
 
-		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + refreshExpirationDateInMs))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
+    private String doGenerateToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
+                .signWith(SignatureAlgorithm.HS512, secret).compact();
 
-	}
+    }
 
-	public boolean validateToken(String authToken) {
-		try {
-			Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
-			return true;
-		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
-			throw new BadCredentialsException("INVALID_CREDENTIALS", ex);
-		} catch (ExpiredJwtException ex) {
-			throw ex;
-		}
-	}
+    public String doGenerateRefreshToken(Map<String, Object> claims, String subject) {
 
-	public String getUsernameFromToken(String token) {
-		Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-		return claims.getSubject();
+        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationDateInMs))
+                .signWith(SignatureAlgorithm.HS512, secret).compact();
 
-	}
+    }
 
-	public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
-		Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    public boolean validateToken(String authToken) {
+        try {
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
+            return true;
+        } catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+            throw new BadCredentialsException("INVALID_CREDENTIALS", ex);
+        } catch (ExpiredJwtException ex) {
+            throw ex;
+        }
+    }
 
-		List<SimpleGrantedAuthority> roles = new ArrayList<>();
+    public String getUsernameFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return claims.getSubject();
 
-		Boolean isAdmin = claims.get("isAdmin", Boolean.class);
-		Boolean isTeacher = claims.get("isTeacher", Boolean.class);
-		Boolean isParent = claims.get("isParent", Boolean.class);
+    }
 
-		if (isAdmin != null && isAdmin) {
-			roles.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"));
-		}
-		if (isTeacher != null && isTeacher) {
-			roles.add(new SimpleGrantedAuthority("ROLE_TEACHER"));
-		}
-		if (isParent != null && isParent) {
-			roles.add(new SimpleGrantedAuthority("ROLE_PARENT"));
-		}
-		return roles;
+    public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
-	}
+        List<SimpleGrantedAuthority> roles = new ArrayList<>();
+
+        Boolean isAdmin = claims.get("isAdmin", Boolean.class);
+        Boolean isTeacher = claims.get("isTeacher", Boolean.class);
+        Boolean isParent = claims.get("isParent", Boolean.class);
+        Boolean isStudent = claims.get("isStudent", Boolean.class);
+
+        if (isAdmin != null && isAdmin) {
+            roles.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVE"));
+        }
+        if (isTeacher != null && isTeacher) {
+            roles.add(new SimpleGrantedAuthority("ROLE_TEACHER"));
+        }
+        if (isParent != null && isParent) {
+            roles.add(new SimpleGrantedAuthority("ROLE_PARENT"));
+        }
+        if (isStudent != null && isStudent) {
+            roles.add(new SimpleGrantedAuthority("ROLE_STUDENT"));
+        }
+        return roles;
+
+    }
 
 }

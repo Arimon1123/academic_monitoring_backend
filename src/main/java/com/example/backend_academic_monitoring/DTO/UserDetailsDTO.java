@@ -12,6 +12,7 @@ import java.util.List;
 public class UserDetailsDTO {
     private Object details;
     private UserDTO user;
+    private StudentDTO studentDetails;
     private List<StudentDTO> students;
     private List<ClassAssignationDTO> classAssignations;
     private String role;

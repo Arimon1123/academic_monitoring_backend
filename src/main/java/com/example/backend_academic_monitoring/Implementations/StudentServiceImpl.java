@@ -2,10 +2,7 @@ package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.StudentCreateDTO;
 import com.example.backend_academic_monitoring.DTO.StudentDTO;
-import com.example.backend_academic_monitoring.Entity.ClassEntity;
-import com.example.backend_academic_monitoring.Entity.ParentEntity;
-import com.example.backend_academic_monitoring.Entity.ParentStudentEntity;
-import com.example.backend_academic_monitoring.Entity.StudentEntity;
+import com.example.backend_academic_monitoring.Entity.*;
 import com.example.backend_academic_monitoring.Mappers.StudentMapper;
 import com.example.backend_academic_monitoring.Repository.ParentStudentRepository;
 import com.example.backend_academic_monitoring.Repository.StudentRepository;
@@ -15,6 +12,8 @@ import com.example.backend_academic_monitoring.Service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,12 +37,12 @@ public class StudentServiceImpl implements StudentService {
         this.classService = classService;
     }
 
+
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void saveStudent(StudentCreateDTO studentDTO) {
-        if (studentRepository.existsByCi(studentDTO.getCi())) throw new RuntimeException("Ci ya existe");
-        if (studentRepository.existsByRude(studentDTO.getRude())) throw new RuntimeException("Rude ya existe");
+    public void saveStudent(StudentCreateDTO studentDTO, UserEntity userEntity) {
         StudentEntity studentEntity = StudentMapper.toEntity(studentDTO);
+        studentEntity.setUser(userEntity);
         studentEntity = studentRepository.save(studentEntity);
         for (Integer parentId : studentDTO.getParentId()) {
             ParentEntity parentEntity = parentService.getParent(parentId);
@@ -52,13 +51,23 @@ public class StudentServiceImpl implements StudentService {
             fatherStudentEntity.setStudent(studentEntity);
             parentStudentRepository.save(fatherStudentEntity);
         }
+        if (studentDTO.isUser()) {
+            UserEntity user = new UserEntity();
+            user.setUsername(studentDTO.getCi());
+            user.setStatus(1);
+        }
         classService.addStudentToClass(studentDTO.getClassId(), studentEntity);
     }
 
     @Override
     public void updateStudent(StudentDTO studentDTO) {
-        if (studentDTO.getId() == null) throw new RuntimeException("Id is required");
-        StudentEntity studentEntity = StudentMapper.toEntity(studentDTO);
+        StudentEntity studentEntity = studentRepository.getReferenceById(studentDTO.getId());
+        studentEntity.setName(studentDTO.getName());
+        studentEntity.setFatherLastname(studentDTO.getFatherLastname());
+        studentEntity.setMotherLastname(studentDTO.getMotherLastname());
+        studentEntity.setEmail(studentDTO.getEmail());
+        studentEntity.setAddress(studentDTO.getAddress());
+        studentEntity.setBirthdate(studentDTO.getBirthDate());
         studentRepository.save(studentEntity);
     }
 
@@ -88,7 +97,12 @@ public class StudentServiceImpl implements StudentService {
     private StudentDTO getStudentDTO(StudentEntity studentEntity) {
         StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
         ClassEntity classEntity = classService.getClassByStudentId(studentEntity.getId());
-        studentDTO.setStudentClass(classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier());
+        if (classEntity != null) {
+            studentDTO.setStudentClass(
+                    classEntity.getGrade().getNumber() + "°" +
+                            classEntity.getGrade().getSection() + " " +
+                            classEntity.getIdentifier());
+        }
         return studentDTO;
     }
 
@@ -100,6 +114,11 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public boolean existsByRude(String rude) {
         return studentRepository.existsByRude(rude);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return studentRepository.existsByEmail(email);
     }
 
     @Override
@@ -122,25 +141,36 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDTO> findAllByAssignationId(Integer assignationId) {
-        List<StudentEntity> studentEntities = studentRepository.findAllByAssignationId(assignationId);
-        ClassEntity classEntity = classService.getClassByAssignationId(assignationId);
-        String className = classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier();
-        return studentEntities.stream().map(studentEntity -> {
-            StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
-            studentDTO.setStudentClass(className);
-            return studentDTO;
-        }).toList();
+        try {
+            List<StudentEntity> studentEntities = studentRepository.findAllByAssignationId(assignationId);
+            ClassEntity classEntity = classService.getClassByAssignationId(assignationId);
+            String className = classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier();
+            return studentEntities.stream().map(studentEntity -> {
+                StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
+                studentDTO.setStudentClass(className);
+                return studentDTO;
+            }).toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     @Override
-    public List<StudentDTO> searchStudent(String ci, String rude, String name, String fatherLastname, String motherLastname) {
+    public Page<StudentDTO> searchStudent(String ci, String rude, String name, String lastname, Integer page, Integer size) {
         if (ci == null) ci = "";
+        ci = "%" + ci + "%";
         if (rude == null) rude = "";
+        rude = "%" + rude + "%";
         if (name == null) name = "";
-        if (fatherLastname == null) fatherLastname = "";
-        if (motherLastname == null) motherLastname = "";
-        List<StudentEntity> studentEntities = studentRepository.searchStudent(ci, rude, name, fatherLastname, motherLastname);
-        return studentEntities.stream().map(this::getStudentDTO).toList();
+        name = "%" + name + "%";
+        if (lastname == null) lastname = "";
+        lastname = "%" + lastname + "%";
+        LOGGER.info("Buscando estudiantes por ci: {}, rude: {}, nombre: {}, apellido: {}", ci, rude, name, lastname);
+        Page<StudentEntity> studentEntities = studentRepository.searchStudent(ci, rude, name, lastname, PageRequest.of(page, size));
+        LOGGER.info("Encontrados {} estudiantes", studentEntities);
+        return studentEntities.map(this::getStudentDTO);
     }
 
     @Override
@@ -170,7 +200,11 @@ public class StudentServiceImpl implements StudentService {
         } else {
             classService.addStudentToClass(classId, student);
         }
+    }
 
+    @Override
+    public StudentDTO findByUserId(Integer userId) {
+        return StudentMapper.toDTO(studentRepository.findByUser_Id(userId));
     }
 
 

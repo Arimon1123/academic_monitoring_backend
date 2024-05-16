@@ -15,37 +15,35 @@ public class StudentMapper {
         student.setBirthDate(studentEntity.getBirthdate());
         student.setAddress(studentEntity.getAddress());
         student.setRude(studentEntity.getRude());
+        student.setEmail(studentEntity.getEmail());
+        student.setParents(studentEntity.getParents().stream().map(ParentMapper::toDTO).toList());
+        if (studentEntity.getUser() != null) {
+            student.setUser(UserMapper.entityToDTO(studentEntity.getUser()));
+        }
         return student;
-
     }
 
     public static StudentEntity toEntity(StudentCreateDTO studentDTO) {
-        return new StudentEntity(
-                studentDTO.getId(),
-                studentDTO.getName(),
-                studentDTO.getCi(),
-                studentDTO.getFatherLastname(),
-                studentDTO.getMotherLastname(),
-                studentDTO.getBirthDate(),
-                studentDTO.getAddress(),
-                1,
-                studentDTO.getRude(),
-                null
-        );
+        return getStudentEntity(studentDTO);
+
     }
 
     public static StudentEntity toEntity(StudentDTO studentDTO) {
-        return new StudentEntity(
-                studentDTO.getId(),
-                studentDTO.getName(),
-                studentDTO.getCi(),
-                studentDTO.getFatherLastname(),
-                studentDTO.getMotherLastname(),
-                studentDTO.getBirthDate(),
-                studentDTO.getAddress(),
-                1,
-                studentDTO.getRude(),
-                null
-        );
+        return getStudentEntity(studentDTO);
+    }
+
+    private static StudentEntity getStudentEntity(StudentDTO studentDTO) {
+        StudentEntity studentEntity = new StudentEntity();
+        studentEntity.setId(studentDTO.getId());
+        studentEntity.setName(studentDTO.getName());
+        studentEntity.setCi(studentDTO.getCi());
+        studentEntity.setFatherLastname(studentDTO.getFatherLastname());
+        studentEntity.setMotherLastname(studentDTO.getMotherLastname());
+        studentEntity.setBirthdate(studentDTO.getBirthDate());
+        studentEntity.setAddress(studentDTO.getAddress());
+        studentEntity.setRude(studentDTO.getRude());
+        studentEntity.setEmail(studentDTO.getEmail());
+        studentEntity.setStatus(1);
+        return studentEntity;
     }
 }

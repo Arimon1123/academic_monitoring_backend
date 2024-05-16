@@ -1,7 +1,6 @@
 package com.example.backend_academic_monitoring.Controller;
 
 import com.example.backend_academic_monitoring.DTO.ResponseDTO;
-import com.example.backend_academic_monitoring.DTO.StudentCreateDTO;
 import com.example.backend_academic_monitoring.DTO.StudentDTO;
 import com.example.backend_academic_monitoring.Service.StudentService;
 import org.slf4j.Logger;
@@ -22,13 +21,6 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
-    @PostMapping()
-    public ResponseEntity<ResponseDTO<String>> save(@RequestBody StudentCreateDTO studentDTO) {
-        LOGGER.info("Guardando  {}", studentDTO);
-        studentService.saveStudent(studentDTO);
-        return ResponseEntity.ok(new ResponseDTO<>(null, "Student saved successfully", 200));
-    }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
     @GetMapping("exists/ci/{ci}")
@@ -46,6 +38,17 @@ public class StudentController {
     public ResponseEntity<ResponseDTO<Boolean>> existsByRude(@PathVariable String rude) {
         try {
             return ResponseEntity.ok(new ResponseDTO<>(studentService.existsByRude(rude), "\n" +
+                    "Successfully searched student", 200));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
+    @GetMapping("exists/email/{email}")
+    public ResponseEntity<ResponseDTO<Boolean>> existsByEmail(@PathVariable String email) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(studentService.existsByEmail(email), "\n" +
                     "Successfully searched student", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
@@ -117,4 +120,28 @@ public class StudentController {
         }
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> searchStudent(@RequestParam(required = false) String ci,
+                                           @RequestParam(required = false) String rude,
+                                           @RequestParam(required = false) String name,
+                                           @RequestParam(required = false) String lastname,
+                                           @RequestParam(defaultValue = "0") Integer page,
+                                           @RequestParam(defaultValue = "10") Integer size) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(studentService.searchStudent(ci, rude, name, lastname, page, size), "\n" +
+                    "Successfully searched student", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
+    @PutMapping()
+    public ResponseEntity<?> updateStudent(@RequestBody StudentDTO studentDTO) {
+        try {
+            studentService.updateStudent(studentDTO);
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Student updated successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
 }
