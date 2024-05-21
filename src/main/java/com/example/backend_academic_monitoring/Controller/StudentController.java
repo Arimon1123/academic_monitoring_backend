@@ -92,6 +92,7 @@ public class StudentController {
             return ResponseEntity.ok(new ResponseDTO<>(studentService.getStudent(id), "\n" +
                     "Successfully searched student", 200));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }

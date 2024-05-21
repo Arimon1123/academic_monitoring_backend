@@ -53,4 +53,13 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     Page<StudentEntity> searchStudent(String ci, String rude, String name, String lastname, Pageable pageable);
 
     StudentEntity findByUser_Id(Integer userId);
+
+    @Query(value = """
+             Select s.* from student s
+             join student_class sc on sc.student_id = s.id
+             join class c on c.id = sc.class_id
+             where c.year = 2024 group by s, s.id, name, ci, father_lastname,
+            mother_lastname, birthdate, rude, address, s.status, acad_user_id, email""",
+            nativeQuery = true)
+    List<StudentEntity> findAllByYear(Integer year);
 }

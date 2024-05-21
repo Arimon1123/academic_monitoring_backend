@@ -2,13 +2,17 @@ package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.StudentCreateDTO;
 import com.example.backend_academic_monitoring.DTO.StudentDTO;
+import com.example.backend_academic_monitoring.DTO.SubjectDTO;
 import com.example.backend_academic_monitoring.Entity.*;
 import com.example.backend_academic_monitoring.Mappers.StudentMapper;
 import com.example.backend_academic_monitoring.Repository.ParentStudentRepository;
+import com.example.backend_academic_monitoring.Repository.StudentClassRepository;
 import com.example.backend_academic_monitoring.Repository.StudentRepository;
+import com.example.backend_academic_monitoring.Repository.ValidationRepository;
 import com.example.backend_academic_monitoring.Service.ClassService;
 import com.example.backend_academic_monitoring.Service.ParentService;
 import com.example.backend_academic_monitoring.Service.StudentService;
+import com.example.backend_academic_monitoring.Service.SubjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +32,20 @@ public class StudentServiceImpl implements StudentService {
     private final ParentStudentRepository parentStudentRepository;
     private final ParentService parentService;
     private final ClassService classService;
+    private final ValidationRepository validationRepository;
+    private final SubjectService subjectService;
+    private final StudentClassRepository studentClassRepository;
+
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository, ParentStudentRepository parentStudentRepository, ParentService parentService, ClassService classService) {
+    public StudentServiceImpl(StudentRepository studentRepository, ParentStudentRepository parentStudentRepository, ParentService parentService, ClassService classService, ValidationRepository validationRepository, SubjectService subjectService, StudentClassRepository studentClassRepository) {
         this.studentRepository = studentRepository;
         this.parentStudentRepository = parentStudentRepository;
         this.parentService = parentService;
         this.classService = classService;
+        this.validationRepository = validationRepository;
+        this.subjectService = subjectService;
+        this.studentClassRepository = studentClassRepository;
     }
 
 
@@ -84,7 +95,8 @@ public class StudentServiceImpl implements StudentService {
         if (studentEntity == null) throw new RuntimeException("Student not found");
         ClassEntity classEntity = classService.getClassByStudentId(id);
         StudentDTO studentDTO = StudentMapper.toDTO(studentEntity);
-        studentDTO.setStudentClass(classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier());
+        if (classEntity != null)
+            studentDTO.setStudentClass(classEntity.getGrade().getNumber() + "°" + classEntity.getGrade().getSection() + " " + classEntity.getIdentifier());
         return studentDTO;
     }
 
@@ -195,11 +207,10 @@ public class StudentServiceImpl implements StudentService {
     public void updateStudentClass(Integer studentId, Integer classId) {
         ClassEntity newClassEntity = classService.getClass(classId);
         StudentEntity student = studentRepository.getReferenceById(studentId);
-        if (!classService.removeStudentFromClass(newClassEntity, student)) {
+        if (!classService.removeStudentFromClass(newClassEntity, student))
             throw new RuntimeException("Error al eliminar estudiante de la clase anterior");
-        } else {
-            classService.addStudentToClass(classId, student);
-        }
+        if (validateInscription(newClassEntity, student)) classService.addStudentToClass(classId, student);
+
     }
 
     @Override
@@ -207,5 +218,35 @@ public class StudentServiceImpl implements StudentService {
         return StudentMapper.toDTO(studentRepository.findByUser_Id(userId));
     }
 
+    @Override
+    public void setApprovalStatus(Integer studentId, Integer approvalStatus) {
+        StudentEntity studentEntity = studentRepository.getReferenceById(studentId);
+        ClassEntity classEntity = classService.getClassByStudentId(studentId);
+        StudentClassEntity studentClass = studentClassRepository.findByStudentIdAndClassEntity_Id(studentId, classEntity.getId());
+        boolean isApproved = validateApproval(classEntity, studentEntity);
+        studentClass.setApprovalStatus(isApproved ? 1 : 0);
+        studentClassRepository.save(studentClass);
+    }
+
+    @Override
+    public List<StudentEntity> getAllStudentsByYear(Integer year) {
+        return studentRepository.findAllByYear(year);
+    }
+
+    public boolean validateInscription(ClassEntity classEntity, StudentEntity studentEntity) {
+        if (classEntity.getStudents().size() > 40)
+            throw new RuntimeException("La clase ya alcanzó su capacidad máxima");
+
+        return true;
+    }
+
+    public boolean validateApproval(ClassEntity classEntity, StudentEntity studentEntity) {
+        if (!classEntity.getGrade().getNumber().equals("1")) {
+            List<Object[]> approvedSubjects = validationRepository.findApprovedSubjects(studentEntity.getId(), classEntity.getGrade().getId());
+            List<SubjectDTO> subjects = subjectService.getByGrade(classEntity.getGrade().getId() - 1);
+            return approvedSubjects.size() == subjects.size();
+        }
+        return true;
+    }
 
 }

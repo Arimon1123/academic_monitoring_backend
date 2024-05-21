@@ -4,11 +4,13 @@ import com.example.backend_academic_monitoring.DTO.ClassDTO;
 import com.example.backend_academic_monitoring.DTO.GradeDTO;
 import com.example.backend_academic_monitoring.DTO.UnfinishedSubjectDTO;
 import com.example.backend_academic_monitoring.Entity.ConfigEntity;
+import com.example.backend_academic_monitoring.Entity.StudentEntity;
 import com.example.backend_academic_monitoring.Repository.ConfigurationRepository;
 import com.example.backend_academic_monitoring.Repository.ValidationRepository;
 import com.example.backend_academic_monitoring.Service.ClassService;
 import com.example.backend_academic_monitoring.Service.ConfigurationService;
 import com.example.backend_academic_monitoring.Service.GradeService;
+import com.example.backend_academic_monitoring.Service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,12 +25,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private final ConfigurationRepository configurationRepository;
     private final GradeService gradeService;
     private final ClassService classService;
+    private final StudentService studentService;
 
-    public ConfigurationServiceImpl(ValidationRepository validationRepository, ConfigurationRepository configurationRepository, GradeService gradeService, ClassService classService) {
+    public ConfigurationServiceImpl(ValidationRepository validationRepository, ConfigurationRepository configurationRepository, GradeService gradeService, ClassService classService, StudentService studentService) {
         this.validationRepository = validationRepository;
         this.configurationRepository = configurationRepository;
         this.gradeService = gradeService;
         this.classService = classService;
+        this.studentService = studentService;
     }
 
     @Override
@@ -65,16 +69,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public void finishYear(Integer year) {
-        int bimester = 1;
-        for (int i = 1; i <= 4; i++) {
+
+        for (int bimester = 1; bimester <= 4; bimester++) {
             List<UnfinishedSubjectDTO> list = validateBimester(bimester, year);
             if (!list.isEmpty()) {
                 throw new RuntimeException("There are unfinished subjects");
             }
-            bimester++;
         }
+        setApprovalStatusForAllStudents(year);
         ConfigEntity config = configurationRepository.getReferenceById(1);
         config.setCurrentYear(year + 1);
+        config.setCurrentBimester(1);
         configurationRepository.save(config);
         List<GradeDTO> grades = gradeService.getAll();
         List<String> identifiers = List.of("A", "B", "C", "D", "E");
@@ -96,6 +101,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         ConfigEntity config = configurationRepository.findById(1).orElseThrow();
         log.info("aa {} ", config);
         return config;
+    }
+
+    void setApprovalStatusForAllStudents(Integer year) {
+        List<StudentEntity> students = studentService.getAllStudentsByYear(year);
+        for (StudentEntity student : students) {
+            studentService.setApprovalStatus(student.getId(), 1);
+        }
     }
 
 }

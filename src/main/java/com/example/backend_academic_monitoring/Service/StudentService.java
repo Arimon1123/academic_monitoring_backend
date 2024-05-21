@@ -40,4 +40,8 @@ public interface StudentService {
     void updateStudentClass(Integer studentId, Integer classId);
 
     StudentDTO findByUserId(Integer userId);
+
+    void setApprovalStatus(Integer studentId, Integer approvalStatus);
+
+    List<StudentEntity> getAllStudentsByYear(Integer year);
 }

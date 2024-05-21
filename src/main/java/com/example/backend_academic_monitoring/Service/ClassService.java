@@ -25,4 +25,8 @@ public interface ClassService {
     boolean removeStudentFromClass(ClassEntity classEntity, StudentEntity student);
 
     void saveClass(ClassDTO classDTO);
+
+    List<ClassEntity> getStudentClasses(Integer studentId);
+
+    void setApprovalStatus(Integer studentId, Integer classId, Integer approvalStatus);
 }

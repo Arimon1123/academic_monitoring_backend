@@ -44,7 +44,8 @@ public class ConfigurationController {
             configurationService.finishYear(year);
             return ResponseEntity.ok(new ResponseDTO<String>(null, "Year finished successfully", 200));
         } catch (Exception e) {
-            return ResponseEntity.ok(new ResponseDTO<String>(null, "Year couldn't be finished", 200));
+            e.printStackTrace();
+            return ResponseEntity.ok(new ResponseDTO<String>(null, e.getMessage(), 200));
         }
     }
 }

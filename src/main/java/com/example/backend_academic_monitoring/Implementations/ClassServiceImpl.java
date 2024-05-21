@@ -2,9 +2,11 @@ package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.ClassDTO;
 import com.example.backend_academic_monitoring.DTO.ClassListDTO;
+import com.example.backend_academic_monitoring.Entity.ActivityGradeEntity;
 import com.example.backend_academic_monitoring.Entity.ClassEntity;
 import com.example.backend_academic_monitoring.Entity.StudentEntity;
 import com.example.backend_academic_monitoring.Repository.ClassRepository;
+import com.example.backend_academic_monitoring.Service.ActivityGradeService;
 import com.example.backend_academic_monitoring.Service.ClassService;
 import com.example.backend_academic_monitoring.Service.GradeService;
 import org.springframework.stereotype.Service;
@@ -16,10 +18,12 @@ public class ClassServiceImpl implements ClassService {
 
     private final ClassRepository classRepository;
     private final GradeService gradeService;
+    private final ActivityGradeService activityGradeService;
 
-    public ClassServiceImpl(ClassRepository classRepository, GradeService gradeService) {
+    public ClassServiceImpl(ClassRepository classRepository, GradeService gradeService, ActivityGradeService activityGradeService) {
         this.classRepository = classRepository;
         this.gradeService = gradeService;
+        this.activityGradeService = activityGradeService;
     }
 
     @Override
@@ -67,12 +71,17 @@ public class ClassServiceImpl implements ClassService {
     @Override
     public boolean removeStudentFromClass(ClassEntity newClass, StudentEntity student) {
         ClassEntity prevClass = classRepository.findByStudentIdAndYearAndShift(student.getId(), newClass.getYear(), newClass.getShift());
-        if (prevClass != null) {
-            prevClass.getStudents().remove(student);
-            classRepository.save(newClass);
+        if (prevClass == null) {
             return true;
         }
-        return false;
+        prevClass.getStudents().remove(student);
+        classRepository.save(newClass);
+        List<ActivityGradeEntity> activityGradeEntities = activityGradeService.activityGradesByStudentAndYear(student.getId(), prevClass.getYear());
+        for (ActivityGradeEntity activityGradeEntity : activityGradeEntities) {
+            activityGradeEntity.setStatus(0);
+        }
+        activityGradeService.updateGrades(activityGradeEntities);
+        return true;
     }
 
     @Override
@@ -82,7 +91,18 @@ public class ClassServiceImpl implements ClassService {
         classEntity.setShift(classDTO.getShift());
         classEntity.setIdentifier(classDTO.getIdentifier());
         classEntity.setGrade(gradeService.getById(classDTO.getGradeId()));
+        classEntity.setStatus(1);
         classRepository.save(classEntity);
+    }
+
+    @Override
+    public List<ClassEntity> getStudentClasses(Integer studentId) {
+        return List.of();
+    }
+
+    @Override
+    public void setApprovalStatus(Integer studentId, Integer classId, Integer approvalStatus) {
+
     }
 
     public ClassListDTO getClassDTO(ClassEntity classEntity) {

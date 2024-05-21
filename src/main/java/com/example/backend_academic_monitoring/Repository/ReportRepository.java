@@ -15,40 +15,42 @@ public class ReportRepository {
     private EntityManager entityManager;
 
     public List<Object[]> getPerformanceReport(Integer gradeId) {
-        Query query = entityManager.createNativeQuery("select  row_number() over (),round(sum(total_grade)/count(student_id),2) as grade, class_id, year, shift, identifier, grade_number,bimester\n" +
-                "from (select sum(grade * activity.value * dimension.value)/10000 as total_grade ,\n" +
-                "             count(student_id) as student_id, class.id as class_id, class.year as year,\n" +
-                "             class.shift as shift, class.identifier as identifier, grade.number as grade_number, grade.section as grade_section , bimester\n" +
-                "      from activity_has_grade\n" +
-                "               left join activity on activity_has_grade.activity_id = activity.id\n" +
-                "               join class_has_subject on activity.class_has_subject_id = class_has_subject.id\n" +
-                "               join class on class_has_subject.class_id = class.id\n" +
-                "               join student on activity_has_grade.student_id = student.id\n" +
-                "               join subject on class_has_subject.subject_id = subject.id\n" +
-                "               join dimension on activity.dimension = dimension.name\n" +
-                "               join grade on class.grade_id = grade.id\n" +
-                "      where grade.id = :gradeId\n" +
-                "      group by student_id,bimester, class_has_subject.id, class.id, year, shift, identifier, grade_number, grade_section) as t\n" +
-                "group by class_id, year, shift, identifier, grade_number, grade_section , bimester order by bimester, class_id;");
+        Query query = entityManager.createNativeQuery("""
+                select  row_number() over (),round(sum(total_grade)/count(student_id),2) as grade, class_id, year, shift, identifier, grade_number,bimester
+                from (select sum(grade * activity.value * dimension.value)/10000 as total_grade ,
+                             count(student_id) as student_id, class.id as class_id, class.year as year,
+                             class.shift as shift, class.identifier as identifier, grade.number as grade_number, grade.section as grade_section , bimester
+                      from activity_has_grade
+                               left join activity on activity_has_grade.activity_id = activity.id
+                               join class_has_subject on activity.class_has_subject_id = class_has_subject.id
+                               join class on class_has_subject.class_id = class.id
+                               join student on activity_has_grade.student_id = student.id
+                               join subject on class_has_subject.subject_id = subject.id
+                               join dimension on activity.dimension = dimension.name
+                               join grade on class.grade_id = grade.id
+                      where grade.id = :gradeId
+                      group by student_id,bimester, class_has_subject.id, class.id, year, shift, identifier, grade_number, grade_section) as t
+                group by class_id, year, shift, identifier, grade_number, grade_section , bimester order by bimester, class_id;""");
         query.setParameter("gradeId", gradeId);
         return query.getResultList();
     }
 
     public List<Object[]> getAttendanceReport(Date startDate, Date finalDate, Integer gradeId) {
-        Query query = entityManager.createNativeQuery("select count(a.attendance)/(cast(num_dates.num_dates * num_subjects.num_subjects as float)) as attendance_avg,\n" +
-                "                       count(a.attendance) , num_dates as clases, num_subjects  as subjects,\n" +
-                "                       a.attendance , cl.year, cl.shift, cl.identifier, g.section, g.number, g.id\n" +
-                "                from attendance a\n" +
-                "                         join class_has_subject c on a.class_has_subject_id = c.id\n" +
-                "                         join class cl on c.class_id = cl.id\n" +
-                "                         join grade g on cl.grade_id = g.id,\n" +
-                "                        lateral (SELECT COUNT(DISTINCT date) AS num_dates\n" +
-                "                            FROM attendance a left join class_has_subject chs on chs.id = a.class_has_subject_id\n" +
-                "                            join class c on c.id = chs.class_id join grade g1 on c.grade_id = g1.id WHERE g1.id = g.id and a.date between :startDate and :finalDate) as num_dates,\n" +
-                "                        Lateral (Select count(subject.id) as num_subjects from subject where subject.grade_id = g.id) as num_subjects\n" +
-                "                where g.id = :gradeId and a.date between :startDate and :finalDate\n" +
-                "                group by  a.attendance, cl.year, cl.shift, cl.identifier, g.section, g.number, g.id, num_dates.num_dates, num_subjects.num_subjects\n" +
-                "                order by  number,identifier,a.attendance;");
+        Query query = entityManager.createNativeQuery("""
+                select count(a.attendance)/(cast(num_dates.num_dates * num_subjects.num_subjects as float)) as attendance_avg,
+                                       count(a.attendance) , num_dates as clases, num_subjects  as subjects,
+                                       a.attendance , cl.year, cl.shift, cl.identifier, g.section, g.number, g.id
+                                from attendance a
+                                         join class_has_subject c on a.class_has_subject_id = c.id
+                                         join class cl on c.class_id = cl.id
+                                         join grade g on cl.grade_id = g.id,
+                                        lateral (SELECT COUNT(DISTINCT date) AS num_dates
+                                            FROM attendance a left join class_has_subject chs on chs.id = a.class_has_subject_id
+                                            join class c on c.id = chs.class_id join grade g1 on c.grade_id = g1.id WHERE g1.id = g.id and a.date between :startDate and :finalDate) as num_dates,
+                                        Lateral (Select count(subject.id) as num_subjects from subject where subject.grade_id = g.id) as num_subjects
+                                where g.id = :gradeId and a.date between :startDate and :finalDate
+                                group by  a.attendance, cl.year, cl.shift, cl.identifier, g.section, g.number, g.id, num_dates.num_dates, num_subjects.num_subjects
+                                order by  number,identifier,a.attendance;""");
         query.setParameter("startDate", startDate).setParameter("finalDate", finalDate).setParameter("gradeId", gradeId);
         return query.getResultList();
     }

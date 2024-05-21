@@ -15,4 +15,8 @@ public interface ActivityGradeService {
     Map<Integer, List<ActivityGradeEntity>> getGradesByAssignationIdAndBimester(Integer assignationId, Integer bimester);
 
     void deleteAllGradesByActivityId(Integer activityId);
+
+    List<ActivityGradeEntity> activityGradesByStudentAndYear(Integer studentId, Integer year);
+
+    void updateGrades(List<ActivityGradeEntity> activityGradeEntities);
 }

@@ -38,4 +38,22 @@ public class ValidationRepository {
         return query.getResultList();
     }
 
+    public List<Object[]> findApprovedSubjects(Integer studentId, Integer gradeId) {
+        Query query = entityManager.createNativeQuery("""
+                Select sum(grade)/4 as grade , class_has_subject_id, subject
+                from(Select sum(grade * activity.value * dimension.value) / 10000 as grade, class_has_subject_id, subject.name as subject
+                     from activity_has_grade a
+                              join activity on a.activity_id = activity.id
+                              join class_has_subject on activity.class_has_subject_id = class_has_subject.id
+                              join class on class_has_subject.class_id = class.id
+                              join dimension on activity.dimension = dimension.name
+                              join subject on class_has_subject.subject_id = subject.id
+                     where a.student_id = :studentId and class.grade_id = :gradeId
+                     group by class_has_subject_id, bimester, subject) as grades
+                group by class_has_subject_id, subject
+                having sum(grade)/4 >=  51;""");
+        query.setParameter("studentId", studentId).setParameter("gradeId", gradeId);
+        return query.getResultList();
+    }
+
 }

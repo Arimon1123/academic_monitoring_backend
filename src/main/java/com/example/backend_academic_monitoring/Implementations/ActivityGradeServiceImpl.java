@@ -47,5 +47,15 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
         activityGradeRepository.deleteAllInBatch(activityGradeEntities);
     }
 
+    @Override
+    public List<ActivityGradeEntity> activityGradesByStudentAndYear(Integer studentId, Integer year) {
+        return activityGradeRepository.findByStudentIdAndClassId(studentId, year);
+    }
+
+    @Override
+    public void updateGrades(List<ActivityGradeEntity> activityGradeEntities) {
+        activityGradeRepository.saveAll(activityGradeEntities);
+    }
+
 
 }

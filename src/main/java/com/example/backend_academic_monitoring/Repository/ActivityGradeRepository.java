@@ -35,4 +35,12 @@ public interface ActivityGradeRepository extends JpaRepository<ActivityGradeEnti
               where student_id =:studentId and class.year = :year\s
               group by student_id, student.name,activity.bimester, subject.name, subject.id, class_has_subject.id;""", nativeQuery = true)
     List<GradesDTO> findAllByStudentIdAndYear(Integer studentId, Integer year);
+
+    @Query(value = "Select a from ActivityGradeEntity a " +
+            "join ActivityEntity ac on ac.id = a.activityId " +
+            "join ClassAssignationEntity ca on ca.id = ac.assignationId " +
+            "join ClassEntity c on c.id = ca.classId " +
+            "where a.studentId = :studentId and c.year = :year")
+    List<ActivityGradeEntity> findByStudentIdAndClassId(Integer studentId, Integer year);
+
 }
