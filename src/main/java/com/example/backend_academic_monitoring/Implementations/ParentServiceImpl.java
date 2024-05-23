@@ -70,4 +70,5 @@ public class ParentServiceImpl implements ParentService {
         return parentEntities.stream().map(ParentMapper::toDTO).toList();
     }
 
+
 }

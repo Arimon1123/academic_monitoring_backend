@@ -13,13 +13,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PersonServiceImpl implements PersonService {
 
-    private final PersonRepository personRepository;
     public static Logger LOGGER = LoggerFactory.getLogger(PersonServiceImpl.class);
+    private final PersonRepository personRepository;
+
     @Autowired
     public PersonServiceImpl(PersonRepository personRepository) {
         this.personRepository = personRepository;
@@ -63,22 +63,22 @@ public class PersonServiceImpl implements PersonService {
 
 
     @Override
-    public Page<PersonEntity> findAllByNameOrCI(String name,  String lastname, String ci, String role, Integer page, Integer size) {
-        if(name != null) name = "%" + name + "%";
+    public Page<PersonEntity> findAllByNameOrCI(String name, String lastname, String ci, String role, Integer page, Integer size) {
+        if (name != null) name = "%" + name + "%";
         else name = "%%";
-        if(lastname != null) lastname = "%" + lastname + "%";
+        if (lastname != null) lastname = "%" + lastname + "%";
         else lastname = "%%";
-        if(ci != null) ci = "%" + ci + "%";
+        if (ci != null) ci = "%" + ci + "%";
         else ci = "%%";
-        if(role != null) role = "%" + role + "%";
+        if (role != null) role = "%" + role + "%";
         else role = "%%";
         LOGGER.info("Buscando personas por nombre: {}, apellido: {}, ci: {}, role: {}", name, lastname, ci, role);
-        return personRepository.findAllByNameAndRole(name,lastname , ci ,role,  PageRequest.of(page, size));
+        return personRepository.findAllByNameAndRole(name, lastname, ci, role, PageRequest.of(page, size));
     }
 
     @Override
     public List<PersonEntity> findAllByRole(String role) {
-        if(role == null) return personRepository.findAll();
+        if (role == null) return personRepository.findAll();
         return personRepository.findAllByRole(role);
     }
 
@@ -95,5 +95,10 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public boolean existsByPhone(String phone) {
         return personRepository.existsByPhone(phone);
+    }
+
+    @Override
+    public PersonEntity findByUserId(Integer userId) {
+        return personRepository.findByUserId(userId);
     }
 }

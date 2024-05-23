@@ -6,7 +6,10 @@ import java.util.List;
 
 public interface ScheduleService {
     List<ScheduleEntity> findAllByClassId(Integer classId);
-    List<ScheduleEntity> findAllByTeacherId(Integer teacherId);
-    List<ScheduleEntity> findAllByClassroomId(Integer classroomId);
+
+    List<ScheduleEntity> findAllByTeacherId(Integer teacherId, Integer year);
+
+    List<ScheduleEntity> findAllByClassroomId(Integer classroomId, Integer year);
+
     List<ScheduleEntity> findAllByClassIdAndSubjectId(Integer classId, Integer subjectId);
 }

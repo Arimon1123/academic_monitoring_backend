@@ -36,11 +36,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public List<UnfinishedSubjectDTO> finishBimester(Integer bimester, Integer year) {
-        List<UnfinishedSubjectDTO> list = validateBimester(bimester, year);
+    public List<UnfinishedSubjectDTO> finishBimester() {
+        ConfigEntity config = getCurrentConfig();
+        List<UnfinishedSubjectDTO> list = validateBimester(config.getCurrentBimester(), config.getCurrentYear());
         if (list.isEmpty()) {
-            ConfigEntity config = configurationRepository.getReferenceById(1);
-            config.setCurrentBimester(bimester + 1);
+            config.setCurrentBimester(config.getCurrentBimester() + 1);
             configurationRepository.save(config);
         }
         return list;
@@ -48,9 +48,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private List<UnfinishedSubjectDTO> validateBimester(Integer bimester, Integer year) {
         List<Object[]> subjects = validationRepository.findUnterminatedSubjects(bimester, year);
-        if (subjects.isEmpty()) {
-            return List.of();
-        }
+        if (subjects.isEmpty()) return List.of();
         return subjects.stream().map(subject -> {
             UnfinishedSubjectDTO unfinishedSubjectDTO = new UnfinishedSubjectDTO();
             unfinishedSubjectDTO.setBimester((Integer) subject[0]);
@@ -68,17 +66,16 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void finishYear(Integer year) {
-
+    public void finishYear() {
+        ConfigEntity config = getCurrentConfig();
         for (int bimester = 1; bimester <= 4; bimester++) {
-            List<UnfinishedSubjectDTO> list = validateBimester(bimester, year);
+            List<UnfinishedSubjectDTO> list = validateBimester(bimester, config.getCurrentYear());
             if (!list.isEmpty()) {
                 throw new RuntimeException("There are unfinished subjects");
             }
         }
-        setApprovalStatusForAllStudents(year);
-        ConfigEntity config = configurationRepository.getReferenceById(1);
-        config.setCurrentYear(year + 1);
+        setApprovalStatusForAllStudents(config.getCurrentYear());
+        config.setCurrentYear(config.getCurrentYear() + 1);
         config.setCurrentBimester(1);
         configurationRepository.save(config);
         List<GradeDTO> grades = gradeService.getAll();
@@ -87,7 +84,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             for (String identifier : identifiers) {
                 ClassDTO classDTO = new ClassDTO();
                 classDTO.setGradeId(grade.getId());
-                classDTO.setYear(year + 1);
+                classDTO.setYear(config.getCurrentYear());
                 classDTO.setShift(1);
                 classDTO.setIdentifier(identifier);
                 classService.saveClass(classDTO);
@@ -98,9 +95,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ConfigEntity getCurrentConfig() {
-        ConfigEntity config = configurationRepository.findById(1).orElseThrow();
-        log.info("aa {} ", config);
-        return config;
+        return configurationRepository.findById(1).orElseThrow();
     }
 
     void setApprovalStatusForAllStudents(Integer year) {

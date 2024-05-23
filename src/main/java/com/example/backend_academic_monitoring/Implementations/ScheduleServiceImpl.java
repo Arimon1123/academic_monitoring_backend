@@ -13,8 +13,8 @@ import java.util.List;
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
-    private final ScheduleRepository scheduleRepository;
     public static final Logger LOGGER = LoggerFactory.getLogger(ScheduleServiceImpl.class);
+    private final ScheduleRepository scheduleRepository;
 
     public ScheduleServiceImpl(ScheduleRepository scheduleRepository) {
         this.scheduleRepository = scheduleRepository;
@@ -26,13 +26,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleEntity> findAllByTeacherId(Integer teacherId) {
-        return scheduleRepository.findAllByClassAssignation_TeacherId(teacherId);
+    public List<ScheduleEntity> findAllByTeacherId(Integer teacherId, Integer year) {
+        return scheduleRepository.findAllByClassAssignation_TeacherId(teacherId, year);
     }
 
     @Override
-    public List<ScheduleEntity> findAllByClassroomId(Integer classroomId) {
-        return scheduleRepository.findAllByClassAssignation_ClassroomId(classroomId);
+    public List<ScheduleEntity> findAllByClassroomId(Integer classroomId, Integer year) {
+        return scheduleRepository.findAllByClassAssignation_ClassroomId(classroomId, year);
     }
 
     @Override

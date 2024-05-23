@@ -9,7 +9,9 @@ public interface ActivityService {
 
     void updateActivity(ActivityEntity activityCreateDTO);
 
-    List<ActivityEntity> findActivitiesByAssignationIdAndBimester(Integer assignationId,Integer bimester);
+    List<ActivityEntity> findActivitiesByAssignationIdAndBimester(Integer assignationId, Integer bimester);
 
-    void deleteActivity (Integer id);
+    void deleteActivity(Integer id);
+
+    ActivityEntity findActivityById(Integer id);
 }

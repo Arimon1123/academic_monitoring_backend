@@ -51,4 +51,7 @@ public interface PersonRepository extends JpaRepository<PersonEntity, Integer> {
     boolean existsByEmail(String email);
 
     boolean existsByPhone(String phone);
+
+    @Query(value = "SELECT * FROM person WHERE acad_user_id = :userId", nativeQuery = true)
+    PersonEntity findByUserId(@Param("userId") Integer userId);
 }

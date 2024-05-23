@@ -1,9 +1,7 @@
 package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.Entity.ActivityEntity;
-import com.example.backend_academic_monitoring.Entity.ActivityGradeEntity;
 import com.example.backend_academic_monitoring.Repository.ActivityRepository;
-import com.example.backend_academic_monitoring.Service.ActivityGradeService;
 import com.example.backend_academic_monitoring.Service.ActivityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +11,8 @@ import java.util.List;
 
 @Service
 public class ActivityServiceImpl implements ActivityService {
-    private final ActivityRepository activityRepository;
     public static final Logger LOGGER = LoggerFactory.getLogger(ActivityServiceImpl.class);
+    private final ActivityRepository activityRepository;
 
     public ActivityServiceImpl(ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
@@ -39,8 +37,8 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public List<ActivityEntity> findActivitiesByAssignationIdAndBimester(Integer assignationId, Integer bimester) {
-        LOGGER.info("assignation {} , bimester, {} " , assignationId, bimester);
-        return activityRepository.findAllByAssignationIdAndStatusAndBimesterOrderById(assignationId,1,bimester);
+        LOGGER.info("assignation {} , bimester, {} ", assignationId, bimester);
+        return activityRepository.findAllByAssignationIdAndStatusAndBimesterOrderById(assignationId, 1, bimester);
     }
 
     @Override
@@ -48,5 +46,10 @@ public class ActivityServiceImpl implements ActivityService {
         ActivityEntity activity = activityRepository.getReferenceById(id);
         activity.setStatus(0);
         activityRepository.save(activity);
+    }
+
+    @Override
+    public ActivityEntity findActivityById(Integer id) {
+        return activityRepository.findById(id).orElse(null);
     }
 }

@@ -91,6 +91,10 @@
             display: inline-block;
             min-width: 222px;
         }
+
+        .text-red {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -147,11 +151,21 @@
             <tbody>
             <tr th:each="subject: ${subjects}">
                 <td th:text="${subject.subjectName}"></td>
-                <td th:if="${bimester}>=1" th:text="${subject.firstGrade}"></td>
-                <td th:if="${bimester}>=2" th:text="${subject.secondGrade}"></td>
-                <td th:if="${bimester}>=3" th:text="${subject.thirdGrade}"></td>
-                <td th:if="${bimester}>=4" th:text="${subject.fourthGrade}"></td>
-                <td th:if="${isFinalReport}" th:text="${subject.average}"></td>
+                <td th:if="${bimester} >= 1 and ${subject.getFirstGrade() >= 51}" th:text="${subject.firstGrade}"></td>
+                <td class="text-red" th:if="${bimester}>=1 and ${subject.getFirstGrade() < 51}"
+                    th:text="${subject.firstGrade}"></td>
+                <td th:if="${bimester}>=2 and ${subject.getSecondGrade() >= 51}" th:text="${subject.secondGrade}"></td>
+                <td class="text-red" th:if="${bimester}>=2 and ${subject.getSecondGrade() < 51}"
+                    th:text="${subject.secondGrade}"></td>
+                <td th:if="${bimester}>=3 and ${subject.getThirdGrade() >= 51}" th:text="${subject.thirdGrade}"></td>
+                <td class="text-red" th:if="${bimester}>=3 and ${subject.getThirdGrade() < 51}"
+                    th:text="${subject.thirdGrade}"></td>
+                <td th:if="${bimester}>=4 and ${subject.getFourthGrade() >= 51}" th:text="${subject.fourthGrade}"></td>
+                <td class="text-red" th:if="${bimester}>=4 and ${subject.getFourthGrade() < 51}"
+                    th:text="${subject.fourthGrade}"></td>
+                <td th:if="${isFinalReport} and ${subject.getAverage() >= 51}" th:text="${subject.average}"></td>
+                <td class="text-red" th:if="${isFinalReport} and ${subject.getAverage() < 51}"
+                    th:text="${subject.average}"></td>
             </tr>
             </tbody>
         </table>

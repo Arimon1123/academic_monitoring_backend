@@ -6,9 +6,9 @@ import com.example.backend_academic_monitoring.Entity.ConfigEntity;
 import java.util.List;
 
 public interface ConfigurationService {
-    List<UnfinishedSubjectDTO> finishBimester(Integer bimester, Integer year);
+    List<UnfinishedSubjectDTO> finishBimester();
 
-    void finishYear(Integer year);
+    void finishYear();
 
     ConfigEntity getCurrentConfig();
 }

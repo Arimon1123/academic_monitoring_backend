@@ -32,4 +32,6 @@ public interface TeacherService {
     boolean existAcademicEmail(String academicEmail);
 
     void updateAcademicEmail(String academicEmail, Integer teacherId);
+
+    TeacherDTO getTeacherByAssignationId(Integer assignationId);
 }

@@ -39,14 +39,14 @@ public class ClassAssignationServiceImpl implements ClassAssignationService {
     }
 
     @Override
-    public List<ClassAssignationDTO> getClassAssignationByClassroomId(Integer classroomId) {
-        List<ClassAssignationEntity> classSubjectEntities = classAssignationRepository.findAllByClassroomId(classroomId);
+    public List<ClassAssignationDTO> getClassAssignationByClassroomId(Integer classroomId, Integer year) {
+        List<ClassAssignationEntity> classSubjectEntities = classAssignationRepository.findAllByClassroomId(classroomId, year);
         return getClassAssignationDTOS(classSubjectEntities);
     }
 
     @Override
-    public List<ClassAssignationDTO> getClassAssignationByTeacherId(Integer teacherId) {
-        List<ClassAssignationEntity> classSubjectEntities = classAssignationRepository.findAllByTeacherId(teacherId);
+    public List<ClassAssignationDTO> getClassAssignationByTeacherId(Integer teacherId, Integer year) {
+        List<ClassAssignationEntity> classSubjectEntities = classAssignationRepository.findAllByTeacherId(teacherId, year);
         return getClassAssignationDTOS(classSubjectEntities);
     }
 

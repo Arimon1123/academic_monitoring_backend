@@ -9,9 +9,9 @@ import java.util.List;
 public interface ClassAssignationService {
     List<ClassAssignationDTO> getClassAssignationByClassId(Integer classId);
 
-    List<ClassAssignationDTO> getClassAssignationByClassroomId(Integer classroomId);
+    List<ClassAssignationDTO> getClassAssignationByClassroomId(Integer classroomId, Integer year);
 
-    List<ClassAssignationDTO> getClassAssignationByTeacherId(Integer teacherId);
+    List<ClassAssignationDTO> getClassAssignationByTeacherId(Integer teacherId, Integer year);
 
     void createClassAssignation(AssignationCreateDTO classAssignationDTO);
 

@@ -37,8 +37,11 @@ public class UserController {
             LOGGER.info("DTO {}, image {}, type {}", userDTO, image.getOriginalFilename(), image.getContentType());
         try {
             UserCreateDTO userDto = objectMapper.readValue(userDTO, UserCreateDTO.class);
-            List<SubjectDTO> subjectDTOList = objectMapper.readValue(subjects, new TypeReference<>() {
-            });
+            List<SubjectDTO> subjectDTOList = null;
+            if (subjects != null) {
+                subjectDTOList = objectMapper.readValue(subjects, new TypeReference<>() {
+                });
+            }
             List<ConsultHourDTO> consultHourDTOS = null;
             if (consultHours != null) {
                 consultHourDTOS = objectMapper.readValue(consultHours, new TypeReference<>() {
@@ -116,7 +119,7 @@ public class UserController {
     public ResponseEntity<ResponseDTO<Boolean>> existsByUsername(@PathVariable String username) {
         return ResponseEntity.ok(
                 new ResponseDTO<>(
-                        userService.isUsernameAvaiable(username),
+                        userService.isUsernameAvailable(username),
                         "Usuario disponible",
                         200));
     }
@@ -185,7 +188,9 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMINISTRATIVE')")
     public ResponseEntity<?> updateUseRoles(@RequestBody() UserDTO user) {
         try {
+            LOGGER.info("Updating roles for user {}", user.getUsername());
             userService.updateUserRole(user.getUsername(), user.getRole());
+            LOGGER.info("Roles updated successfully");
             return ResponseEntity.ok(new ResponseDTO<>(null, "Roles updated successfully", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(e.getMessage(), "Error trying to update roles", 200));
@@ -202,9 +207,9 @@ public class UserController {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<ResponseDTO<UserDetailsDTO>> getUserDetails(@RequestParam String username, @RequestParam String role) {
+    public ResponseEntity<ResponseDTO<UserDetailsDTO>> getUserDetails(@RequestParam String username, @RequestParam String role, @RequestParam Integer year) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(userService.getUserRoleDetails(username, role), "Details Retrieved Successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(userService.getUserRoleDetails(username, role, year), "Details Retrieved Successfully", 200));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -217,6 +222,16 @@ public class UserController {
             return ResponseEntity.ok(new ResponseDTO<>(null, "Student created successfully", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(e.getMessage(), "Error trying to create student", 500));
+        }
+    }
+
+    @GetMapping("/assignation/{assignationId}")
+    public ResponseEntity<ResponseDTO<UserDTO>> getUserByAssignationId(@PathVariable Integer assignationId) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(userService.getUserByAssignationId(assignationId), "User Retrieved Successfully", 200));
+        } catch (Exception e) {
+            e.getMessage();
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
 }

@@ -12,4 +12,5 @@ public interface AdministrativeService {
     AdministrativeDTO findDTOByUserId(Integer userId);
 
     AdministrativeEntity findEntityByUserId(Integer userId);
+
 }

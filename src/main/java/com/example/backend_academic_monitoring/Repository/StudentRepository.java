@@ -26,8 +26,7 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
             "WHERE ps.parent.id = :parentId AND s.status = 1")
     List<StudentEntity> findAllByParentId(Integer parentId);
 
-    @Query(value = "Select s.id, s.name, s.address, s.birthdate, s.father_lastname , s.mother_lastname, " +
-            "s.ci, s.rude, s.status" +
+    @Query(value = "Select s.* " +
             " from student s join student_class sc on s.id = sc.student_id where" +
             " sc.class_id = :classId  order by s.father_lastname desc ", nativeQuery = true)
     List<StudentEntity> findAllByClassId(Integer classId);

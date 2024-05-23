@@ -5,10 +5,7 @@ import com.example.backend_academic_monitoring.Entity.ScheduleEntity;
 import com.example.backend_academic_monitoring.Service.ScheduleService;
 import com.example.backend_academic_monitoring.Service.TeacherService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,18 +31,18 @@ public class ScheduleController {
     }
 
     @GetMapping("/teacher/{teacherId}")
-    public ResponseEntity<ResponseDTO<List<ScheduleEntity>>> findAllByTeacherId(@PathVariable Integer teacherId) {
+    public ResponseEntity<ResponseDTO<List<ScheduleEntity>>> findAllByTeacherId(@PathVariable Integer teacherId, @RequestParam Integer year) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(scheduleService.findAllByTeacherId(teacherId), null, 200));
+            return ResponseEntity.ok(new ResponseDTO<>(scheduleService.findAllByTeacherId(teacherId, year), "Schedules Retrieved sucessfully", 200));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
 
     @GetMapping("/classroom/{classroomId}")
-    public ResponseEntity<ResponseDTO<List<ScheduleEntity>>> findAllByClassroomId(@PathVariable Integer classroomId) {
+    public ResponseEntity<ResponseDTO<List<ScheduleEntity>>> findAllByClassroomId(@PathVariable Integer classroomId, @RequestParam Integer year) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(scheduleService.findAllByClassroomId(classroomId), null, 200));
+            return ResponseEntity.ok(new ResponseDTO<>(scheduleService.findAllByClassroomId(classroomId, year), null, 200));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }

@@ -135,6 +135,12 @@ public class TeacherServiceImpl implements TeacherService {
         teacherRepository.save(teacher);
     }
 
+    @Override
+    public TeacherDTO getTeacherByAssignationId(Integer assignationId) {
+        TeacherEntity teacher = teacherRepository.findByAssignationId(assignationId);
+        return getTeacherDTO(teacher);
+    }
+
     private TeacherDTO getTeacherDTO(TeacherEntity teacher) {
         TeacherDTO teacherDTO = TeacherMapper.toDTO(teacher);
         ArrayList<SubjectDTO> subjects = new ArrayList<>();
@@ -145,4 +151,6 @@ public class TeacherServiceImpl implements TeacherService {
         teacherDTO.setSubjects(subjects);
         return teacherDTO;
     }
+
+
 }

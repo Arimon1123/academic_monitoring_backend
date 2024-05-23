@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = new UserEntity();
         user.setUsername(userCreateDTO.getCi());
         user.setStatus(1);
+        user.setRole(userCreateDTO.getRoles());
         user = saveUser(user, image, userCreateDTO.getEmail());
 
         PersonEntity personEntity = getPersonEntity(userCreateDTO, user);
@@ -115,7 +116,6 @@ public class UserServiceImpl implements UserService {
         UserEntity user = new UserEntity();
         user.setUsername(studentCreateDTO.getCi());
         user.setStatus(1);
-        LOGGER.info("User: {}, email {}", user, studentCreateDTO.getEmail());
         user = this.saveUser(user, null, studentCreateDTO.getEmail());
         studentService.saveStudent(studentCreateDTO, user);
     }
@@ -176,21 +176,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserRole(String username, List<RoleEntity> newRoles) {
         UserEntity userEntity = userRepository.findByUsername(username);
-        PersonEntity personEntity = personService.getById(userEntity.getId());
+        PersonEntity personEntity = personService.findByUserId(userEntity.getId());
         List<RoleEntity> userRoles = userEntity.getRole();
         LOGGER.info("UserRoles: {}", userRoles);
-        for (RoleEntity role : newRoles) {
-            if (!userEntity.getRole().contains(role)) {
+        if (!userEntity.getRole().isEmpty()) {
+            for (RoleEntity role : newRoles) {
+                if (!userEntity.getRole().contains(role)) {
+                    if (!updateRoleStatus(role, userEntity, 1)) {
+                        createRole(role, personEntity);
+                    }
+                }
+                LOGGER.info("Role: {}", role);
+                userRoles.remove(role);
+                LOGGER.info("UserRoles: {}", userRoles);
+            }
+            for (RoleEntity role : userRoles) {
+                updateRoleStatus(role, userEntity, 0);
+            }
+        } else {
+            for (RoleEntity role : newRoles) {
                 if (!updateRoleStatus(role, userEntity, 1)) {
                     createRole(role, personEntity);
                 }
             }
-            LOGGER.info("Role: {}", role);
-            userRoles.remove(role);
-            LOGGER.info("UserRoles: {}", userRoles);
-        }
-        for (RoleEntity role : userRoles) {
-            updateRoleStatus(role, userEntity, 0);
         }
         userEntity.setRole(newRoles);
         userRepository.save(userEntity);
@@ -222,6 +230,7 @@ public class UserServiceImpl implements UserService {
             TeacherEntity teacherEntity = teacherService.findTeacherEntityByUserId(user.getId());
             if (teacherEntity != null) {
                 teacherEntity.setStatus(status);
+                teacherService.update(teacherEntity);
                 return true;
             }
         }
@@ -229,6 +238,7 @@ public class UserServiceImpl implements UserService {
             ParentEntity parent = parentService.getParentEntityByUserId(user.getId());
             if (parent != null) {
                 parent.setStatus(status);
+                parentService.update(parent);
                 return true;
             }
         }
@@ -236,6 +246,7 @@ public class UserServiceImpl implements UserService {
             AdministrativeEntity administrative = administrativeService.findEntityByUserId(user.getId());
             if (administrative != null) {
                 administrative.setStatus(status);
+                administrativeService.update(administrative);
                 return true;
             }
         }
@@ -245,16 +256,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDataDTO getUser(Integer id) {
-        UserEntity user = userRepository.findById(id).orElseThrow();
+        UserEntity user = userRepository.findByPersonId(id);
         PersonDTO personDTO;
-        personDTO = PersonMapper.entityToDTO(personService.getById(user.getId()));
-        LOGGER.info("PersonDTO: {}, UserEntity {}", personDTO.getId(), user.getId());
+        personDTO = PersonMapper.entityToDTO(personService.getById(id));
         UserDataDTO userDataDTO = UserMapper.entityToData(user, personDTO);
         if (user.getImageId() != null) {
             String uuid = fileService.getImage(user.getImageId()).getUuid();
             fileService.getImageURL(uuid);
         }
-        LOGGER.info(String.valueOf(user));
         return userDataDTO;
     }
 
@@ -262,7 +271,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserDataDTO> searchUser(String name, String lastname, String role, String ci, Integer page, Integer size) {
         Page<PersonEntity> personList = personService.findAllByNameOrCI(name, lastname, ci, role, page, size);
-        LOGGER.info("PersonList: {}", personList.getContent());
+
         return personList.map(person -> {
             UserEntity user = userRepository.findById(person.getUserId()).orElseThrow();
             UserDataDTO userDataDTO = UserMapper.entityToData(user, PersonMapper.entityToDTO(person));
@@ -284,7 +293,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isUsernameAvaiable(String username) {
+    public boolean isUsernameAvailable(String username) {
         return !userRepository.existsByUsername(username);
     }
 
@@ -301,14 +310,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailsDTO getUserRoleDetails(String username, String role) {
-        LOGGER.info("Username: {}, Role: {}", username, role);
+    public UserDetailsDTO getUserRoleDetails(String username, String role, Integer year) {
         UserDTO user = this.getUserByUsername(username);
         UserDetailsDTO userDetails = new UserDetailsDTO();
         ObjectMapper mapper = new ObjectMapper();
         if (!user.getRole().stream().filter(roleEntity -> role.equals(roleEntity.getName())).toList().isEmpty()) {
             if (role.equals(PARENT_ROLE)) {
-                LOGGER.info("Parent");
                 userDetails.setDetails(parentService.getParentDTOByUserId(user.getId()));
             }
             if (role.equals(TEACHER_ROLE)) {
@@ -324,17 +331,21 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("El usuario no tiene el rol solicitado");
         }
         userDetails.setUser(user);
-        LOGGER.info("{}", userDetails);
         if (role.equals(PARENT_ROLE)) {
             ParentDTO parent = mapper.convertValue(userDetails.getDetails(), ParentDTO.class);
             userDetails.setStudents(studentService.findAllByParentId(parent.getId()));
         }
         if (role.equals(TEACHER_ROLE)) {
             TeacherDTO teacher = mapper.convertValue(userDetails.getDetails(), TeacherDTO.class);
-            userDetails.setClassAssignations(classAssignationService.getClassAssignationByTeacherId(teacher.getId()));
+            userDetails.setClassAssignations(classAssignationService.getClassAssignationByTeacherId(teacher.getId(), year));
         }
         userDetails.setRole(role);
         return userDetails;
+    }
+
+    @Override
+    public UserDTO getUserByAssignationId(Integer assignationId) {
+        return UserMapper.entityToDTO(userRepository.findByAssignationId(assignationId));
     }
 
 

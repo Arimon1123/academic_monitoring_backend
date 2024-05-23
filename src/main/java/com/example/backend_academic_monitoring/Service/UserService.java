@@ -33,11 +33,13 @@ public interface UserService {
 
     void updateUserImage(Integer id, MultipartFile image);
 
-    boolean isUsernameAvaiable(String username);
+    boolean isUsernameAvailable(String username);
 
     UserDTO getUserByUsername(String username);
 
     UserDTO getUserByPersonId(Integer id);
 
-    UserDetailsDTO getUserRoleDetails(String username, String role);
+    UserDetailsDTO getUserRoleDetails(String username, String role, Integer year);
+
+    UserDTO getUserByAssignationId(Integer assignationId);
 }

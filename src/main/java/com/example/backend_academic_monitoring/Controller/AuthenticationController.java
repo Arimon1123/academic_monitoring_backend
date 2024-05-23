@@ -61,11 +61,9 @@ public class AuthenticationController {
             );
 
             UserDetails userdetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-            LOGGER.info("{}", userdetails);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtUtil.generateToken(userdetails);
             CookieHelper.create(httpServletResponse, cookieName, token, false, -1, host);
-            LOGGER.info("{}", userdetails);
             return ResponseEntity.ok(new ResponseDTO<>(true, "Login Successful", 200));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "Invalid Credentials", 400));
@@ -117,11 +115,11 @@ public class AuthenticationController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATIVE','ROLE_TEACHER','ROLE_PARENT','ROLE_STUDENT')")
     @GetMapping("/role")
-    public ResponseEntity<ResponseDTO<Object>> getUserRoleDetails(@RequestParam String role) {
+    public ResponseEntity<ResponseDTO<Object>> getUserRoleDetails(@RequestParam String role, @RequestParam Integer year) {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            UserDetailsDTO user = userService.getUserRoleDetails(username, role);
+            UserDetailsDTO user = userService.getUserRoleDetails(username, role, year);
             return ResponseEntity.ok(new ResponseDTO<>(user, "Details Retrieved Successfully", 200));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));

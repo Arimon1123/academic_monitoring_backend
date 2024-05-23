@@ -79,4 +79,13 @@ public class TeacherController {
         }
     }
 
+    @GetMapping("/assignation/{assignationId}")
+    public ResponseEntity<ResponseDTO<TeacherDTO>> getTeacherByAssignationId(@PathVariable Integer assignationId) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(teacherService.getTeacherByAssignationId(assignationId), "Teacher retrieved successfully", 200));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
 }

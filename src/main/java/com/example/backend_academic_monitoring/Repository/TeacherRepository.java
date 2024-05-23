@@ -18,4 +18,8 @@ public interface TeacherRepository extends JpaRepository<TeacherEntity, Integer>
     TeacherEntity findByPerson_UserId(Integer userId);
 
     boolean existsByAcademicEmail(String academicEmail);
+
+    @Query("SELECT t FROM TeacherEntity t , ClassAssignationEntity a " +
+            "where t.id = a.teacherId and a.teacherId = :assignationId")
+    TeacherEntity findByAssignationId(Integer assignationId);
 }
