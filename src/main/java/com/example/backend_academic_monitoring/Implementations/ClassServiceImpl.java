@@ -105,6 +105,13 @@ public class ClassServiceImpl implements ClassService {
 
     }
 
+    @Override
+    public ClassListDTO getClassDTOByStudentIdAndYear(Integer studentId, Integer year) {
+        ClassEntity classEntity = classRepository.findByStudentIdAndYear(studentId, year);
+        if (classEntity == null) return null;
+        return getClassDTO(classEntity);
+    }
+
     public ClassListDTO getClassDTO(ClassEntity classEntity) {
         ClassListDTO classListDTO = new ClassListDTO();
         classListDTO.setId(classEntity.getId());

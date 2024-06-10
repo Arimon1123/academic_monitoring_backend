@@ -221,7 +221,8 @@ public class UserController {
             userService.saveStudentUser(studentCreateDTO);
             return ResponseEntity.ok(new ResponseDTO<>(null, "Student created successfully", 200));
         } catch (Exception e) {
-            return ResponseEntity.ok(new ResponseDTO<>(e.getMessage(), "Error trying to create student", 500));
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(e.getMessage(), "Error trying to create student", 500));
         }
     }
 

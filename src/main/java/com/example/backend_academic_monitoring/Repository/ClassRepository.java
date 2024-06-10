@@ -46,13 +46,17 @@ public interface ClassRepository extends JpaRepository<ClassEntity, Integer> {
     ClassEntity findByAssignation(Integer assignationId);
 
     @Query(value = """
-            SELECT c.id, c.year, c.shift, c.identifier,c.status, g.number, g.section, c.grade_id
-            FROM class c
-            JOIN grade g ON c.grade_id = g.id
-            JOIN student_class sc ON c.id = sc.class_id
-            JOIN student s ON s.id = sc.student_id
-            WHERE s.id = :studentId
-            ORDER BY c.year DESC
-            LIMIT 1""", nativeQuery = true)
-    List<ClassEntity> findByStudentId(Integer studentId);
+             SELECT c.id, c.year, c.shift, c.identifier,c.status, g.number, g.section, c.grade_id
+             FROM class c
+             JOIN grade g ON c.grade_id = g.id
+             JOIN student_class sc ON c.id = sc.class_id
+             JOIN student s ON s.id = sc.student_id
+             WHERE s.id = :studentId ANd c.year = :year
+            """, nativeQuery = true)
+    ClassEntity findByStudentIdAndYear(Integer studentId, Integer year);
+
+    @Query(value = """ 
+            Insert into student_class (class_id, student_id) values (:classId, :studentId)
+            """, nativeQuery = true)
+    void addStudentToClass(Integer classId, Integer studentId);
 }

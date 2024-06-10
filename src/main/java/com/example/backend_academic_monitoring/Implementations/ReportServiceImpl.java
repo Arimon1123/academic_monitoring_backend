@@ -20,8 +20,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public List<ReportPerformanceDTO> getPerformanceReport(Integer gradeId) {
-        return reportRepository.getPerformanceReport(gradeId).stream().map(
+    public List<ReportPerformanceDTO> getPerformanceReport(Integer gradeId, Integer year) {
+        return reportRepository.getPerformanceReport(gradeId, year).stream().map(
                 objects -> {
                     ReportPerformanceDTO reportPerformanceDTO = new ReportPerformanceDTO();
                     reportPerformanceDTO.setId((Long) objects[0]);
@@ -58,8 +58,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public List<GradeRangeReportDTO> getGradeRangeReport(Integer bimester, Integer gradeId) {
-        return reportRepository.getGradeRangesReport(bimester, gradeId).stream().map(
+    public List<GradeRangeReportDTO> getGradeRangeReport(Integer bimester, Integer gradeId, Integer year) {
+        return reportRepository.getGradeRangesReport(bimester, gradeId, year).stream().map(
                 report -> {
                     GradeRangeReportDTO newReport = new GradeRangeReportDTO();
                     newReport.setRange((String) report[0]);

@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,8 @@ public class RejectedPermissionEntity {
     @Column(name = "id")
     private Integer id;
     private String reason;
-    @Column(name = "permission_id")
-    private Integer permissionId;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JsonIgnore
+    private PermissionEntity permission;
 }

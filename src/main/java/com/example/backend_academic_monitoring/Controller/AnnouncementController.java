@@ -29,21 +29,29 @@ public class AnnouncementController {
             LOGGER.info("AnnouncementDTO: {}", announcementDTO);
             AnnouncementDTO announcement = objectMapper.readValue(announcementDTO, AnnouncementDTO.class);
             announcementService.save(announcement, images);
-            return ResponseEntity.ok(new ResponseDTO<>(null, "Announcement saved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Anuncio guardado exitosamente", 200));
         } catch (Exception e) {
-            return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Error al guardar el anuncio: " + e.getMessage(), 500));
         }
     }
 
     @GetMapping()
     public ResponseEntity<ResponseDTO<?>> getAllAnnouncements() throws JsonProcessingException {
-        return ResponseEntity.ok(new ResponseDTO<>(announcementService.getAllAnnouncements(), "Announcements fetched successfully", 200));
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(announcementService.getAllAnnouncements(), "Anuncios obtenidos exitosamente", 200));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Error al obtener los anuncios: " + e.getMessage(), 500));
+        }
     }
 
     @GetMapping("/search")
     public ResponseEntity<ResponseDTO<?>> getAnnouncementBy(@RequestParam("receiver") String receiver,
                                                             @RequestParam("gradeId") Integer gradeId,
                                                             @RequestParam("shift") Integer shift) {
-        return ResponseEntity.ok(new ResponseDTO<>(announcementService.getByReceivers(receiver, gradeId, shift), "announcement fetched successfully", 200));
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(announcementService.getByReceivers(receiver, gradeId, shift), "Anuncio obtenido exitosamente", 200));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Error al obtener el anuncio: " + e.getMessage(), 500));
+        }
     }
 }

@@ -66,6 +66,7 @@ public class AuthenticationController {
             CookieHelper.create(httpServletResponse, cookieName, token, false, -1, host);
             return ResponseEntity.ok(new ResponseDTO<>(true, "Login Successful", 200));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "Invalid Credentials", 400));
         }
 

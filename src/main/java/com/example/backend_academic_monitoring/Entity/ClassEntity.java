@@ -26,7 +26,7 @@ public class ClassEntity {
     @OneToOne
     @JoinColumn(name = "grade_id")
     private GradeEntity grade;
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(
             name = "student_class",
             joinColumns = @JoinColumn(name = "class_id"),

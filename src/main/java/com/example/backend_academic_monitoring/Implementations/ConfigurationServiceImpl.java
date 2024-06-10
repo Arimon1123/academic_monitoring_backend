@@ -1,7 +1,5 @@
 package com.example.backend_academic_monitoring.Implementations;
 
-import com.example.backend_academic_monitoring.DTO.ClassDTO;
-import com.example.backend_academic_monitoring.DTO.GradeDTO;
 import com.example.backend_academic_monitoring.DTO.UnfinishedSubjectDTO;
 import com.example.backend_academic_monitoring.Entity.ConfigEntity;
 import com.example.backend_academic_monitoring.Entity.StudentEntity;
@@ -78,18 +76,18 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         config.setCurrentYear(config.getCurrentYear() + 1);
         config.setCurrentBimester(1);
         configurationRepository.save(config);
-        List<GradeDTO> grades = gradeService.getAll();
-        List<String> identifiers = List.of("A", "B", "C", "D", "E");
-        for (GradeDTO grade : grades) {
-            for (String identifier : identifiers) {
-                ClassDTO classDTO = new ClassDTO();
-                classDTO.setGradeId(grade.getId());
-                classDTO.setYear(config.getCurrentYear());
-                classDTO.setShift(1);
-                classDTO.setIdentifier(identifier);
-                classService.saveClass(classDTO);
-            }
-        }
+//        List<GradeDTO> grades = gradeService.getAll();
+//        List<String> identifiers = List.of("A", "B", "C", "D", "E");
+//        for (GradeDTO grade : grades) {
+//            for (String identifier : identifiers) {
+//                ClassDTO classDTO = new ClassDTO();
+//                classDTO.setGradeId(grade.getId());
+//                classDTO.setYear(config.getCurrentYear());
+//                classDTO.setShift(1);
+//                classDTO.setIdentifier(identifier);
+//                classService.saveClass(classDTO);
+//            }
+//        }
 
     }
 

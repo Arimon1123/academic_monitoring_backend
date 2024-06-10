@@ -16,13 +16,14 @@ public class ActivityController {
     public ActivityController(ActivityService activityService) {
         this.activityService = activityService;
     }
+
     @PostMapping()
     public ResponseEntity<ResponseDTO<String>> saveActivity(@RequestBody ActivityEntity activityCreateDTO) {
         try {
             activityService.saveActivity(activityCreateDTO);
-            return ResponseEntity.ok(new ResponseDTO<>(null, "Activity created successfully",200));
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Actividad creada exitosamente", 200));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error creating activity",500));
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error al crear la actividad: " + e.getMessage(), 500));
         }
     }
 
@@ -30,26 +31,28 @@ public class ActivityController {
     public ResponseEntity<ResponseDTO<String>> updateActivity(@RequestBody ActivityEntity activityCreateDTO) {
         try {
             activityService.updateActivity(activityCreateDTO);
-            return ResponseEntity.ok(new ResponseDTO<>(null, "Activity updated successfully",200));
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Actividad actualizada exitosamente", 200));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error updating activity",500));
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error al actualizar la actividad: " + e.getMessage(), 500));
         }
     }
+
     @GetMapping("/assignation/{assignationId}/bimester/{bimester}")
     public ResponseEntity<ResponseDTO<List<ActivityEntity>>> findActivitiesByAssignationId(@PathVariable Integer assignationId, @PathVariable Integer bimester) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(activityService.findActivitiesByAssignationIdAndBimester(assignationId,bimester), "Activities found successfully",200));
+            return ResponseEntity.ok(new ResponseDTO<>(activityService.findActivitiesByAssignationIdAndBimester(assignationId, bimester), "Actividades encontradas", 200));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error finding activities",500));
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error al buscar actividades" + e.getMessage(), 500));
         }
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDTO<String>> deleteActivity(@PathVariable Integer id) {
         try {
             activityService.deleteActivity(id);
-            return ResponseEntity.ok(new ResponseDTO<>(null, "Activity deleted successfully",200));
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Actividad eliminada exitosamente", 200));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error deleting activity",500));
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error al eliminar la actividad" + e.getMessage(), 500));
         }
     }
 }

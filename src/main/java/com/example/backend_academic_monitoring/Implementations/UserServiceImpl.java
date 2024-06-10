@@ -110,13 +110,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void saveStudentUser(StudentCreateDTO studentCreateDTO) {
         if (studentService.existsByCi(studentCreateDTO.getCi())) throw new RuntimeException("Ci ya existe");
         if (studentService.existsByRude(studentCreateDTO.getRude())) throw new RuntimeException("Rude ya existe");
         UserEntity user = new UserEntity();
         user.setUsername(studentCreateDTO.getCi());
         user.setStatus(1);
-        user = this.saveUser(user, null, studentCreateDTO.getEmail());
+        user.setRole(List.of(new RoleEntity(4, STUDENT_ROLE)));
+        user = saveUser(user, null, studentCreateDTO.getEmail());
         studentService.saveStudent(studentCreateDTO, user);
     }
 

@@ -39,5 +39,10 @@ public class ClassController {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
+
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<ResponseDTO<ClassListDTO>> getClassByStudentId(@PathVariable Integer studentId, @RequestParam Integer year) {
+        return ResponseEntity.ok(new ResponseDTO<>(classService.getClassDTOByStudentIdAndYear(studentId, year), "Clase obtenida", 200));
+    }
 }
 

@@ -14,7 +14,10 @@ public interface ClassAssignationRepository extends JpaRepository<ClassAssignati
     @Query(value = "select c from ClassAssignationEntity c join ClassEntity  cl on c.classId = cl.id where cl.year = :year and c.classroomId = :classroomId")
     List<ClassAssignationEntity> findAllByClassroomId(Integer classroomId, Integer year);
 
-    @Query(value = "select c from ClassAssignationEntity c join ClassEntity  cl on c.classId = cl.id where cl.year = :year and c.teacherId = :teacherId")
+    @Query(value = "select c from ClassAssignationEntity c " +
+            "join ClassEntity  cl on c.classId = cl.id " +
+            "where cl.year = :year and c.teacherId = :teacherId " +
+            "order by cl.grade.number, cl.grade.section, cl.identifier")
     List<ClassAssignationEntity> findAllByTeacherId(Integer teacherId, Integer year);
 
     ClassAssignationEntity findByClassIdAndClassroomIdAndTeacherIdAndSubjectId(Integer classId, Integer classroomId, Integer teacherId, Integer subjectId);

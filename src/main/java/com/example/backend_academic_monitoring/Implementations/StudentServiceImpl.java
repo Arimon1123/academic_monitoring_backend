@@ -62,11 +62,6 @@ public class StudentServiceImpl implements StudentService {
             fatherStudentEntity.setStudent(studentEntity);
             parentStudentRepository.save(fatherStudentEntity);
         }
-        if (studentDTO.isUser()) {
-            UserEntity user = new UserEntity();
-            user.setUsername(studentDTO.getCi());
-            user.setStatus(1);
-        }
         classService.addStudentToClass(studentDTO.getClassId(), studentEntity);
     }
 

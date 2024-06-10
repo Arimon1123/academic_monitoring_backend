@@ -7,7 +7,6 @@ import com.example.backend_academic_monitoring.Service.AttendanceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
 import java.util.List;
 
 @RequestMapping("/attendance")
@@ -21,30 +20,30 @@ public class AttendanceController {
     }
 
     @GetMapping("/assignation/{assignationId}")
-    public ResponseEntity<ResponseDTO<List<AttendanceEntity>>> getAllAttendanceByAssignation(@PathVariable Integer assignationId){
-        try{
-            return ResponseEntity.ok(new ResponseDTO<>(attendanceService.getAllAttendanceByAssignation(assignationId), "Attendance list retrieved successfully", 200));
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+    public ResponseEntity<ResponseDTO<List<AttendanceEntity>>> getAllAttendanceByAssignation(@PathVariable Integer assignationId) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(attendanceService.getAllAttendanceByAssignation(assignationId), "Lista de asistencia recuperada exitosamente", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error al recuperar la lista de asistencia: " + e.getMessage(), 500));
         }
     }
 
     @PostMapping()
-    public ResponseEntity<ResponseDTO<AttendanceEntity>> createAttendance(@RequestBody List<AttendanceEntity> attendanceEntity){
-        try{
+    public ResponseEntity<ResponseDTO<AttendanceEntity>> createAttendance(@RequestBody List<AttendanceEntity> attendanceEntity) {
+        try {
             attendanceService.createAttendance(attendanceEntity);
-            return ResponseEntity.ok(new ResponseDTO<>(null, "Attendance created successfully", 200));
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Asistencia creada exitosamente", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error al crear la asistencia: " + e.getMessage(), 500));
         }
     }
 
     @GetMapping("/assignation/{assignationId}/date")
-    public ResponseEntity<ResponseDTO<List<AttendanceDTO>>> getAttendanceDateByAssignationId(@PathVariable Integer assignationId){
-        try{
-            return ResponseEntity.ok(new ResponseDTO<>(attendanceService.getAttendanceDateByAssignationId(assignationId), "Attendance date list retrieved successfully", 200));
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+    public ResponseEntity<ResponseDTO<List<AttendanceDTO>>> getAttendanceDateByAssignationId(@PathVariable Integer assignationId) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(attendanceService.getAttendanceDateByAssignationId(assignationId), "Lista de fechas de asistencia recuperada exitosamente", 200));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, "Error al recuperar la lista de fechas de asistencia: " + e.getMessage(), 500));
         }
     }
 }

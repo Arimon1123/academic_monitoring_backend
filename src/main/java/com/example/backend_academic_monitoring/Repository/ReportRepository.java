@@ -14,7 +14,7 @@ public class ReportRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<Object[]> getPerformanceReport(Integer gradeId) {
+    public List<Object[]> getPerformanceReport(Integer gradeId, Integer year) {
         Query query = entityManager.createNativeQuery("""
                 select  row_number() over (),round(sum(total_grade)/count(student_id),2) as grade, class_id, year, shift, identifier, grade_number,bimester
                 from (select sum(grade * activity.value * dimension.value)/10000 as total_grade ,
@@ -28,10 +28,10 @@ public class ReportRepository {
                                join subject on class_has_subject.subject_id = subject.id
                                join dimension on activity.dimension = dimension.name
                                join grade on class.grade_id = grade.id
-                      where grade.id = :gradeId
+                      where grade.id = :gradeId and class.year = :year
                       group by student_id,bimester, class_has_subject.id, class.id, year, shift, identifier, grade_number, grade_section) as t
                 group by class_id, year, shift, identifier, grade_number, grade_section , bimester order by bimester, class_id;""");
-        query.setParameter("gradeId", gradeId);
+        query.setParameter("gradeId", gradeId).setParameter("year", year);
         return query.getResultList();
     }
 
@@ -55,7 +55,7 @@ public class ReportRepository {
         return query.getResultList();
     }
 
-    public List<Object[]> getGradeRangesReport(Integer bimester, Integer gradeId) {
+    public List<Object[]> getGradeRangesReport(Integer bimester, Integer gradeId, Integer year) {
         Query query = entityManager.createNativeQuery(""" 
                 Select t.range  , count(*) as count, sum(count(*)) over () as total
                   from (
@@ -74,9 +74,9 @@ public class ReportRepository {
                      from activity_has_grade join activity on activity_has_grade.activity_id = activity.id
                      join class_has_subject on activity.class_has_subject_id = class_has_subject.id
                      join class on class_has_subject.class_id = class.id
-                     where bimester = :bimester and class.grade_id = :gradeId
+                     where bimester = :bimester and class.grade_id = :gradeId and class.year = :year
                      ) as t group by t.range order by t.range;""");
-        query.setParameter("bimester", bimester).setParameter("gradeId", gradeId);
+        query.setParameter("bimester", bimester).setParameter("gradeId", gradeId).setParameter("year", year);
         return query.getResultList();
     }
 }

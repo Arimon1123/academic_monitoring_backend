@@ -29,4 +29,6 @@ public interface ClassService {
     List<ClassEntity> getStudentClasses(Integer studentId);
 
     void setApprovalStatus(Integer studentId, Integer classId, Integer approvalStatus);
+
+    ClassListDTO getClassDTOByStudentIdAndYear(Integer studentId, Integer year);
 }

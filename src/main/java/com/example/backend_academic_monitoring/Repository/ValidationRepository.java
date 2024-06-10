@@ -18,7 +18,7 @@ public class ValidationRepository {
                 subject.name as subject_name, class_has_subject.id as assignation_id,
                 person.name, person.lastname, grade.number, grade.section, c.identifier,c.shift
                 from activity_has_grade
-                left join activity on activity_has_grade.activity_id = activity.id
+                right join activity on activity_has_grade.activity_id = activity.id
                 join class_has_subject on activity.class_has_subject_id = class_has_subject.id
                 join teacher on class_has_subject.teacher_id = teacher.id
                 join person on teacher.person_id = person.id
@@ -30,7 +30,7 @@ public class ValidationRepository {
                 Select count(student.id ) from student
                 join student_class on student.id = student_class.student_id
                 where student_class.class_id = c.id) as count
-                where  c.year = :year and bimester = :bimester and activity_has_grade.status = 1
+                where  c.year = :year and bimester = :bimester and activity_has_grade.status = 1 and activity.status = 1
                 group by activity.bimester, subject.name, subject.id, class_has_subject.id, count.count,
                 person.name, person.lastname,grade.number, grade.section, c.identifier,c.shift
                 having sum(activity.value * dimension.value)/(100 * count.count) != 100;""");

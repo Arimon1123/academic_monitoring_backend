@@ -17,6 +17,7 @@ import java.util.List;
 public class PermissionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
     private Date date;
     private Timestamp permissionStartDate;
@@ -32,4 +33,7 @@ public class PermissionEntity {
             inverseJoinColumns = @JoinColumn(name = "image_id")
     )
     private List<ImageEntity> images;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "permission_id", referencedColumnName = "id")
+    private List<RejectedPermissionEntity> rejectedPermissionEntity;
 }

@@ -8,9 +8,9 @@ import java.sql.Date;
 import java.util.List;
 
 public interface ReportService {
-    List<ReportPerformanceDTO> getPerformanceReport(Integer gradeId);
+    List<ReportPerformanceDTO> getPerformanceReport(Integer gradeId, Integer year);
 
     List<ReportAttendanceDTO> getAttendanceReport(Date startDate, Date endDate, Integer gradeId);
 
-    List<GradeRangeReportDTO> getGradeRangeReport(Integer bimester, Integer gradeId);
+    List<GradeRangeReportDTO> getGradeRangeReport(Integer bimester, Integer gradeId, Integer year);
 }

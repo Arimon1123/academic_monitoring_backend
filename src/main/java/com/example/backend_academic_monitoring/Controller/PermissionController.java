@@ -87,12 +87,22 @@ public class PermissionController {
     }
 
     @GetMapping("/class/{classId}")
-    public ResponseEntity<ResponseDTO<List<PermissionDTO>>> getPermissionByClass(@PathVariable Integer classId){
-        try{
-            return ResponseEntity.ok(new ResponseDTO<>(permissionService.getPermissionsByClass(classId),"Permissions retrieved successfully" , 200));
+    public ResponseEntity<ResponseDTO<List<PermissionDTO>>> getPermissionByClass(@PathVariable Integer classId) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(permissionService.getPermissionsByClass(classId), "Permissions retrieved successfully", 200));
 
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(),500));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
+        }
+    }
+
+    @GetMapping("/students")
+    public ResponseEntity<ResponseDTO<List<PermissionDTO>>> getPermissionByStudents(@RequestParam List<Integer> studentId, @RequestParam Integer year) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO<>(permissionService.getPermissionByStudents(studentId, year), "Permissions retrieved successfully", 200));
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
 

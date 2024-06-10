@@ -1,5 +1,6 @@
 package com.example.backend_academic_monitoring.DTO;
 
+import com.example.backend_academic_monitoring.Entity.RejectedPermissionEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
@@ -24,4 +25,5 @@ public class PermissionDTO {
     private Integer permissionStatus;
     private List<String> images;
     private StudentDTO student;
+    private List<RejectedPermissionEntity> rejection;
 }

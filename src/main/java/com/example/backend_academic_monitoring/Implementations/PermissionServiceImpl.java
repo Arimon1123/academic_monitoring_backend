@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -91,13 +92,13 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void rejectPermission(RejectedPermissionEntity rejectedPermissionEntity) {
-        PermissionEntity permissionEntity = permissionRepository.findById(rejectedPermissionEntity.getPermissionId()).orElseThrow(
+        PermissionEntity permissionEntity = permissionRepository.findById(rejectedPermissionEntity.getPermission().getId()).orElseThrow(
                 () -> new RuntimeException("Permission not found")
         );
         permissionEntity.setPermissionStatus(2);
         permissionRepository.save(permissionEntity);
         RejectedPermissionEntity rejectedPermissionEntity1 = new RejectedPermissionEntity();
-        rejectedPermissionEntity1.setPermissionId(rejectedPermissionEntity.getPermissionId());
+        rejectedPermissionEntity1.setPermission(rejectedPermissionEntity.getPermission());
         rejectedPermissionEntity1.setReason(rejectedPermissionEntity.getReason());
         rejectPermissionRepository.save(rejectedPermissionEntity1);
     }
@@ -117,6 +118,17 @@ public class PermissionServiceImpl implements PermissionService {
 
     }
 
+    @Override
+    public List<PermissionDTO> getPermissionByStudents(List<Integer> studentId, Integer year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, 11);
+        calendar.set(Calendar.DAY_OF_MONTH, 31);
+        Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+        List<PermissionEntity> permissionEntities = permissionRepository.findAllByStudentIds(studentId, timestamp);
+        return getPermissionDTOS(permissionEntities);
+    }
+
     private PermissionDTO mapDTO(PermissionEntity permissionEntity) {
         PermissionDTO permissionDTO = new PermissionDTO();
         permissionDTO.setId(permissionEntity.getId());
@@ -130,7 +142,9 @@ public class PermissionServiceImpl implements PermissionService {
         for (ImageEntity imageEntity : permissionEntity.getImages()) {
             images.add(imageService.getImageURL(imageEntity.getUuid()));
         }
+        permissionDTO.setRejection(permissionEntity.getRejectedPermissionEntity());
         permissionDTO.setImages(images);
+        logger.info("Permission DTO: {}", permissionEntity);
         return permissionDTO;
     }
 }

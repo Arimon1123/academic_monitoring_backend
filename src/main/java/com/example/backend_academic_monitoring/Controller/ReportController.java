@@ -23,9 +23,9 @@ public class ReportController {
     }
 
     @GetMapping("/performance")
-    public ResponseEntity<ResponseDTO<?>> getPerformanceReport(@RequestParam() Integer gradeId) {
+    public ResponseEntity<ResponseDTO<?>> getPerformanceReport(@RequestParam() Integer gradeId, @RequestParam() Integer year) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(reportService.getPerformanceReport(gradeId), "Performance report retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(reportService.getPerformanceReport(gradeId, year), "Performance report retrieved successfully", 200));
         } catch (Exception e) {
             log.error("Error getting performance report", e);
             return ResponseEntity.badRequest().body(new ResponseDTO<>(null, "Error getting performance report", 500));
@@ -43,9 +43,9 @@ public class ReportController {
     }
 
     @GetMapping("/gradeRange")
-    public ResponseEntity<ResponseDTO<?>> getGradeRangeReport(@RequestParam("bimester") Integer bimester, @RequestParam() Integer gradeId) {
+    public ResponseEntity<ResponseDTO<?>> getGradeRangeReport(@RequestParam("bimester") Integer bimester, @RequestParam() Integer gradeId, @RequestParam Integer year) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(reportService.getGradeRangeReport(bimester, gradeId), "Grade range report retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(reportService.getGradeRangeReport(bimester, gradeId, year), "Grade range report retrieved successfully", 200));
         } catch (Exception e) {
             log.error("Error getting grade range report", e);
             return ResponseEntity.badRequest().body(new ResponseDTO<>(null, "Error getting grade range report", 500));
