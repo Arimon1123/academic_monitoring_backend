@@ -3,9 +3,35 @@ services:
   postgres:
     image: postgres:latest
     restart: always
+    networks:
+      - monitoring
     ports:
       - "5432:5432"
     volumes:
-      - ./sql/init1.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./sql/dump.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRES_PASSWORD=password
+  backend:
+    image: moni:1.0.0
+    networks:
+      - monitoring
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+  frontend:
+    image: front:1.0.0
+    networks:
+      - monitoring
+    ports:
+      - "80:80"
+    environment:
+      - API_URL:http://backend:8080
+      - SERVER_HOST:localhost
+      - SERVER_PORT:8080
+networks:
+  monitoring:
+    driver: bridge
+

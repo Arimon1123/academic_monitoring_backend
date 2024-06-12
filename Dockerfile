@@ -1,9 +1,11 @@
 FROM openjdk:22-ea-20-slim-bullseye
 
+ENV DB_HOST=database
 ENV DB_PORT=5432
 ENV DB_NAME=acad_monitoring
 ENV DB_USER=postgres
 ENV DB_PASSWORD=password
+
 
 RUN mkdir -p /opt/arqui_software/logs
 VOLUME /opt/arqui_software/logs

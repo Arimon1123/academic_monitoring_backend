@@ -668,5 +668,5 @@ ALTER TABLE user_roles
                 INITIALLY IMMEDIATE
 ;
 
--- End of file.
+-- End of file.\
 
