@@ -5,7 +5,7 @@ public interface GradesDTO {
 
     Integer getStudent_Id();
 
-    Integer gettotal_grade();
+    Float gettotal_grade();
 
     String getName();
 

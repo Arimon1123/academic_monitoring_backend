@@ -2,7 +2,7 @@ package com.example.backend_academic_monitoring.Service;
 
 import com.example.backend_academic_monitoring.DTO.PermissionCreateDTO;
 import com.example.backend_academic_monitoring.DTO.PermissionDTO;
-import com.example.backend_academic_monitoring.Entity.RejectedPermissionEntity;
+import com.example.backend_academic_monitoring.DTO.RejectedPermissionDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public interface PermissionService {
 
     void approvePermission(Integer permissionId);
 
-    void rejectPermission(RejectedPermissionEntity rejectedPermissionEntity);
+    void rejectPermission(RejectedPermissionDTO rejectedPermission);
 
     PermissionDTO getPermission(Integer permissionId);
 

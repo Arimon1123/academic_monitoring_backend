@@ -22,7 +22,7 @@ public interface ActivityGradeRepository extends JpaRepository<ActivityGradeEnti
     List<ActivityGradeEntity> findAllByAssignationIdAndBimester(Integer assignationId, Integer bimester);
 
     @Query(value = """
-            select row_number() over () as id ,sum(grade * activity.value * dimension.value)/10000 as total_grade ,
+            select row_number() over () as id ,cast(sum(grade * activity.value * dimension.value) as float)/10000 as total_grade ,
                    student_id, student.name, activity.bimester, subject.id as subject_id,
                    subject.name as subject_name, class_has_subject.id as assignation_id
              from activity_has_grade
@@ -32,7 +32,7 @@ public interface ActivityGradeRepository extends JpaRepository<ActivityGradeEnti
              join student on activity_has_grade.student_id = student.id
               join subject on class_has_subject.subject_id = subject.id
               join dimension on activity.dimension = dimension.name
-              where student_id =:studentId and class.year = :year and activity_has_grade.status = 1\s
+              where student_id =:studentId and class.year = :year and activity_has_grade.status = 1 and activity.status = 1
               group by student_id, student.name,activity.bimester, subject.name, subject.id, class_has_subject.id;""", nativeQuery = true)
     List<GradesDTO> findAllByStudentIdAndYear(Integer studentId, Integer year);
 

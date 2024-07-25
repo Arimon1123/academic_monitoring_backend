@@ -2,8 +2,8 @@ package com.example.backend_academic_monitoring.Controller;
 
 import com.example.backend_academic_monitoring.DTO.PermissionCreateDTO;
 import com.example.backend_academic_monitoring.DTO.PermissionDTO;
+import com.example.backend_academic_monitoring.DTO.RejectedPermissionDTO;
 import com.example.backend_academic_monitoring.DTO.ResponseDTO;
-import com.example.backend_academic_monitoring.Entity.RejectedPermissionEntity;
 import com.example.backend_academic_monitoring.Service.PermissionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class PermissionController {
             PermissionCreateDTO permission = objectMapper.readValue(permissionDTO, PermissionCreateDTO.class);
             LOGGER.info("Saving permission {}", permission);
             permissionService.savePermission(permission, image);
-            return ResponseEntity.ok(new ResponseDTO<>(null, "Permission saved successfully", null));
+            return ResponseEntity.ok(new ResponseDTO<>(null, "La licencia se registro correctamente", null));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -42,7 +42,7 @@ public class PermissionController {
     @GetMapping("")
     public ResponseEntity<ResponseDTO<List<PermissionDTO>>> getAllPermissions(@RequestParam(value = "status", required = false) Integer status) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(permissionService.getAllPermissions(), "Permissions retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(permissionService.getAllPermissions(), "Licencias encontradas correctamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -51,7 +51,7 @@ public class PermissionController {
     @GetMapping("/status")
     public ResponseEntity<ResponseDTO<List<PermissionDTO>>> getPermissionStatus(@RequestParam Integer statusId) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(permissionService.getPermissionStatus(statusId), "Permissions retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(permissionService.getPermissionStatus(statusId), "Licencias encontradas correctamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -61,17 +61,18 @@ public class PermissionController {
     public ResponseEntity<ResponseDTO<String>> approvePermission(@PathVariable Integer permissionId) {
         try {
             permissionService.approvePermission(permissionId);
-            return ResponseEntity.ok(new ResponseDTO<>(null, "Permission approved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Licencia aprobada exitosamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
     }
 
     @PutMapping("/reject")
-    public ResponseEntity<ResponseDTO<String>> rejectPermission(@RequestBody RejectedPermissionEntity rejectedPermissionEntity) {
+    public ResponseEntity<ResponseDTO<String>> rejectPermission(@RequestBody RejectedPermissionDTO rejectedPermission) {
         try {
-            permissionService.rejectPermission(rejectedPermissionEntity);
-            return ResponseEntity.ok(new ResponseDTO<>(null, "Permission rejected successfully", 200));
+            LOGGER.info("Rejecting permission {}", rejectedPermission.getPermissionId());
+            permissionService.rejectPermission(rejectedPermission);
+            return ResponseEntity.ok(new ResponseDTO<>(null, "Licencia rechazada exitosamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }

@@ -14,6 +14,8 @@ public class CookieHelper {
         cookie.setMaxAge(maxAge);
         cookie.setPath("/");
         cookie.setDomain(domain);
+//        cookie.setSecure(true);
+//        cookie.setAttribute("SameSite", "None");
         httpServletResponse.addCookie(cookie);
     }
 

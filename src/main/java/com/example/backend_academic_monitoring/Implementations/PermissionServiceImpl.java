@@ -2,6 +2,7 @@ package com.example.backend_academic_monitoring.Implementations;
 
 import com.example.backend_academic_monitoring.DTO.PermissionCreateDTO;
 import com.example.backend_academic_monitoring.DTO.PermissionDTO;
+import com.example.backend_academic_monitoring.DTO.RejectedPermissionDTO;
 import com.example.backend_academic_monitoring.Entity.ImageEntity;
 import com.example.backend_academic_monitoring.Entity.PermissionEntity;
 import com.example.backend_academic_monitoring.Entity.RejectedPermissionEntity;
@@ -91,15 +92,15 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void rejectPermission(RejectedPermissionEntity rejectedPermissionEntity) {
-        PermissionEntity permissionEntity = permissionRepository.findById(rejectedPermissionEntity.getPermission().getId()).orElseThrow(
+    public void rejectPermission(RejectedPermissionDTO rejectedPermission) {
+        PermissionEntity permissionEntity = permissionRepository.findById(rejectedPermission.getPermissionId()).orElseThrow(
                 () -> new RuntimeException("Permission not found")
         );
         permissionEntity.setPermissionStatus(2);
         permissionRepository.save(permissionEntity);
         RejectedPermissionEntity rejectedPermissionEntity1 = new RejectedPermissionEntity();
-        rejectedPermissionEntity1.setPermission(rejectedPermissionEntity.getPermission());
-        rejectedPermissionEntity1.setReason(rejectedPermissionEntity.getReason());
+        rejectedPermissionEntity1.setPermission(permissionEntity);
+        rejectedPermissionEntity1.setReason(rejectedPermission.getReason());
         rejectPermissionRepository.save(rejectedPermissionEntity1);
     }
 

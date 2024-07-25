@@ -22,7 +22,7 @@ public class ClassAssignationController {
     @GetMapping("/classroom/{classroomId}")
     public ResponseEntity<ResponseDTO<List<ClassAssignationDTO>>> findClassroomSchedule(@PathVariable(value = "classroomId") Integer classroomId, @RequestParam Integer year) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByClassroomId(classroomId, year), "Classrooms retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByClassroomId(classroomId, year), "Aulas recuperadas exitosamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -31,7 +31,7 @@ public class ClassAssignationController {
     @GetMapping("")
     public ResponseEntity<ResponseDTO<ClassAssignationEntity>> findAllClassAssignations(@RequestParam(required = false) Integer classId, @RequestParam(required = false) Integer subjectId) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByClassIdAndSubjectId(classId, subjectId), "Class assignations retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByClassIdAndSubjectId(classId, subjectId), "Asignaciones de clase recuperadas exitosamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -42,7 +42,7 @@ public class ClassAssignationController {
     public ResponseEntity<ResponseDTO<String>> createClassAssignation(@RequestBody AssignationCreateDTO classAssignationDTO) {
         try {
             classAssignationService.createClassAssignation(classAssignationDTO);
-            return ResponseEntity.ok(new ResponseDTO<>("Class assignation created successfully", "Class assignation created successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>("Asignación de clase creada exitosamente", "Asignación de clase creada exitosamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.toString(), 500));
         }
@@ -51,7 +51,7 @@ public class ClassAssignationController {
     @GetMapping("/teacher/{teacherId}")
     public ResponseEntity<ResponseDTO<List<ClassAssignationDTO>>> findTeacherSchedule(@PathVariable(value = "teacherId") Integer teacherId, @RequestParam Integer year) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByTeacherId(teacherId, year), "Teacher schedule retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByTeacherId(teacherId, year), "Horario del profesor recuperado exitosamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -60,7 +60,7 @@ public class ClassAssignationController {
     @GetMapping("/class/{classId}")
     public ResponseEntity<ResponseDTO<List<ClassAssignationDTO>>> findClassSchedule(@PathVariable(value = "classId") Integer classId) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByClassId(classId), "Class schedule retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByClassId(classId), "Horario de clase recuperado exitosamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -69,7 +69,7 @@ public class ClassAssignationController {
     @GetMapping("/student")
     public ResponseEntity<ResponseDTO<List<ClassAssignationDTO>>> findStudentSchedule(@RequestParam Integer studentId, @RequestParam Integer year) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByStudentAndYear(studentId, year), "Student schedule retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationByStudentAndYear(studentId, year), "Horario del estudiante recuperado exitosamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
@@ -78,7 +78,7 @@ public class ClassAssignationController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDTO<ClassAssignationDTO>> findClassAssignationById(@PathVariable(value = "id") Integer id) {
         try {
-            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationById(id), "Class assignation retrieved successfully", 200));
+            return ResponseEntity.ok(new ResponseDTO<>(classAssignationService.getClassAssignationById(id), "Asignación de clase recuperada exitosamente", 200));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO<>(null, e.getMessage(), 500));
         }
